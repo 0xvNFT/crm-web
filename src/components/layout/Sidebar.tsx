@@ -1,5 +1,7 @@
-import { NavLink } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useSidebarContext } from '@/providers/SidebarProvider'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -14,6 +16,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  X,
 } from 'lucide-react'
 
 interface NavItem {
@@ -44,10 +47,16 @@ const NAV_ADMIN: NavItem[] = [
   { to: '/admin', label: 'Admin', icon: Settings, roles: ['ADMIN'] },
 ]
 
-function NavGroup({ label, items, userRoles }: {
+function NavGroup({
+  label,
+  items,
+  userRoles,
+  onNavigate,
+}: {
   label: string
   items: NavItem[]
   userRoles: string[]
+  onNavigate: () => void
 }) {
   const visible = items.filter(
     (item) => !item.roles || item.roles.some((r) => userRoles.includes(r))
@@ -63,6 +72,7 @@ function NavGroup({ label, items, userRoles }: {
         <NavLink
           key={item.to}
           to={item.to}
+          onClick={onNavigate}
           className={({ isActive }) =>
             cn(
               'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -89,12 +99,12 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-export function Sidebar() {
+function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth()
   const userRoles = user?.roles ?? []
 
   return (
-    <aside className="flex h-full w-56 flex-col bg-auth-panel">
+    <div className="flex h-full flex-col bg-auth-panel">
       {/* Logo */}
       <div className="flex h-14 shrink-0 items-center gap-2.5 px-4">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-xs font-bold text-white select-none">
@@ -107,9 +117,9 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-2 py-2">
-        <NavGroup label="Main" items={NAV_MAIN} userRoles={userRoles} />
-        <NavGroup label="Management" items={NAV_MANAGER} userRoles={userRoles} />
-        <NavGroup label="Admin" items={NAV_ADMIN} userRoles={userRoles} />
+        <NavGroup label="Main" items={NAV_MAIN} userRoles={userRoles} onNavigate={onNavigate} />
+        <NavGroup label="Management" items={NAV_MANAGER} userRoles={userRoles} onNavigate={onNavigate} />
+        <NavGroup label="Admin" items={NAV_ADMIN} userRoles={userRoles} onNavigate={onNavigate} />
       </nav>
 
       {/* User + Logout */}
@@ -131,6 +141,69 @@ export function Sidebar() {
           </button>
         </div>
       </div>
-    </aside>
+    </div>
+  )
+}
+
+export function Sidebar() {
+  const { open, close } = useSidebarContext()
+  const location = useLocation()
+
+  // Close drawer on route change (mobile)
+  useEffect(() => {
+    close()
+  }, [location.pathname, close])
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') close()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open, close])
+
+  // Prevent body scroll when drawer is open on mobile
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [open])
+
+  return (
+    <>
+      {/* Desktop — always visible static sidebar */}
+      <aside className="hidden lg:flex lg:w-56 lg:shrink-0">
+        <SidebarContent onNavigate={close} />
+      </aside>
+
+      {/* Mobile — backdrop + drawer */}
+      {open && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={close}
+            aria-hidden="true"
+          />
+
+          {/* Drawer */}
+          <aside className="absolute inset-y-0 left-0 w-72 shadow-2xl">
+            <SidebarContent onNavigate={close} />
+            <button
+              onClick={close}
+              className="absolute right-3 top-3.5 rounded p-1 text-white/40 hover:bg-white/10 hover:text-white transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </aside>
+        </div>
+      )}
+    </>
   )
 }
