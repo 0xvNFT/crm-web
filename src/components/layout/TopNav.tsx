@@ -14,7 +14,7 @@ export function TopNav() {
         <User className="h-4 w-4 text-muted-foreground" />
         <span className="font-medium">{user?.fullName}</span>
         <span className="text-muted-foreground">·</span>
-        <span className="text-xs text-muted-foreground">{user?.role}</span>
+        <span className="text-xs text-muted-foreground">{user?.roles.join(', ')}</span>
       </div>
       <button
         onClick={handleLogout}

@@ -19,7 +19,7 @@ interface NavItem {
   to: string
   label: string
   icon: React.ElementType
-  roles?: ('ADMIN' | 'MANAGER' | 'FIELD_REP')[]
+  roles?: string[]
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -41,7 +41,7 @@ export function Sidebar() {
   const { user } = useAuth()
 
   const visibleItems = NAV_ITEMS.filter(
-    (item) => !item.roles || (user && item.roles.includes(user.role))
+    (item) => !item.roles || (user && item.roles.some((r) => user.roles.includes(r)))
   )
 
   return (

@@ -29,14 +29,14 @@ export type PagePharmaFieldVisit = components['schemas']['PagePharmaFieldVisit']
 export type PagePharmaTerritory = components['schemas']['PagePharmaTerritory']
 export type PagePharmaTeam = components['schemas']['PagePharmaTeam']
 
-// Auth — not in the OpenAPI spec (backend returns dynamic JSON for login)
-export interface AuthResponse {
-  token: string
+// Auth user shape — returned by POST /api/auth/login and GET /api/auth/me
+// token is always null in the JSON body (it lives in the httpOnly cookie only)
+export interface AuthUser {
   userId: string
   tenantId: string
   email: string
   fullName: string
-  role: 'ADMIN' | 'MANAGER' | 'FIELD_REP'
+  roles: string[]
 }
 
 // API error shape returned by backend

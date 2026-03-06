@@ -5,12 +5,18 @@ import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
+// Auth pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'))
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/features/auth/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage'))
+const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
+
+// App pages
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'))
 const AccountListPage = lazy(() => import('@/features/accounts/AccountListPage'))
 
-// Intern-owned feature pages (scaffold — replace with real pages as interns build them)
+// Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -23,9 +29,12 @@ export function AppRouter() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Wrap><LoginPage /></Wrap>} />
+        <Route path="/register" element={<Wrap><RegisterPage /></Wrap>} />
         <Route path="/forgot-password" element={<Wrap><ForgotPasswordPage /></Wrap>} />
+        <Route path="/reset-password" element={<Wrap><ResetPasswordPage /></Wrap>} />
+        <Route path="/verify-email" element={<Wrap><VerifyEmailPage /></Wrap>} />
 
-        {/* Protected routes */}
+        {/* Protected routes — all nested inside AppShell */}
         <Route
           element={
             <PrivateRoute>
@@ -37,7 +46,7 @@ export function AppRouter() {
           <Route path="/dashboard" element={<Wrap><DashboardPage /></Wrap>} />
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
 
-          {/* Intern pages — swap PlaceholderPage with real components as they're built */}
+          {/* Intern pages — replace PlaceholderPage as each feature is completed */}
           <Route path="/contacts" element={<Wrap><PlaceholderPage name="Contacts" /></Wrap>} />
           <Route path="/leads" element={<Wrap><PlaceholderPage name="Leads" /></Wrap>} />
           <Route path="/orders" element={<Wrap><PlaceholderPage name="Orders" /></Wrap>} />
@@ -45,7 +54,7 @@ export function AppRouter() {
           <Route path="/activities" element={<Wrap><PlaceholderPage name="Activities" /></Wrap>} />
           <Route path="/visits" element={<Wrap><PlaceholderPage name="Visits" /></Wrap>} />
 
-          {/* Manager+ routes */}
+          {/* MANAGER+ only */}
           <Route
             path="/territories"
             element={
@@ -71,7 +80,7 @@ export function AppRouter() {
             }
           />
 
-          {/* Admin-only */}
+          {/* ADMIN only */}
           <Route
             path="/admin"
             element={
