@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import client from '@/api/client'
 import { parseApiError } from '@/utils/errors'
@@ -13,8 +13,12 @@ export default function VerifyEmailPage() {
   const token = searchParams.get('token') ?? ''
   const [status, setStatus] = useState<Status>('loading')
   const [errorMessage, setErrorMessage] = useState('')
+  const called = useRef(false)
 
   useEffect(() => {
+    if (called.current) return
+    called.current = true
+
     if (!token) {
       setStatus('error')
       setErrorMessage('Invalid verification link — no token found.')

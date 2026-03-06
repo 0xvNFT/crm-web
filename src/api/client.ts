@@ -17,7 +17,8 @@ client.interceptors.response.use(
     if (
       axios.isAxiosError(error) &&
       error.response?.status === 401 &&
-      window.location.pathname !== '/login'
+      window.location.pathname !== '/login' &&
+      window.location.pathname !== '/verify-email'
     ) {
       window.location.href = '/login'
     }
