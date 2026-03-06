@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateAccount } from '@/api/endpoints/accounts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { toast } from '@/hooks/useToast'
+import { parseApiError } from '@/utils/errors'
 
-// ─── Schema — mirrors CreatePharmaAccountRequest validation ───────────────────
 const accountSchema = z.object({
   name: z.string().min(2, 'Account name must be at least 2 characters'),
   accountType: z.enum(['hospital', 'pharmacy', 'clinic', 'distributor'], {
@@ -27,7 +29,6 @@ const accountSchema = z.object({
 
 type AccountFormData = z.infer<typeof accountSchema>
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border bg-background p-5 space-y-4">
@@ -55,29 +56,27 @@ function FormRow({ label, required, error, children }: {
   )
 }
 
-// ─── Page ──────────────────────────────────────────────────────────────────────
 export default function AccountFormPage() {
   const navigate = useNavigate()
   const { mutate: createAccount, isPending } = useCreateAccount()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AccountFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     defaultValues: { controlledSubstanceApproved: false },
   })
 
   function onSubmit(data: AccountFormData) {
     createAccount(data, {
-      onSuccess: (account) => navigate(`/accounts/${account.id}`),
+      onSuccess: (account) => {
+        toast('Account created', { variant: 'success' })
+        navigate(`/accounts/${account.id}`)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -91,16 +90,21 @@ export default function AccountFormPage() {
             <Input {...register('name')} placeholder="e.g. St. Luke's Medical Center" autoFocus />
           </FormRow>
           <FormRow label="Account Type" required error={errors.accountType?.message}>
-            <select
-              {...register('accountType')}
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="">Select type</option>
-              <option value="hospital">Hospital</option>
-              <option value="pharmacy">Pharmacy</option>
-              <option value="clinic">Clinic</option>
-              <option value="distributor">Distributor</option>
-            </select>
+            <Controller
+              name="accountType"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hospital">Hospital</SelectItem>
+                    <SelectItem value="pharmacy">Pharmacy</SelectItem>
+                    <SelectItem value="clinic">Clinic</SelectItem>
+                    <SelectItem value="distributor">Distributor</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
             <Input {...register('paymentTerms')} placeholder="e.g. NET30" />

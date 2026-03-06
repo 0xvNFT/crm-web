@@ -30,6 +30,10 @@
   --color-ring: hsl(231 48% 38%);
   --radius: 0.5rem;
 
+  /* Popover (Select dropdown, DropdownMenu, tooltips) */
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(224 71% 4%);
+
   /* Auth panel brand background */
   --color-auth-panel: hsl(231 44% 18%);
   --color-auth-panel-muted: hsl(231 35% 28%);
@@ -56,6 +60,8 @@
   --color-border: hsl(224 30% 14%);
   --color-input: hsl(224 30% 14%);
   --color-ring: hsl(231 80% 65%);
+  --color-popover: hsl(224 50% 7%);
+  --color-popover-foreground: hsl(210 40% 98%);
   --color-auth-panel: hsl(231 44% 12%);
   --color-auth-panel-muted: hsl(231 35% 18%);
 }
@@ -64,6 +70,12 @@
   * {
     border-color: var(--color-border);
     box-sizing: border-box;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
   }
   body {
     background-color: var(--color-background);

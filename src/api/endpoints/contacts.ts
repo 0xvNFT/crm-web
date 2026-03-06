@@ -41,3 +41,15 @@ export function useUpdateContact(id: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
   })
 }
+
+export function useDeleteContact() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => client.delete(`/api/pharma/contacts/${id}`),
+    onSuccess: (_data, id) => {
+      // Remove the detail cache entry immediately — prevents a 400 refetch after navigation
+      qc.removeQueries({ queryKey: ['contacts', id] })
+      qc.invalidateQueries({ queryKey: ['contacts', 'list'] })
+    },
+  })
+}

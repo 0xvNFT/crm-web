@@ -42,3 +42,15 @@ export function useUpdateAccount(id: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })
 }
+
+export function useDeleteAccount() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => client.delete(`/api/pharma/accounts/${id}`),
+    onSuccess: (_data, id) => {
+      // Remove the detail cache entry immediately — prevents a 400 refetch after navigation
+      qc.removeQueries({ queryKey: ['accounts', id] })
+      qc.invalidateQueries({ queryKey: ['accounts', 'list'] })
+    },
+  })
+}

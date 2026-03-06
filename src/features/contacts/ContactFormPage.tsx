@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
@@ -8,7 +8,11 @@ import { useAccounts } from '@/api/endpoints/accounts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { toast } from '@/hooks/useToast'
+import { parseApiError } from '@/utils/errors'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 const contactSchema = z.object({
@@ -72,8 +76,6 @@ function FormRow({ label, required, error, className, children }: {
   )
 }
 
-const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactFormPage() {
@@ -87,6 +89,7 @@ export default function ContactFormPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -113,7 +116,11 @@ export default function ContactFormPage() {
     )
 
     createContact(clean, {
-      onSuccess: (contact) => navigate(`/contacts/${contact.id}`),
+      onSuccess: (contact) => {
+        toast('Contact created', { variant: 'success' })
+        navigate(`/contacts/${contact.id}`)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 
@@ -130,32 +137,46 @@ export default function ContactFormPage() {
         {/* Primary Account — required */}
         <FormSection title="Primary Account">
           <FormRow label="Account" required error={errors.accountId?.message} className="sm:col-span-2">
-            <select
-              {...register('accountId')}
-              disabled={accountsLoading}
-              className={SELECT_CLASS}
-            >
-              <option value="">{accountsLoading ? 'Loading accounts…' : 'Select account'}</option>
-              {accounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} — {a.accountType}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="accountId"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange} disabled={accountsLoading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={accountsLoading ? 'Loading accounts…' : 'Select account'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id ?? ''}>
+                        {a.name} — {a.accountType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
         </FormSection>
 
         {/* Basic Info */}
         <FormSection title="Basic Info">
           <FormRow label="Salutation" error={errors.salutation?.message}>
-            <select {...register('salutation')} className={SELECT_CLASS}>
-              <option value="">None</option>
-              <option value="Dr.">Dr.</option>
-              <option value="Mr.">Mr.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Mrs.">Mrs.</option>
-              <option value="Prof.">Prof.</option>
-            </select>
+            <Controller
+              name="salutation"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Dr.">Dr.</SelectItem>
+                    <SelectItem value="Mr.">Mr.</SelectItem>
+                    <SelectItem value="Ms.">Ms.</SelectItem>
+                    <SelectItem value="Mrs.">Mrs.</SelectItem>
+                    <SelectItem value="Prof.">Prof.</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="First Name" required error={errors.firstName?.message}>
             <Input {...register('firstName')} autoFocus />
@@ -170,16 +191,24 @@ export default function ContactFormPage() {
             <Input {...register('title')} placeholder="e.g. Cardiologist" />
           </FormRow>
           <FormRow label="Contact Type" required error={errors.contactType?.message}>
-            <select {...register('contactType')} className={SELECT_CLASS}>
-              <option value="">Select type</option>
-              <option value="physician">Physician</option>
-              <option value="pharmacist">Pharmacist</option>
-              <option value="nurse_practitioner">Nurse Practitioner</option>
-              <option value="physician_assistant">Physician Assistant</option>
-              <option value="administrator">Administrator</option>
-              <option value="buyer">Buyer</option>
-              <option value="other">Other</option>
-            </select>
+            <Controller
+              name="contactType"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="physician">Physician</SelectItem>
+                    <SelectItem value="pharmacist">Pharmacist</SelectItem>
+                    <SelectItem value="nurse_practitioner">Nurse Practitioner</SelectItem>
+                    <SelectItem value="physician_assistant">Physician Assistant</SelectItem>
+                    <SelectItem value="administrator">Administrator</SelectItem>
+                    <SelectItem value="buyer">Buyer</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Specialty" error={errors.specialty?.message}>
             <Input {...register('specialty')} placeholder="e.g. Cardiology" />
@@ -205,21 +234,38 @@ export default function ContactFormPage() {
         {/* Segmentation */}
         <FormSection title="Segmentation">
           <FormRow label="Customer Class" error={errors.customerClass?.message}>
-            <select {...register('customerClass')} className={SELECT_CLASS}>
-              <option value="">None</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
+            <Controller
+              name="customerClass"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A">A</SelectItem>
+                    <SelectItem value="B">B</SelectItem>
+                    <SelectItem value="C">C</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Adoption Stage" error={errors.adoptionStage?.message}>
-            <select {...register('adoptionStage')} className={SELECT_CLASS}>
-              <option value="unaware">Unaware</option>
-              <option value="aware">Aware</option>
-              <option value="user">User</option>
-              <option value="advocate">Advocate</option>
-              <option value="champion">Champion</option>
-            </select>
+            <Controller
+              name="adoptionStage"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unaware">Unaware</SelectItem>
+                    <SelectItem value="aware">Aware</SelectItem>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="advocate">Advocate</SelectItem>
+                    <SelectItem value="champion">Champion</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="PRC Number" error={errors.prcNumber?.message}>
             <Input {...register('prcNumber')} />
@@ -259,10 +305,9 @@ export default function ContactFormPage() {
         {/* Notes */}
         <div className="rounded-xl border bg-background p-5 space-y-2">
           <Label className="text-sm font-semibold text-foreground">Notes</Label>
-          <textarea
+          <Textarea
             {...register('notes')}
             rows={3}
-            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             placeholder="Any additional notes about this contact…"
           />
         </div>

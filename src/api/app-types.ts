@@ -70,6 +70,7 @@ export interface AuthUser {
 
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
-  error: string
+  error?: string       // HTTP status name (e.g. "Conflict") — from Spring default error body
+  message?: string     // Human-readable backend message — prefer this over error
   validationErrors?: Record<string, string>
 }

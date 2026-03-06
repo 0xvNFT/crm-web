@@ -3,18 +3,23 @@
 // Your task is read-only — list + detail view. No create or edit required.
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check, Trash2 } from 'lucide-react'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useContact, useUpdateContact } from '@/api/endpoints/contacts'
+import { useContact, useUpdateContact, useDeleteContact } from '@/api/endpoints/contacts'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { formatDate, formatLabel } from '@/utils/formatters'
+import { parseApiError } from '@/utils/errors'
+import { toast } from '@/hooks/useToast'
 
 // ─── Edit schema — only fields that PharmaContactService.update() patches ─────
 const editSchema = z.object({
@@ -88,19 +93,19 @@ function FormRow({ label, error, children }: { label: string; error?: string; ch
   )
 }
 
-const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
   const { data: contact, isLoading, isError } = useContact(id ?? '')
   const { mutate: updateContact, isPending } = useUpdateContact(id ?? '')
+  const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<EditFormData>({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<EditFormData>({
     resolver: zodResolver(editSchema),
   })
 
@@ -157,7 +162,11 @@ export default function ContactDetailPage() {
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
     )
     updateContact(payload, {
-      onSuccess: () => setEditing(false),
+      onSuccess: () => {
+        toast('Contact updated', { variant: 'success' })
+        setEditing(false)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 
@@ -203,10 +212,16 @@ export default function ContactDetailPage() {
         </div>
 
         {!editing && (
-          <Button variant="outline" size="sm" onClick={startEdit} className="shrink-0">
-            <Pencil className="h-3.5 w-3.5 mr-1.5" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={startEdit}>
+              <Pencil className="h-3.5 w-3.5 mr-1.5" />
+              Edit
+            </Button>
+            <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              Delete
+            </Button>
+          </div>
         )}
       </div>
 
@@ -246,6 +261,23 @@ export default function ContactDetailPage() {
           </span>
         )}
       </div>
+
+      <ConfirmDialog
+        open={showDelete}
+        onCancel={() => setShowDelete(false)}
+        onConfirm={() =>
+          deleteContact(id ?? '', {
+            onSuccess: () => {
+              toast('Contact deleted', { variant: 'success' })
+              navigate('/contacts')
+            },
+            onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+          })
+        }
+        title="Delete Contact?"
+        description={`This will permanently delete "${fullName}" and all associated data. This cannot be undone.`}
+        isPending={isDeleting}
+      />
 
       {/* View mode */}
       {!editing && (
@@ -316,26 +348,43 @@ export default function ContactDetailPage() {
               <Input {...register('title')} />
             </FormRow>
             <FormRow label="Contact Type" error={errors.contactType?.message}>
-              <select {...register('contactType')} className={SELECT_CLASS}>
-                <option value="">Select type</option>
-                <option value="physician">Physician</option>
-                <option value="pharmacist">Pharmacist</option>
-                <option value="nurse_practitioner">Nurse Practitioner</option>
-                <option value="physician_assistant">Physician Assistant</option>
-                <option value="administrator">Administrator</option>
-                <option value="buyer">Buyer</option>
-                <option value="other">Other</option>
-              </select>
+              <Controller
+                name="contactType"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="physician">Physician</SelectItem>
+                      <SelectItem value="pharmacist">Pharmacist</SelectItem>
+                      <SelectItem value="nurse_practitioner">Nurse Practitioner</SelectItem>
+                      <SelectItem value="physician_assistant">Physician Assistant</SelectItem>
+                      <SelectItem value="administrator">Administrator</SelectItem>
+                      <SelectItem value="buyer">Buyer</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormRow>
             <FormRow label="Specialty" error={errors.specialty?.message}>
               <Input {...register('specialty')} />
             </FormRow>
             <FormRow label="Status" error={errors.status?.message}>
-              <select {...register('status')} className={SELECT_CLASS}>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormRow>
           </FormSection>
 
@@ -388,11 +437,7 @@ export default function ContactDetailPage() {
 
           <div className="rounded-xl border bg-background p-5 space-y-2">
             <Label className="text-sm font-semibold text-foreground">Notes</Label>
-            <textarea
-              {...register('notes')}
-              rows={3}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
-            />
+            <Textarea {...register('notes')} rows={3} />
           </div>
 
           <div className="flex items-center gap-2 justify-end">
