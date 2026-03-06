@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { loginSchema, type LoginFormData } from '@/schemas/auth'
-import { useLogin } from '@/api/endpoints/auth'
+import { useLogin, useResendVerification } from '@/api/endpoints/auth'
 import { useAuth } from '@/hooks/useAuth'
 import { parseApiError } from '@/utils/errors'
 
@@ -11,6 +12,9 @@ export default function LoginPage() {
   const location = useLocation()
   const { login } = useAuth()
   const loginMutation = useLogin()
+  const resendMutation = useResendVerification()
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
+  const [resendSent, setResendSent] = useState(false)
 
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/dashboard'
 
@@ -23,13 +27,24 @@ export default function LoginPage() {
   })
 
   async function onSubmit(data: LoginFormData) {
+    setUnverifiedEmail(null)
+    setResendSent(false)
     try {
       const user = await loginMutation.mutateAsync(data)
       login(user)
       navigate(from, { replace: true })
-    } catch {
-      // error shown via loginMutation.error
+    } catch (err) {
+      const msg = parseApiError(err)
+      if (msg.toLowerCase().includes('not verified') || msg.toLowerCase().includes('verify')) {
+        setUnverifiedEmail(data.email)
+      }
     }
+  }
+
+  async function handleResend() {
+    if (!unverifiedEmail) return
+    await resendMutation.mutateAsync({ email: unverifiedEmail })
+    setResendSent(true)
   }
 
   return (
@@ -65,8 +80,26 @@ export default function LoginPage() {
             {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>}
           </div>
 
-          {loginMutation.error && (
+          {loginMutation.error && !unverifiedEmail && (
             <p className="text-sm text-destructive text-center">{parseApiError(loginMutation.error)}</p>
+          )}
+
+          {unverifiedEmail && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-center space-y-2">
+              <p className="text-destructive">Email not verified. Check your inbox or resend the link.</p>
+              {resendSent ? (
+                <p className="text-muted-foreground">Verification email sent. Check your inbox.</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendMutation.isPending}
+                  className="text-primary underline-offset-4 hover:underline disabled:opacity-50"
+                >
+                  {resendMutation.isPending ? 'Sending…' : 'Resend verification email'}
+                </button>
+              )}
+            </div>
           )}
 
           <button
