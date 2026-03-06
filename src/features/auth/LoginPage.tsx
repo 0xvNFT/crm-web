@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { loginSchema, type LoginFormData } from '@/schemas/auth'
 import { useLogin } from '@/api/endpoints/auth'
 import { useAuth } from '@/hooks/useAuth'
@@ -17,19 +17,18 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
 
   async function onSubmit(data: LoginFormData) {
     try {
-      const result = await loginMutation.mutateAsync(data)
-      login(result)
+      const user = await loginMutation.mutateAsync(data)
+      login(user)
       navigate(from, { replace: true })
-    } catch (err) {
-      // error displayed via loginMutation.error below
-      console.error(parseApiError(err))
+    } catch {
+      // error shown via loginMutation.error
     }
   }
 
@@ -43,33 +42,27 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
             <input
               id="email"
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring"
+              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
             {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
             <input
               id="password"
               type="password"
               autoComplete="current-password"
               {...register('password')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring"
+              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.password && (
-              <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>
-            )}
+            {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>}
           </div>
 
           {loginMutation.error && (
@@ -78,18 +71,24 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting || loginMutation.isPending}
+            disabled={loginMutation.isPending}
             className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm">
-          <a href="/forgot-password" className="text-primary underline-offset-4 hover:underline">
+        <div className="mt-4 flex flex-col items-center gap-2 text-sm">
+          <Link to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
             Forgot your password?
-          </a>
-        </p>
+          </Link>
+          <p className="text-muted-foreground">
+            No account?{' '}
+            <Link to="/register" className="text-primary underline-offset-4 hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
