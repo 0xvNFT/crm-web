@@ -47,8 +47,10 @@
 | Feature                | List             | Detail | Form | Endpoint hook               | Assigned to | Status      |
 | ---------------------- | ---------------- | ------ | ---- | --------------------------- | ----------- | ----------- |
 | Auth — Login           | —                | —      | Done | `useLogin`                  | Lead dev    | Done        |
+| Auth — Register        | —                | —      | Done | `useRegister`               | Lead dev    | Done        |
+| Auth — Verify Email    | —                | —      | —    | —                           | Lead dev    | Done        |
 | Auth — Forgot Password | —                | —      | Done | `useForgotPassword`         | Lead dev    | Done        |
-| Auth — Reset Password  | —                | —      | —    | `useResetPassword`          | Lead dev    | Pending     |
+| Auth — Reset Password  | —                | —      | Done | `useResetPassword`          | Lead dev    | Done        |
 | Dashboard              | —                | —      | —    | —                           | Lead dev    | Stub only   |
 | Accounts               | Done (reference) | —      | —    | `useAccounts`, `useAccount` | Lead dev    | List done   |
 | Contacts               | —                | —      | —    | —                           | Intern      | Not started |
@@ -86,7 +88,6 @@ None currently.
 ### Lead dev (`0xvnft`)
 
 - Dashboard charts (Recharts — pipeline funnel, activity summary)
-- `ResetPasswordPage` (token from URL param)
 - `AccountDetailPage` — view + edit form
 - Territories, Teams pages
 - Reports — pipeline, activity, invoice aging, lead funnel
