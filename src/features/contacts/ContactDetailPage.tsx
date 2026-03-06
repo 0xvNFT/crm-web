@@ -1,3 +1,6 @@
+// REFERENCE PATTERN — Interns: copy the view mode structure only (DetailSection, DetailField, header, quick-contact strip).
+// Ignore everything related to editing (useForm, useUpdateContact, editing state, FormSection, FormRow, edit form JSX).
+// Your task is read-only — list + detail view. No create or edit required.
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check } from 'lucide-react'
