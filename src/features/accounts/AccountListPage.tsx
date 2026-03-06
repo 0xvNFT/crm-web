@@ -1,4 +1,5 @@
 // REFERENCE PATTERN — Interns: copy this structure for your own feature list pages
+import { useNavigate } from 'react-router-dom'
 import { useAccounts } from '@/api/endpoints/accounts'
 import { usePagination } from '@/hooks/usePagination'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -19,6 +20,7 @@ const columns: Column<PharmaAccount>[] = [
 ]
 
 export default function AccountListPage() {
+  const navigate = useNavigate()
   const { page, goToPage } = usePagination()
   const { data, isLoading, isError } = useAccounts(page)
 
@@ -31,7 +33,7 @@ export default function AccountListPage() {
         title="Accounts"
         description="Manage your pharmaceutical accounts"
       />
-      <DataTable columns={columns} data={data?.content ?? []} />
+      <DataTable columns={columns} data={data?.content ?? []} onRowClick={(row) => navigate(`/accounts/${row.id}`)} />
       <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
     </div>
   )

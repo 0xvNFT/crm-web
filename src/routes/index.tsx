@@ -15,6 +15,7 @@ const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
 // App pages
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'))
 const AccountListPage = lazy(() => import('@/features/accounts/AccountListPage'))
+const AccountDetailPage = lazy(() => import('@/features/accounts/AccountDetailPage'))
 const ContactListPage = lazy(() => import('@/features/contacts/ContactListPage'))
 const ContactDetailPage = lazy(() => import('@/features/contacts/ContactDetailPage'))
 
@@ -47,6 +48,7 @@ export function AppRouter() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Wrap><DashboardPage /></Wrap>} />
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
+          <Route path="/accounts/:id" element={<Wrap><AccountDetailPage /></Wrap>} />
 
           {/* Intern pages — replace PlaceholderPage as each feature is completed */}
           <Route path="/contacts" element={<Wrap><ContactListPage /></Wrap>} />
