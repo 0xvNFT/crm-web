@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+// In dev: VITE_API_BASE_URL is empty — requests go to localhost:5173/api (Vite proxy forwards to backend)
+// In prod: VITE_API_BASE_URL is the backend URL — requests go directly
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

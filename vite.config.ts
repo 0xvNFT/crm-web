@@ -10,4 +10,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      // In dev, proxy /api requests to the backend so the cookie is set on localhost.
+      // This avoids the cross-origin cookie restriction (localhost ↔ remote IP).
+      // In production, VITE_API_BASE_URL points directly to the backend — no proxy needed.
+      '/api': {
+        target: 'http://13.212.189.78:8080',
+        changeOrigin: true,
+      },
+    },
+  },
 })
