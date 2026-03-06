@@ -3,22 +3,38 @@ import { cn } from '@/lib/utils'
 type StatusVariant = 'success' | 'warning' | 'destructive' | 'secondary' | 'default'
 
 const STATUS_MAP: Record<string, StatusVariant> = {
+  // Positive
   ACTIVE: 'success',
   APPROVED: 'success',
   DELIVERED: 'success',
   ACCEPTED: 'success',
   CONVERTED: 'success',
-  INACTIVE: 'secondary',
+  COMPLETED: 'success',
+  VERIFIED: 'success',
+  PAID: 'success',
+  // Warning / in-progress
   PENDING: 'warning',
+  PENDING_APPROVAL: 'warning',
   SENT: 'warning',
   SHIPPED: 'warning',
   CONTACTED: 'warning',
   QUALIFIED: 'warning',
+  IN_PROGRESS: 'warning',
+  IN_PROCESS: 'warning',
+  ASSIGNED: 'warning',
+  OVERDUE: 'warning',
+  // Negative
   REJECTED: 'destructive',
   UNQUALIFIED: 'destructive',
   EXPIRED: 'destructive',
+  CANCELLED: 'destructive',
+  LOST: 'destructive',
+  INACTIVE: 'destructive',
+  // Neutral
   NEW: 'default',
   DRAFT: 'secondary',
+  UNAWARE: 'secondary',
+  AWARE: 'secondary',
 }
 
 const VARIANT_CLASSES: Record<StatusVariant, string> = {

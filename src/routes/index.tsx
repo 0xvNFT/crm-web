@@ -15,6 +15,8 @@ const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
 // App pages
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'))
 const AccountListPage = lazy(() => import('@/features/accounts/AccountListPage'))
+const ContactListPage = lazy(() => import('@/features/contacts/ContactListPage'))
+const ContactDetailPage = lazy(() => import('@/features/contacts/ContactDetailPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -47,7 +49,8 @@ export function AppRouter() {
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
 
           {/* Intern pages — replace PlaceholderPage as each feature is completed */}
-          <Route path="/contacts" element={<Wrap><PlaceholderPage name="Contacts" /></Wrap>} />
+          <Route path="/contacts" element={<Wrap><ContactListPage /></Wrap>} />
+          <Route path="/contacts/:id" element={<Wrap><ContactDetailPage /></Wrap>} />
           <Route path="/leads" element={<Wrap><PlaceholderPage name="Leads" /></Wrap>} />
           <Route path="/orders" element={<Wrap><PlaceholderPage name="Orders" /></Wrap>} />
           <Route path="/quotes" element={<Wrap><PlaceholderPage name="Quotes" /></Wrap>} />

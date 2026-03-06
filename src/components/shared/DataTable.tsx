@@ -10,6 +10,7 @@ export interface Column<T> {
 interface DataTableProps<T> {
   columns: Column<T>[]
   data: T[]
+  onRowClick?: (row: T) => void
   className?: string
   emptyMessage?: string
 }
@@ -17,6 +18,7 @@ interface DataTableProps<T> {
 export function DataTable<T extends { id?: string }>({
   columns,
   data,
+  onRowClick,
   className,
   emptyMessage = 'No records found.',
 }: DataTableProps<T>) {
@@ -44,7 +46,14 @@ export function DataTable<T extends { id?: string }>({
             </tr>
           ) : (
             data.map((row) => (
-              <tr key={row.id ?? Math.random()} className="border-b transition-colors hover:bg-muted/30">
+              <tr
+                key={row.id ?? Math.random()}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={cn(
+                  'border-b transition-colors hover:bg-muted/30',
+                  onRowClick && 'cursor-pointer'
+                )}
+              >
                 {columns.map((col) => (
                   <td key={col.header} className={cn('px-4 py-3', col.className)}>
                     {typeof col.accessor === 'function'
