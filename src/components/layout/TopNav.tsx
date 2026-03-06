@@ -1,28 +1,29 @@
 import { useAuth } from '@/hooks/useAuth'
-import { LogOut, User } from 'lucide-react'
+import { Bell } from 'lucide-react'
 
 export function TopNav() {
-  const { user, logout } = useAuth()
-
-  async function handleLogout() {
-    await logout()
-  }
+  const { user } = useAuth()
 
   return (
-    <header className="flex h-14 items-center justify-end gap-4 border-b bg-card px-4">
-      <div className="flex items-center gap-2 text-sm">
-        <User className="h-4 w-4 text-muted-foreground" />
-        <span className="font-medium">{user?.fullName}</span>
-        <span className="text-muted-foreground">·</span>
-        <span className="text-xs text-muted-foreground">{user?.roles.join(', ')}</span>
+    <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-6">
+      {/* Left — tenant name / context */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium text-foreground">{user?.fullName}</span>
+        <span className="text-muted-foreground/40">·</span>
+        <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+          {user?.roles[0]}
+        </span>
       </div>
-      <button
-        onClick={handleLogout}
-        className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-      >
-        <LogOut className="h-4 w-4" />
-        Logout
-      </button>
+
+      {/* Right — actions */}
+      <div className="flex items-center gap-1">
+        <button
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Notifications"
+        >
+          <Bell className="h-4 w-4" strokeWidth={1.75} />
+        </button>
+      </div>
     </header>
   )
 }
