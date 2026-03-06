@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import { useContacts } from '@/api/endpoints/contacts'
 import { usePagination } from '@/hooks/usePagination'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -7,6 +8,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { Button } from '@/components/ui/button'
 import { formatLabel } from '@/utils/formatters'
 import type { PharmaContact } from '@/api/app-types'
 
@@ -45,6 +47,12 @@ export default function ContactListPage() {
       <PageHeader
         title="Contacts"
         description="Doctors, pharmacists, and healthcare professionals"
+        actions={
+          <Button size="sm" onClick={() => navigate('/contacts/new')}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            New Contact
+          </Button>
+        }
       />
       <DataTable
         columns={columns}

@@ -1,12 +1,46 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, Mail, MapPin, Award, Shield } from 'lucide-react'
-import { useContact } from '@/api/endpoints/contacts'
+import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useContact, useUpdateContact } from '@/api/endpoints/contacts'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { formatDate, formatLabel } from '@/utils/formatters'
 
+// ─── Edit schema — only fields that PharmaContactService.update() patches ─────
+const editSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  title: z.string().optional(),
+  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  mobile: z.string().optional(),
+  contactType: z.enum(
+    ['physician', 'pharmacist', 'nurse_practitioner', 'physician_assistant', 'administrator', 'buyer', 'other'],
+    { errorMap: () => ({ message: 'Contact type is required' }) }
+  ),
+  specialty: z.string().optional(),
+  npiNumber: z.string().optional(),
+  deaNumber: z.string().optional(),
+  stateLicenseNumber: z.string().optional(),
+  prescribingAuthority: z.boolean().optional(),
+  yearsOfExperience: z.coerce.number().int().nonnegative().optional(),
+  patientVolumeMonthly: z.coerce.number().int().nonnegative().optional(),
+  preferredContactMethod: z.string().optional(),
+  preferredContactTime: z.string().optional(),
+  status: z.enum(['active', 'inactive', 'suspended']).optional(),
+  notes: z.string().optional(),
+})
+
+type EditFormData = z.infer<typeof editSchema>
+
+// ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border bg-background p-5 space-y-4">
@@ -32,10 +66,40 @@ function DetailField({ label, value }: { label: string; value?: string | number 
   )
 }
 
+function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border bg-background p-5 space-y-4">
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
+    </div>
+  )
+}
+
+function FormRow({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  )
+}
+
+const SELECT_CLASS =
+  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
+
+// ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [editing, setEditing] = useState(false)
+
   const { data: contact, isLoading, isError } = useContact(id ?? '')
+  const { mutate: updateContact, isPending } = useUpdateContact(id ?? '')
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<EditFormData>({
+    resolver: zodResolver(editSchema),
+  })
 
   if (isLoading) return <LoadingSpinner />
   if (isError || !contact) return <ErrorMessage message="Contact not found." />
@@ -54,6 +118,45 @@ export default function ContactDetailPage() {
   ]
     .filter(Boolean)
     .join(', ')
+
+  function startEdit() {
+    reset({
+      firstName: contact?.firstName ?? '',
+      lastName: contact?.lastName ?? '',
+      title: contact?.title ?? '',
+      email: contact?.email ?? '',
+      phone: contact?.phone ?? '',
+      mobile: contact?.mobile ?? '',
+      contactType: (contact?.contactType as EditFormData['contactType']) ?? undefined,
+      specialty: contact?.specialty ?? '',
+      npiNumber: contact?.npiNumber ?? '',
+      deaNumber: contact?.deaNumber ?? '',
+      stateLicenseNumber: contact?.stateLicenseNumber ?? '',
+      prescribingAuthority: contact?.prescribingAuthority ?? false,
+      yearsOfExperience: contact?.yearsOfExperience ?? undefined,
+      patientVolumeMonthly: contact?.patientVolumeMonthly ?? undefined,
+      preferredContactMethod: contact?.preferredContactMethod ?? '',
+      preferredContactTime: contact?.preferredContactTime ?? '',
+      status: (contact?.status as EditFormData['status']) ?? 'active',
+      notes: contact?.notes ?? '',
+    })
+    setEditing(true)
+  }
+
+  function cancelEdit() {
+    setEditing(false)
+    reset()
+  }
+
+  function onSubmit(data: EditFormData) {
+    // Strip empty strings — backend patches only non-null fields
+    const payload = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    )
+    updateContact(payload, {
+      onSuccess: () => setEditing(false),
+    })
+  }
 
   return (
     <div className="space-y-4">
@@ -95,6 +198,13 @@ export default function ContactDetailPage() {
             )}
           </div>
         </div>
+
+        {!editing && (
+          <Button variant="outline" size="sm" onClick={startEdit} className="shrink-0">
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+            Edit
+          </Button>
+        )}
       </div>
 
       {/* Quick contact strip */}
@@ -134,58 +244,166 @@ export default function ContactDetailPage() {
         )}
       </div>
 
-      {/* Sections */}
-      <div className="space-y-4">
-        <DetailSection title="Professional Info">
-          <DetailField label="Contact Type" value={formatLabel(contact.contactType)} />
-          <DetailField label="Specialty" value={contact.specialty} />
-          <DetailField label="Customer Class" value={contact.customerClass} />
-          <DetailField label="Adoption Stage" value={formatLabel(contact.adoptionStage)} />
-          <DetailField label="Years of Experience" value={contact.yearsOfExperience} />
-          <DetailField label="Monthly Patient Volume" value={contact.patientVolumeMonthly} />
-          <DetailField label="Professional Society" value={contact.professionalSociety} />
-          <DetailField label="Lead Source" value={formatLabel(contact.leadSource)} />
-        </DetailSection>
+      {/* View mode */}
+      {!editing && (
+        <div className="space-y-4">
+          <DetailSection title="Professional Info">
+            <DetailField label="Contact Type" value={formatLabel(contact.contactType)} />
+            <DetailField label="Specialty" value={contact.specialty} />
+            <DetailField label="Customer Class" value={contact.customerClass} />
+            <DetailField label="Adoption Stage" value={formatLabel(contact.adoptionStage)} />
+            <DetailField label="Years of Experience" value={contact.yearsOfExperience} />
+            <DetailField label="Monthly Patient Volume" value={contact.patientVolumeMonthly} />
+            <DetailField label="Professional Society" value={contact.professionalSociety} />
+            <DetailField label="Lead Source" value={formatLabel(contact.leadSource)} />
+          </DetailSection>
 
-        <DetailSection title="Licensing & Credentials">
-          <DetailField label="PRC Number" value={contact.prcNumber} />
-          <DetailField label="PRC Expiry" value={formatDate(contact.prcExpiryDate)} />
-          <DetailField label="NPI Number" value={contact.npiNumber} />
-          <DetailField label="DEA Number" value={contact.deaNumber} />
-          <DetailField label="State License" value={contact.stateLicenseNumber} />
-          <DetailField label="Prescribing Authority" value={contact.prescribingAuthority} />
-        </DetailSection>
+          <DetailSection title="Licensing & Credentials">
+            <DetailField label="PRC Number" value={contact.prcNumber} />
+            <DetailField label="PRC Expiry" value={formatDate(contact.prcExpiryDate)} />
+            <DetailField label="NPI Number" value={contact.npiNumber} />
+            <DetailField label="DEA Number" value={contact.deaNumber} />
+            <DetailField label="State License" value={contact.stateLicenseNumber} />
+            <DetailField label="Prescribing Authority" value={contact.prescribingAuthority} />
+          </DetailSection>
 
-        <DetailSection title="Contact Preferences">
-          <DetailField label="Preferred Contact Method" value={formatLabel(contact.preferredContactMethod)} />
-          <DetailField label="Preferred Contact Time" value={contact.preferredContactTime} />
-          <DetailField label="Do Not Call" value={contact.doNotCall} />
-          <DetailField label="Email Opt-Out" value={contact.emailOptOut} />
-        </DetailSection>
+          <DetailSection title="Contact Preferences">
+            <DetailField label="Preferred Contact Method" value={formatLabel(contact.preferredContactMethod)} />
+            <DetailField label="Preferred Contact Time" value={contact.preferredContactTime} />
+            <DetailField label="Do Not Call" value={contact.doNotCall} />
+            <DetailField label="Email Opt-Out" value={contact.emailOptOut} />
+          </DetailSection>
 
-        <DetailSection title="Consent & Compliance">
-          <DetailField label="Consent Status" value={formatLabel(contact.consentConfirmedStatus)} />
-          <DetailField label="Consent Date" value={formatDate(contact.consentConfirmedDate)} />
-        </DetailSection>
+          <DetailSection title="Consent & Compliance">
+            <DetailField label="Consent Status" value={formatLabel(contact.consentConfirmedStatus)} />
+            <DetailField label="Consent Date" value={formatDate(contact.consentConfirmedDate)} />
+          </DetailSection>
 
-        {contact.notes && (
-          <div className="rounded-xl border bg-background p-5 space-y-2">
-            <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-              <Shield className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
-              Notes
-            </h2>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{contact.notes}</p>
-          </div>
-        )}
+          {contact.notes && (
+            <div className="rounded-xl border bg-background p-5 space-y-2">
+              <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                <Shield className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
+                Notes
+              </h2>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{contact.notes}</p>
+            </div>
+          )}
 
-        <div className="rounded-xl border bg-background p-5">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <DetailField label="Contact Code" value={contact.contactCode} />
-            <DetailField label="Created" value={formatDate(contact.createdAt)} />
-            <DetailField label="Last Updated" value={formatDate(contact.updatedAt)} />
+          <div className="rounded-xl border bg-background p-5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <DetailField label="Contact Code" value={contact.contactCode} />
+              <DetailField label="Created" value={formatDate(contact.createdAt)} />
+              <DetailField label="Last Updated" value={formatDate(contact.updatedAt)} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Edit mode */}
+      {editing && (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormSection title="Basic Info">
+            <FormRow label="First Name" error={errors.firstName?.message}>
+              <Input {...register('firstName')} autoFocus />
+            </FormRow>
+            <FormRow label="Last Name" error={errors.lastName?.message}>
+              <Input {...register('lastName')} />
+            </FormRow>
+            <FormRow label="Title / Position" error={errors.title?.message}>
+              <Input {...register('title')} />
+            </FormRow>
+            <FormRow label="Contact Type" error={errors.contactType?.message}>
+              <select {...register('contactType')} className={SELECT_CLASS}>
+                <option value="">Select type</option>
+                <option value="physician">Physician</option>
+                <option value="pharmacist">Pharmacist</option>
+                <option value="nurse_practitioner">Nurse Practitioner</option>
+                <option value="physician_assistant">Physician Assistant</option>
+                <option value="administrator">Administrator</option>
+                <option value="buyer">Buyer</option>
+                <option value="other">Other</option>
+              </select>
+            </FormRow>
+            <FormRow label="Specialty" error={errors.specialty?.message}>
+              <Input {...register('specialty')} />
+            </FormRow>
+            <FormRow label="Status" error={errors.status?.message}>
+              <select {...register('status')} className={SELECT_CLASS}>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </FormRow>
+          </FormSection>
+
+          <FormSection title="Contact Details">
+            <FormRow label="Email" error={errors.email?.message}>
+              <Input {...register('email')} type="email" />
+            </FormRow>
+            <FormRow label="Mobile" error={errors.mobile?.message}>
+              <Input {...register('mobile')} type="tel" />
+            </FormRow>
+            <FormRow label="Phone" error={errors.phone?.message}>
+              <Input {...register('phone')} type="tel" />
+            </FormRow>
+            <FormRow label="Preferred Contact Method" error={errors.preferredContactMethod?.message}>
+              <Input {...register('preferredContactMethod')} placeholder="e.g. email, phone" />
+            </FormRow>
+            <FormRow label="Preferred Contact Time" error={errors.preferredContactTime?.message}>
+              <Input {...register('preferredContactTime')} placeholder="e.g. mornings" />
+            </FormRow>
+          </FormSection>
+
+          <FormSection title="Licensing & Credentials">
+            <FormRow label="NPI Number" error={errors.npiNumber?.message}>
+              <Input {...register('npiNumber')} />
+            </FormRow>
+            <FormRow label="DEA Number" error={errors.deaNumber?.message}>
+              <Input {...register('deaNumber')} />
+            </FormRow>
+            <FormRow label="State License Number" error={errors.stateLicenseNumber?.message}>
+              <Input {...register('stateLicenseNumber')} />
+            </FormRow>
+            <FormRow label="Years of Experience" error={errors.yearsOfExperience?.message}>
+              <Input {...register('yearsOfExperience')} type="number" min={0} />
+            </FormRow>
+            <FormRow label="Monthly Patient Volume" error={errors.patientVolumeMonthly?.message}>
+              <Input {...register('patientVolumeMonthly')} type="number" min={0} />
+            </FormRow>
+            <div className="flex items-center gap-2 pt-1 sm:col-span-2">
+              <input
+                type="checkbox"
+                id="prescribingAuthority"
+                {...register('prescribingAuthority')}
+                className="h-4 w-4 rounded border-border accent-primary"
+              />
+              <Label htmlFor="prescribingAuthority" className="text-sm text-foreground cursor-pointer">
+                Prescribing Authority
+              </Label>
+            </div>
+          </FormSection>
+
+          <div className="rounded-xl border bg-background p-5 space-y-2">
+            <Label className="text-sm font-semibold text-foreground">Notes</Label>
+            <textarea
+              {...register('notes')}
+              rows={3}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 justify-end">
+            <Button type="button" variant="outline" onClick={cancelEdit} disabled={isPending}>
+              <X className="h-3.5 w-3.5 mr-1.5" />
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isPending}>
+              <Check className="h-3.5 w-3.5 mr-1.5" />
+              {isPending ? 'Saving…' : 'Save changes'}
+            </Button>
+          </div>
+        </form>
+      )}
     </div>
   )
 }
