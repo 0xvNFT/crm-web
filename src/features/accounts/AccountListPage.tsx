@@ -1,5 +1,6 @@
 // REFERENCE PATTERN — Interns: copy this structure for your own feature list pages
 import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import { useAccounts } from '@/api/endpoints/accounts'
 import { usePagination } from '@/hooks/usePagination'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { Button } from '@/components/ui/button'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaAccount } from '@/api/app-types'
 
@@ -32,6 +34,12 @@ export default function AccountListPage() {
       <PageHeader
         title="Accounts"
         description="Manage your pharmaceutical accounts"
+        actions={
+          <Button size="sm" onClick={() => navigate('/accounts/new')}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            New Account
+          </Button>
+        }
       />
       <DataTable columns={columns} data={data?.content ?? []} onRowClick={(row) => navigate(`/accounts/${row.id}`)} />
       <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
