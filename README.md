@@ -112,6 +112,135 @@ Changes here break everyone's work. Talk to the lead dev first.
 
 ---
 
+## Git Flow
+
+### Overview
+
+```
+main          ← stable scaffold, production-ready code only
+  └── dev-intern   ← your branch — all intern work happens here
+        └── feature/contacts   ← one branch per feature you build
+        └── feature/leads
+        └── feature/orders
+```
+
+You never commit directly to `dev-intern`. You branch off it, do your work, then open a PR back into `dev-intern`. The lead dev reviews before anything merges.
+
+---
+
+### Starting a Feature
+
+Always start from an up-to-date `dev-intern`:
+
+```bash
+# Make sure you're on dev-intern and it's up to date
+git checkout dev-intern
+git pull origin dev-intern
+
+# Create your feature branch
+git checkout -b feature/contacts
+```
+
+Branch naming: `feature/<name>` — lowercase, hyphenated.
+
+```
+feature/contacts
+feature/leads
+feature/order-list
+```
+
+---
+
+### While You're Working
+
+Commit small and often. Each commit should do one clear thing.
+
+```bash
+# Stage only the files you changed
+git add src/api/endpoints/contacts.ts
+git add src/features/contacts/ContactListPage.tsx
+
+# Write a clear commit message
+git commit -m "feat(contacts): add useContacts hook and ContactListPage"
+```
+
+**Commit message format:** `type(scope): short description`
+
+| Type | When to use |
+|---|---|
+| `feat` | New component, hook, or page |
+| `fix` | Bug fix |
+| `style` | Formatting, spacing — no logic change |
+| `refactor` | Restructuring code without changing behavior |
+| `chore` | Config, deps, cleanup |
+
+Examples:
+```
+feat(contacts): add ContactListPage with pagination
+feat(leads): add useLeads hook
+fix(contacts): handle empty phone field
+style(contacts): align table column widths
+```
+
+---
+
+### Before Opening a PR
+
+Run these — both must pass:
+
+```bash
+npm run typecheck   # zero TypeScript errors
+npm run build       # build must succeed
+```
+
+If either fails, fix it before asking for review.
+
+---
+
+### Opening a PR
+
+Push your branch and open a PR into `dev-intern` (not `main`):
+
+```bash
+git push origin feature/contacts
+```
+
+Then go to GitHub → New Pull Request → base: `dev-intern` ← compare: `feature/contacts`.
+
+**PR title format:** same as commit messages — `feat(contacts): add ContactListPage`
+
+In the PR description, briefly note:
+- What you built
+- Any decisions you made (e.g. which fields you chose to display)
+- Anything you're unsure about
+
+---
+
+### Keeping Your Branch Up to Date
+
+If `dev-intern` gets new commits while you're working, pull them into your branch:
+
+```bash
+git checkout dev-intern
+git pull origin dev-intern
+git checkout feature/contacts
+git merge dev-intern
+```
+
+Resolve any conflicts, then continue working.
+
+---
+
+### What NOT to Do
+
+- Do not commit directly to `dev-intern` or `main`
+- Do not push to someone else's feature branch
+- Do not force push (`git push --force`) — ever
+- Do not open PRs against `main` — always target `dev-intern`
+- Do not commit `.env` files — they are gitignored for a reason
+
+---
+
 ## Your Task Format
 
 You'll receive a task like this:
