@@ -31,13 +31,13 @@ npm install
 
 # 4. Set up your environment file
 cp .env.example .env.development
-# Ask the lead dev to fill in the API URL
+# The API URL is already filled in — no changes needed
 
 # 5. Start the dev server
 npm run dev
 ```
 
-Open `http://localhost:5173` — the login page should load.
+Open `http://localhost:5173` — the login page should load. Auth is fully wired: you can register, verify email, log in, reset your password, and access the app immediately.
 
 ---
 
@@ -82,6 +82,7 @@ src/
 │   ├── layout/            ← AppShell, Sidebar, TopNav — DO NOT TOUCH
 │   └── shared/            ← DataTable, Pagination, StatusBadge, etc. — use, don't modify
 ├── features/              ← YOUR WORK GOES HERE
+│   ├── auth/              ← Login, Register, ForgotPassword, ResetPassword, VerifyEmail — DO NOT TOUCH
 │   ├── accounts/          ← REFERENCE — copy this pattern for your feature
 │   └── [your-feature]/    ← Create your files here
 ├── hooks/
@@ -104,6 +105,7 @@ Changes here break everyone's work. Talk to the lead dev first.
 - `src/api/client.ts`
 - `src/api/types.ts`
 - `src/api/app-types.ts`
+- `src/features/auth/` — auth pages are pre-built, leave them alone
 - `src/providers/`
 - `src/routes/`
 - `src/components/layout/`
@@ -427,8 +429,8 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { useAuth } from '@/hooks/useAuth'
 
 const { user } = useAuth()
-// user.role → 'ADMIN' | 'MANAGER' | 'FIELD_REP'
-// user.fullName, user.email
+// user.roles → string[] e.g. ['ADMIN'] or ['MANAGER'] or ['FIELD_REP']
+// user.fullName, user.email, user.userId, user.tenantId
 ```
 
 ### `formatDate` / `formatCurrency`
@@ -447,3 +449,13 @@ formatCurrency(1500, 'USD')          // → "$1,500.00"
 - Read `src/features/accounts/AccountListPage.tsx` — it is the reference pattern.
 - Check `STATUS.md` to see what's been built and what's pending.
 - Ask the lead dev before touching any shared file.
+
+## Auth Routes (pre-built — for reference)
+
+| Route | Page | Notes |
+|---|---|---|
+| `/register` | Register | Creates a new tenant + admin account |
+| `/verify-email?token=xxx` | VerifyEmail | Activated via email link |
+| `/login` | Login | Email + password |
+| `/forgot-password` | ForgotPassword | Sends reset link to email |
+| `/reset-password?token=xxx` | ResetPassword | Sets new password via email link |
