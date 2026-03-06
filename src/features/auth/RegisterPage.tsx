@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom'
 import { registerSchema, type RegisterFormData } from '@/schemas/auth'
 import { useRegister } from '@/api/endpoints/auth'
 import { parseApiError } from '@/utils/errors'
+import { AuthLayout } from './components/AuthLayout'
+import { FormField } from './components/FormField'
+import { Button } from '@/components/ui/button'
+import { CheckCircle } from 'lucide-react'
 
 export default function RegisterPage() {
   const [done, setDone] = useState(false)
@@ -37,140 +41,124 @@ export default function RegisterPage() {
 
   if (done) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm text-center space-y-3">
-          <h1 className="text-xl font-semibold">Check your email</h1>
-          <p className="text-sm text-muted-foreground">
-            We sent a verification link to your email address. Click it to activate your account, then come back to sign in.
-          </p>
-          <Link to="/login" className="block text-sm text-primary underline-offset-4 hover:underline">
+      <AuthLayout>
+        <div className="space-y-4 text-center">
+          <div className="flex justify-center">
+            <CheckCircle className="h-12 w-12 text-primary" strokeWidth={1.5} />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold tracking-tight">Check your email</h2>
+            <p className="text-sm text-muted-foreground">
+              We sent a verification link to your address. Click it to activate your account, then sign in.
+            </p>
+          </div>
+          <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
             Back to sign in
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md rounded-lg border bg-card p-8 shadow-sm">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-primary">PharmaForce</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Create your company account</p>
+    <AuthLayout>
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h2>
+          <p className="text-sm text-muted-foreground">Register your company on CRM CDTS</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Company</p>
-
-          <div>
-            <label htmlFor="tenantName" className="block text-sm font-medium mb-1">Company name</label>
-            <input
+          {/* Company section */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Company
+            </p>
+            <FormField
               id="tenantName"
+              label="Company name"
               type="text"
+              error={errors.tenantName?.message}
               {...register('tenantName')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.tenantName && <p className="mt-1 text-xs text-destructive">{errors.tenantName.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="tenantSlug" className="block text-sm font-medium mb-1">
-              Company slug
-              <span className="ml-1 font-normal text-muted-foreground">(unique URL identifier)</span>
-            </label>
-            <input
+            <FormField
               id="tenantSlug"
+              label="Company slug"
+              hint="(unique URL identifier)"
               type="text"
               placeholder="acme-pharma"
+              error={errors.tenantSlug?.message}
               {...register('tenantSlug')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.tenantSlug && <p className="mt-1 text-xs text-destructive">{errors.tenantSlug.message}</p>}
           </div>
 
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide pt-2">Admin account</p>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium mb-1">First name</label>
-              <input
+          {/* Admin account section */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground pt-1">
+              Admin account
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
                 id="firstName"
+                label="First name"
                 type="text"
                 autoComplete="given-name"
+                error={errors.firstName?.message}
                 {...register('firstName')}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
-              {errors.firstName && <p className="mt-1 text-xs text-destructive">{errors.firstName.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium mb-1">Last name</label>
-              <input
+              <FormField
                 id="lastName"
+                label="Last name"
                 type="text"
                 autoComplete="family-name"
+                error={errors.lastName?.message}
                 {...register('lastName')}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
-              {errors.lastName && <p className="mt-1 text-xs text-destructive">{errors.lastName.message}</p>}
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">Work email</label>
-            <input
+            <FormField
               id="email"
+              label="Work email"
               type="email"
               autoComplete="email"
+              error={errors.email?.message}
               {...register('email')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
-            <input
+            <FormField
               id="password"
+              label="Password"
               type="password"
               autoComplete="new-password"
+              error={errors.password?.message}
               {...register('password')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">Confirm password</label>
-            <input
+            <FormField
               id="confirmPassword"
+              label="Confirm password"
               type="password"
               autoComplete="new-password"
+              error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{errors.confirmPassword.message}</p>}
           </div>
 
           {mutation.error && (
-            <p className="text-sm text-destructive text-center">{parseApiError(mutation.error)}</p>
+            <p className="text-sm text-destructive text-center rounded-md bg-destructive/5 border border-destructive/20 px-3 py-2">
+              {parseApiError(mutation.error)}
+            </p>
           )}
 
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <Button type="submit" className="w-full" size="lg" disabled={mutation.isPending}>
             {mutation.isPending ? 'Creating account…' : 'Create account'}
-          </button>
+          </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary underline-offset-4 hover:underline">
+          <Link to="/login" className="text-primary font-medium hover:underline underline-offset-4">
             Sign in
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

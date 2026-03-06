@@ -6,6 +6,9 @@ import { loginSchema, type LoginFormData } from '@/schemas/auth'
 import { useLogin, useResendVerification } from '@/api/endpoints/auth'
 import { useAuth } from '@/hooks/useAuth'
 import { parseApiError } from '@/utils/errors'
+import { AuthLayout } from './components/AuthLayout'
+import { FormField } from './components/FormField'
+import { Button } from '@/components/ui/button'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -48,53 +51,61 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-primary">PharmaForce</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in to your account</p>
+    <AuthLayout>
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Welcome back</h2>
+          <p className="text-sm text-muted-foreground">Sign in to your CRM CDTS account</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register('email')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-            {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
-          </div>
+          <FormField
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register('email')}
+          />
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
-            <input
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="text-sm font-medium text-foreground/80">
+                Password
+              </label>
+              <Link to="/forgot-password" className="text-xs text-primary hover:underline underline-offset-4">
+                Forgot password?
+              </Link>
+            </div>
+            <FormField
               id="password"
               type="password"
               autoComplete="current-password"
+              error={errors.password?.message}
               {...register('password')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>}
           </div>
 
           {loginMutation.error && !unverifiedEmail && (
-            <p className="text-sm text-destructive text-center">{parseApiError(loginMutation.error)}</p>
+            <p className="text-sm text-destructive text-center rounded-md bg-destructive/5 border border-destructive/20 px-3 py-2">
+              {parseApiError(loginMutation.error)}
+            </p>
           )}
 
           {unverifiedEmail && (
-            <div className="rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-center space-y-2">
-              <p className="text-destructive">Email not verified. Check your inbox or resend the link.</p>
+            <div className="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm space-y-2 dark:bg-amber-950/30 dark:border-amber-800/50">
+              <p className="text-amber-800 dark:text-amber-300 font-medium">Email not verified</p>
+              <p className="text-amber-700 dark:text-amber-400 text-xs">
+                Check your inbox for the verification link.
+              </p>
               {resendSent ? (
-                <p className="text-muted-foreground">Verification email sent. Check your inbox.</p>
+                <p className="text-xs text-muted-foreground">Verification email sent.</p>
               ) : (
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={resendMutation.isPending}
-                  className="text-primary underline-offset-4 hover:underline disabled:opacity-50"
+                  className="text-xs text-primary hover:underline underline-offset-4 disabled:opacity-50"
                 >
                   {resendMutation.isPending ? 'Sending…' : 'Resend verification email'}
                 </button>
@@ -102,27 +113,18 @@ export default function LoginPage() {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <Button type="submit" className="w-full" size="lg" disabled={loginMutation.isPending}>
             {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
-          </button>
+          </Button>
         </form>
 
-        <div className="mt-4 flex flex-col items-center gap-2 text-sm">
-          <Link to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
-            Forgot your password?
+        <p className="text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{' '}
+          <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">
+            Create one
           </Link>
-          <p className="text-muted-foreground">
-            No account?{' '}
-            <Link to="/register" className="text-primary underline-offset-4 hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </div>
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

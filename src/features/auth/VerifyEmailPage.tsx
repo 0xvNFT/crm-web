@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import client from '@/api/client'
 import { parseApiError } from '@/utils/errors'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { AuthLayout } from './components/AuthLayout'
+import { Button } from '@/components/ui/button'
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
 type Status = 'loading' | 'success' | 'error'
 
@@ -29,43 +31,52 @@ export default function VerifyEmailPage() {
   }, [token])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm text-center space-y-4">
+    <AuthLayout>
+      <div className="space-y-4 text-center">
         {status === 'loading' && (
           <>
-            <LoadingSpinner />
-            <p className="text-sm text-muted-foreground">Verifying your email…</p>
+            <div className="flex justify-center">
+              <Loader2 className="h-12 w-12 text-primary animate-spin" strokeWidth={1.5} />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold tracking-tight">Verifying your email…</h2>
+              <p className="text-sm text-muted-foreground">Just a moment.</p>
+            </div>
           </>
         )}
 
         {status === 'success' && (
           <>
-            <h1 className="text-xl font-semibold">Email verified</h1>
-            <p className="text-sm text-muted-foreground">
-              Your account is active. You can now sign in.
-            </p>
-            <Link
-              to="/login"
-              className="inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Sign in
-            </Link>
+            <div className="flex justify-center">
+              <CheckCircle className="h-12 w-12 text-primary" strokeWidth={1.5} />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold tracking-tight">Email verified</h2>
+              <p className="text-sm text-muted-foreground">
+                Your account is active. You can now sign in.
+              </p>
+            </div>
+            <Button asChild size="lg" className="w-full">
+              <Link to="/login">Sign in</Link>
+            </Button>
           </>
         )}
 
         {status === 'error' && (
           <>
-            <h1 className="text-xl font-semibold">Verification failed</h1>
-            <p className="text-sm text-destructive">{errorMessage}</p>
-            <Link
-              to="/login"
-              className="block text-sm text-primary underline-offset-4 hover:underline"
-            >
+            <div className="flex justify-center">
+              <XCircle className="h-12 w-12 text-destructive" strokeWidth={1.5} />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold tracking-tight">Verification failed</h2>
+              <p className="text-sm text-destructive">{errorMessage}</p>
+            </div>
+            <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
               Back to sign in
             </Link>
           </>
         )}
       </div>
-    </div>
+    </AuthLayout>
   )
 }

@@ -1,24 +1,63 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typography */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  /* Brand */
+  --color-brand: hsl(231 48% 28%);
+  --color-brand-light: hsl(231 48% 36%);
+  --color-brand-foreground: hsl(0 0% 100%);
+
+  /* Light mode (default) */
   --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-foreground: hsl(224 71% 4%);
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(221.2 83.2% 53.3%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(221.2 83.2% 53.3%);
+  --color-card-foreground: hsl(224 71% 4%);
+  --color-primary: hsl(231 48% 38%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(220 14% 96%);
+  --color-secondary-foreground: hsl(224 71% 4%);
+  --color-muted: hsl(220 14% 96%);
+  --color-muted-foreground: hsl(220 9% 46%);
+  --color-accent: hsl(220 14% 93%);
+  --color-accent-foreground: hsl(224 71% 4%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+  --color-ring: hsl(231 48% 38%);
   --radius: 0.5rem;
+
+  /* Auth panel brand background */
+  --color-auth-panel: hsl(231 44% 18%);
+  --color-auth-panel-muted: hsl(231 35% 28%);
+  --color-auth-panel-foreground: hsl(220 60% 97%);
+  --color-auth-panel-subtle: hsl(231 30% 70%);
+}
+
+/* Dark mode tokens via class strategy */
+.dark {
+  --color-background: hsl(224 71% 4%);
+  --color-foreground: hsl(210 40% 98%);
+  --color-card: hsl(224 50% 7%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-primary: hsl(231 80% 65%);
+  --color-primary-foreground: hsl(224 71% 4%);
+  --color-secondary: hsl(224 30% 12%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(224 30% 12%);
+  --color-muted-foreground: hsl(215 20% 55%);
+  --color-accent: hsl(224 30% 14%);
+  --color-accent-foreground: hsl(210 40% 98%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(224 30% 14%);
+  --color-input: hsl(224 30% 14%);
+  --color-ring: hsl(231 80% 65%);
+  --color-auth-panel: hsl(231 44% 12%);
+  --color-auth-panel-muted: hsl(231 35% 18%);
 }
 
 @layer base {
@@ -29,6 +68,9 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
     margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

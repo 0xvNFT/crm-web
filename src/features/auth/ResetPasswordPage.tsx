@@ -4,6 +4,9 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/schemas/auth'
 import { useResetPassword } from '@/api/endpoints/auth'
 import { parseApiError } from '@/utils/errors'
+import { AuthLayout } from './components/AuthLayout'
+import { FormField } from './components/FormField'
+import { Button } from '@/components/ui/button'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -30,63 +33,61 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm text-center space-y-3">
-          <p className="text-sm text-destructive">Invalid or missing reset link. Please request a new one.</p>
-          <Link to="/forgot-password" className="text-sm text-primary underline-offset-4 hover:underline">
+      <AuthLayout>
+        <div className="space-y-4 text-center">
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold tracking-tight">Invalid reset link</h2>
+            <p className="text-sm text-destructive">
+              This link is missing a token. Please request a new one.
+            </p>
+          </div>
+          <Link to="/forgot-password" className="text-sm text-primary font-medium hover:underline underline-offset-4">
             Request new reset link
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm">
-        <h1 className="text-xl font-semibold mb-1">Set new password</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Enter your new password below. The link expires in 1 hour.
-        </p>
+    <AuthLayout>
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Set new password</h2>
+          <p className="text-sm text-muted-foreground">
+            Enter your new password. The link expires in 1 hour.
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium mb-1">New password</label>
-            <input
-              id="newPassword"
-              type="password"
-              autoComplete="new-password"
-              {...register('newPassword')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-            {errors.newPassword && <p className="mt-1 text-xs text-destructive">{errors.newPassword.message}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">Confirm password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              {...register('confirmPassword')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-            {errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{errors.confirmPassword.message}</p>}
-          </div>
+          <FormField
+            id="newPassword"
+            label="New password"
+            type="password"
+            autoComplete="new-password"
+            error={errors.newPassword?.message}
+            {...register('newPassword')}
+          />
+          <FormField
+            id="confirmPassword"
+            label="Confirm password"
+            type="password"
+            autoComplete="new-password"
+            error={errors.confirmPassword?.message}
+            {...register('confirmPassword')}
+          />
 
           {mutation.error && (
-            <p className="text-sm text-destructive text-center">{parseApiError(mutation.error)}</p>
+            <p className="text-sm text-destructive text-center rounded-md bg-destructive/5 border border-destructive/20 px-3 py-2">
+              {parseApiError(mutation.error)}
+            </p>
           )}
 
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <Button type="submit" className="w-full" size="lg" disabled={mutation.isPending}>
             {mutation.isPending ? 'Saving…' : 'Set new password'}
-          </button>
+          </Button>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   )
 }
