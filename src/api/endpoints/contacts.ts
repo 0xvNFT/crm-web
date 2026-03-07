@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
 import type { PharmaContact, PagePharmaContact } from '@/api/app-types'
 
@@ -21,5 +21,23 @@ export function useContact(id: string) {
     queryFn: () =>
       client.get<PharmaContact>(`/api/pharma/contacts/${id}`).then((r) => r.data),
     enabled: !!id,
+  })
+}
+
+export function useCreateContact() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Partial<PharmaContact>) =>
+      client.post<PharmaContact>('/api/pharma/contacts', data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
+  })
+}
+
+export function useUpdateContact(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Partial<PharmaContact>) =>
+      client.put<PharmaContact>(`/api/pharma/contacts/${id}`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
   })
 }

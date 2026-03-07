@@ -3,6 +3,7 @@ import client from '@/api/client'
 import type { PharmaAccount, PagePharmaAccount } from '@/api/app-types'
 import type { components } from '@/api/types'
 
+type CreateAccountRequest = components['schemas']['CreatePharmaAccountRequest']
 type UpdateAccountRequest = components['schemas']['UpdatePharmaAccountRequest']
 
 export function useAccounts(page = 0, size = 20) {
@@ -21,6 +22,15 @@ export function useAccount(id: string) {
     queryKey: ['accounts', id],
     queryFn: () => client.get<PharmaAccount>(`/api/pharma/accounts/${id}`).then((r) => r.data),
     enabled: !!id,
+  })
+}
+
+export function useCreateAccount() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateAccountRequest) =>
+      client.post<PharmaAccount>('/api/pharma/accounts', data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })
 }
 
