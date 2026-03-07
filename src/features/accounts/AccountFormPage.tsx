@@ -149,7 +149,8 @@ export default function AccountFormPage() {
           </div>
         </FormSection>
 
-        <div className="flex items-center justify-end gap-2">
+        {/* Sticky footer — always visible regardless of form length */}
+        <div className="sticky bottom-0 -mx-6 border-t bg-background px-6 py-3 flex items-center justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>
