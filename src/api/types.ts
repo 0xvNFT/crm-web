@@ -170,6 +170,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update profile (authenticated)
+         * @description Updates the current user's first and last name.
+         */
+        put: operations["updateProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/visits": {
         parameters: {
             query?: never;
@@ -1187,6 +1207,23 @@ export interface paths {
         patch: operations["assignRep"];
         trace?: never;
     };
+    "/api/pharma/visits/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search visits by visit number or purpose */
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/visits/pending-review": {
         parameters: {
             query?: never;
@@ -1357,6 +1394,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/territories/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search territories by name */
+        get: operations["search_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/territories/by-rep/{repId}": {
         parameters: {
             query?: never;
@@ -1434,6 +1488,23 @@ export interface paths {
         };
         /** List members of a team */
         get: operations["getMembers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/teams/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search teams by name */
+        get: operations["search_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1550,6 +1621,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/quotes/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search quotes by quote number or account name */
+        get: operations["search_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/quotes/pending-approval": {
         parameters: {
             query?: never;
@@ -1626,7 +1714,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search products by name */
-        get: operations["search"];
+        get: operations["search_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1733,6 +1821,23 @@ export interface paths {
         post?: never;
         /** Delete an order */
         delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/orders/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search orders by order number or account name */
+        get: operations["search_5"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1889,6 +1994,23 @@ export interface paths {
         };
         /** List materials by category (paginated) */
         get: operations["getByCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/leads/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search leads by name or company */
+        get: operations["search_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2175,6 +2297,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/activities/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search activities by subject */
+        get: operations["search_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/activities/by-type/{type}": {
         parameters: {
             query?: never;
@@ -2255,6 +2394,23 @@ export interface paths {
         };
         /** List territory assignments for an account */
         get: operations["getTerritories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/accounts/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search accounts by name */
+        get: operations["search_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2905,6 +3061,10 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+        };
+        UpdateProfileRequest: {
+            firstName: string;
+            lastName: string;
         };
         ScheduleVisitRequest: {
             visit: components["schemas"]["PharmaFieldVisit"];
@@ -4506,6 +4666,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
             };
         };
     };
@@ -6274,6 +6458,28 @@ export interface operations {
             };
         };
     };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaFieldVisit"][];
+                };
+            };
+        };
+    };
     getPendingReview: {
         parameters: {
             query: {
@@ -6506,6 +6712,28 @@ export interface operations {
             };
         };
     };
+    search_1: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaTerritory"][];
+                };
+            };
+        };
+    };
     getByRep_2: {
         parameters: {
             query: {
@@ -6618,6 +6846,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaTeamMember"][];
+                };
+            };
+        };
+    };
+    search_2: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaTeam"][];
                 };
             };
         };
@@ -6752,6 +7002,28 @@ export interface operations {
             };
         };
     };
+    search_3: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaQuote"][];
+                };
+            };
+        };
+    };
     getPendingApproval: {
         parameters: {
             query: {
@@ -6845,7 +7117,7 @@ export interface operations {
             };
         };
     };
-    search: {
+    search_4: {
         parameters: {
             query: {
                 name: string;
@@ -7015,6 +7287,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    search_5: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaOrder"][];
+                };
             };
         };
     };
@@ -7220,6 +7514,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PagePharmaMaterial"];
+                };
+            };
+        };
+    };
+    search_6: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaLead"][];
                 };
             };
         };
@@ -7585,6 +7901,28 @@ export interface operations {
             };
         };
     };
+    search_7: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaActivity"][];
+                };
+            };
+        };
+    };
     getByType: {
         parameters: {
             query: {
@@ -7699,6 +8037,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaAccountTerritory"][];
+                };
+            };
+        };
+    };
+    search_8: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaAccount"][];
                 };
             };
         };

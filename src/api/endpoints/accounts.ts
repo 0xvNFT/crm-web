@@ -43,6 +43,18 @@ export function useUpdateAccount(id: string) {
   })
 }
 
+export function useAccountSearch(q: string) {
+  return useQuery({
+    queryKey: ['accounts', 'search', q],
+    queryFn: () =>
+      client
+        .get<PharmaAccount[]>('/api/pharma/accounts/search', { params: { q } })
+        .then((r) => r.data),
+    enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useDeleteAccount() {
   const qc = useQueryClient()
   return useMutation({
