@@ -68,6 +68,9 @@ export interface AuthUser {
   roles: string[]
 }
 
+// ─── Auth request types ────────────────────────────────────────────────────────
+export type UpdateProfileRequest = components['schemas']['UpdateProfileRequest']
+
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
   error?: string       // HTTP status name (e.g. "Conflict") — from Spring default error body

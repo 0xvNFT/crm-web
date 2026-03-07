@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { AuthUser } from '@/api/app-types'
+import type { AuthUser, UpdateProfileRequest } from '@/api/app-types'
 import type { components } from '@/api/types'
 
 type LoginRequest = components['schemas']['LoginRequest']
@@ -44,6 +44,16 @@ export function useResetPassword() {
   return useMutation({
     mutationFn: (payload: { token: string; newPassword: string }) =>
       client.post('/api/auth/reset-password', payload).then((r) => r.data),
+  })
+}
+
+export function useUpdateProfile() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateProfileRequest) =>
+      client.put('/api/auth/profile', payload).then((r) => r.data),
+    // Invalidate any cached /me data so AuthContext re-fetches updated name
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   })
 }
 

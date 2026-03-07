@@ -13,6 +13,7 @@ const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage')
 const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
 
 // App pages
+const ProfilePage = lazy(() => import('@/features/auth/ProfilePage'))
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'))
 const AccountListPage = lazy(() => import('@/features/accounts/AccountListPage'))
 const AccountDetailPage = lazy(() => import('@/features/accounts/AccountDetailPage'))
@@ -49,6 +50,7 @@ export function AppRouter() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Wrap><DashboardPage /></Wrap>} />
+          <Route path="/profile" element={<Wrap><ProfilePage /></Wrap>} />
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
           <Route path="/accounts/new" element={<Wrap><AccountFormPage /></Wrap>} />
           <Route path="/accounts/:id" element={<Wrap><AccountDetailPage /></Wrap>} />
