@@ -27,8 +27,8 @@ const columns: Column<PharmaContact>[] = [
       </div>
     ),
   },
-  { header: 'Type', accessor: (row) => formatLabel(row.contactType) },
-  { header: 'Specialty', accessor: (row) => row.specialty ?? '—' },
+  { header: 'Type', accessor: 'contactType', sortable: true, cell: (row) => formatLabel(row.contactType) },
+  { header: 'Specialty', accessor: 'specialty', sortable: true, cell: (row) => row.specialty ?? '—' },
   { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
   { header: 'Mobile', accessor: (row) => row.mobile ?? row.phone ?? '—' },
   {
@@ -81,6 +81,7 @@ export default function ContactListPage() {
         data={data}
         onRowClick={(row) => navigate(`/contacts/${row.id}`)}
         emptyMessage={isSearching ? `No contacts found for "${debouncedQuery}".` : 'No contacts yet.'}
+        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

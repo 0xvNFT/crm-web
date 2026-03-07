@@ -13,13 +13,13 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
-import { formatDate } from '@/utils/formatters'
+import { formatDate, formatLabel } from '@/utils/formatters'
 import type { PharmaAccount } from '@/api/app-types'
 
 const columns: Column<PharmaAccount>[] = [
-  { header: 'Name', accessor: (row) => row.name ?? '—' },
-  { header: 'Type', accessor: (row) => row.accountType ?? '—' },
-  { header: 'Phone', accessor: (row) => row.phoneMain ?? '—' },
+  { header: 'Name', accessor: 'name', sortable: true, cell: (row) => row.name ?? '—' },
+  { header: 'Type', accessor: 'accountType', sortable: true, cell: (row) => formatLabel(row.accountType) },
+  { header: 'Phone', accessor: 'phoneMain', cell: (row) => row.phoneMain ?? '—' },
   { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
@@ -68,6 +68,7 @@ export default function AccountListPage() {
         data={data}
         onRowClick={(row) => navigate(`/accounts/${row.id}`)}
         emptyMessage={isSearching ? `No accounts found for "${debouncedQuery}".` : 'No accounts yet.'}
+        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>
