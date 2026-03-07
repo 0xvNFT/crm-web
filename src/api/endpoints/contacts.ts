@@ -15,6 +15,18 @@ export function useContacts(page = 0, size = 20) {
   })
 }
 
+export function useContactSearch(name: string) {
+  return useQuery({
+    queryKey: ['contacts', 'search', name],
+    queryFn: () =>
+      client
+        .get<PharmaContact[]>('/api/pharma/contacts/search', { params: { name } })
+        .then((r) => r.data),
+    enabled: name.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useContact(id: string) {
   return useQuery({
     queryKey: ['contacts', id],

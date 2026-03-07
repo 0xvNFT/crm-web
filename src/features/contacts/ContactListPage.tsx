@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { useContacts } from '@/api/endpoints/contacts'
+import { useContacts, useContactSearch } from '@/api/endpoints/contacts'
 import { usePagination } from '@/hooks/usePagination'
+import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -9,6 +11,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
+import { SearchInput } from '@/components/ui/search-input'
 import { formatLabel } from '@/utils/formatters'
 import type { PharmaContact } from '@/api/app-types'
 
@@ -37,9 +40,22 @@ const columns: Column<PharmaContact>[] = [
 export default function ContactListPage() {
   const navigate = useNavigate()
   const { page, goToPage } = usePagination()
-  const { data, isLoading, isError } = useContacts(page)
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
 
-  if (isLoading) return <LoadingSpinner />
+  const isSearching = debouncedQuery.trim().length >= 2
+
+  const listQuery = useContacts(page)
+  const searchQuery = useContactSearch(debouncedQuery)
+
+  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
+  const isError = isSearching ? searchQuery.isError : listQuery.isError
+  const data: PharmaContact[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
+  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
+
+  if (isLoading && !isSearching) return <LoadingSpinner />
   if (isError) return <ErrorMessage />
 
   return (
@@ -54,13 +70,19 @@ export default function ContactListPage() {
           </Button>
         }
       />
+      <SearchInput
+        value={query}
+        onChange={(v) => { setQuery(v); goToPage(0) }}
+        placeholder="Search by name…"
+        className="max-w-sm"
+      />
       <DataTable
         columns={columns}
-        data={data?.content ?? []}
+        data={data}
         onRowClick={(row) => navigate(`/contacts/${row.id}`)}
-        emptyMessage="No contacts found."
+        emptyMessage={isSearching ? `No contacts found for "${debouncedQuery}".` : 'No contacts yet.'}
       />
-      <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
+      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>
   )
 }
