@@ -1,7 +1,7 @@
 // REFERENCE PATTERN — Interns: copy this structure for your own feature list pages
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Building2 } from 'lucide-react'
 import { useAccounts, useAccountSearch } from '@/api/endpoints/accounts'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -67,7 +67,10 @@ export default function AccountListPage() {
         columns={columns}
         data={data}
         onRowClick={(row) => navigate(`/accounts/${row.id}`)}
-        emptyMessage={isSearching ? `No accounts found for "${debouncedQuery}".` : 'No accounts yet.'}
+        empty={isSearching
+          ? { icon: Building2, title: `No accounts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.', action: <Button size="sm" onClick={() => navigate('/accounts/new')}><Plus className="h-4 w-4 mr-1.5" />New Account</Button> }
+        }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}

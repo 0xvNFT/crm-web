@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Users } from 'lucide-react'
 import { useContacts, useContactSearch } from '@/api/endpoints/contacts'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -80,7 +80,10 @@ export default function ContactListPage() {
         columns={columns}
         data={data}
         onRowClick={(row) => navigate(`/contacts/${row.id}`)}
-        emptyMessage={isSearching ? `No contacts found for "${debouncedQuery}".` : 'No contacts yet.'}
+        empty={isSearching
+          ? { icon: Users, title: `No contacts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: Users, title: 'No contacts yet', description: 'Add your first contact to get started.', action: <Button size="sm" onClick={() => navigate('/contacts/new')}><Plus className="h-4 w-4 mr-1.5" />New Contact</Button> }
+        }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}

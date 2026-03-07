@@ -9,6 +9,8 @@ import {
 import { useState, type ReactNode } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { EmptyState } from './EmptyState'
+import type { LucideIcon } from 'lucide-react'
 
 // ─── Public Column interface ───────────────────────────────────────────────────
 // accessor  — keyof T (primitive, sortable) OR (row) => ReactNode (custom, not sortable)
@@ -23,13 +25,21 @@ export interface Column<T> {
   sortable?: boolean
 }
 
+interface EmptyStateConfig {
+  icon: LucideIcon
+  title: string
+  description?: string
+  action?: ReactNode
+}
+
 interface DataTableProps<T> {
   columns: Column<T>[]
   data: T[]
   onRowClick?: (row: T) => void
   className?: string
-  emptyMessage?: string
-  totalElements?: number  // pass Page<T>.totalElements for "Showing X of Y" footer
+  emptyMessage?: string       // simple fallback text
+  empty?: EmptyStateConfig    // rich empty state — takes priority over emptyMessage
+  totalElements?: number      // pass Page<T>.totalElements for "Showing X of Y" footer
 }
 
 function toColumnDef<T extends object>(col: Column<T>): ColumnDef<T> {
@@ -61,6 +71,7 @@ export function DataTable<T extends { id?: string }>({
   onRowClick,
   className,
   emptyMessage = 'No records found.',
+  empty,
   totalElements,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -122,11 +133,19 @@ export function DataTable<T extends { id?: string }>({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
-                >
-                  {emptyMessage}
+                <td colSpan={columns.length}>
+                  {empty ? (
+                    <EmptyState
+                      icon={empty.icon}
+                      title={empty.title}
+                      description={empty.description}
+                      action={empty.action}
+                    />
+                  ) : (
+                    <p className="px-4 py-12 text-center text-sm text-muted-foreground">
+                      {emptyMessage}
+                    </p>
+                  )}
                 </td>
               </tr>
             ) : (
