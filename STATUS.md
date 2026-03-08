@@ -1,6 +1,6 @@
 # crm-web — Project Status
 
-> Last updated: 2026-03-07
+> Last updated: 2026-03-08
 > Branch: `dev-intern` | Lead dev branch: `0xvnft`
 
 ---
@@ -18,7 +18,7 @@
 | AuthProvider + useAuth hook            | Done   | sessionStorage for user metadata                                             |
 | PrivateRoute + RoleRoute               | Done   | Location state preserved on redirect                                         |
 | AppShell (Sidebar + TopNav)            | Done   | Role-filtered nav, responsive drawer, SidebarProvider pattern                |
-| Shared components                      | Done   | DataTable (onRowClick), Pagination, StatusBadge, LoadingSpinner, PageHeader  |
+| Shared components                      | Done   | DataTable (TanStack Table v8, sorting, row count), Pagination, StatusBadge, LoadingSpinner, PageHeader, ConfirmDialog, EmptyState |
 | Design system atoms                    | Done   | Button (CVA), Input, Label in `src/components/ui/`                           |
 | Auth molecules                         | Done   | AuthLayout (split panel), FormField in `src/features/auth/components/`       |
 | Zod schemas                            | Partial| Auth schemas done. Feature schemas TBD per feature.                          |
@@ -50,8 +50,9 @@
 | Auth — Forgot Password | —                | —      | Done | `useForgotPassword`             | Lead dev         | Done        |
 | Auth — Reset Password  | —                | —      | Done | `useResetPassword`              | Lead dev         | Done        |
 | Dashboard              | —                | —      | —    | reporting hooks                 | Lead dev         | Done        |
-| Accounts               | Done (reference) | —      | —    | `useAccounts`, `useAccount`     | Lead dev         | List done   |
-| Contacts               | Done             | Done   | —    | `useContacts`, `useContact`     | Lead dev         | List + detail done |
+| Accounts               | Done             | Done   | Done | `useAccounts`, `useAccount`, `useCreateAccount`, `useUpdateAccount`, `useDeleteAccount`, `useAccountSearch` | Lead dev | Complete |
+| Contacts               | Done             | Done   | Done | `useContacts`, `useContact`, `useCreateContact`, `useUpdateContact`, `useDeleteContact`, `useContactSearch` | Lead dev | Complete |
+| Profile                | —                | —      | Done | `useUpdateProfile`, `useChangePassword` | Lead dev  | Done        |
 | Leads                  | —                | —      | —    | —                               | spicycakee       | Assigned    |
 | Orders                 | —                | —      | —    | —                               | MarcLaxa         | Assigned    |
 | Quotes                 | —                | —      | —    | —                               | JaredHLopez      | Assigned    |
@@ -94,12 +95,12 @@ None currently.
 
 ### Lead dev (`0xvnft`)
 
-- `AccountDetailPage` — view + edit form
 - Leads feature (with convert action — ADMIN/MANAGER only)
 - Visits — check-in / check-out flow
 - Territories + Teams pages
 - Reports page (hooks already done — wire to charts)
 - Admin page (tenant user management, ADMIN only)
+- Notifications bell in TopNav (`GET /api/notifications` + mark read)
 
 ### Interns (`dev-intern`) — Wave 1 (in progress)
 

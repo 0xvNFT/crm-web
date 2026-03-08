@@ -4,6 +4,7 @@ import { Plus, Users } from 'lucide-react'
 import { useContacts, useContactSearch } from '@/api/endpoints/contacts'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -39,6 +40,7 @@ const columns: Column<PharmaContact>[] = [
 
 export default function ContactListPage() {
   const navigate = useNavigate()
+  const { isManager } = useRole()
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)

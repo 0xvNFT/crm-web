@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAccount, useUpdateAccount, useDeleteAccount } from '@/api/endpoints/accounts'
+import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -80,6 +81,7 @@ export default function AccountDetailPage() {
   const { data: account, isLoading, isError } = useAccount(id ?? '')
   const { mutate: updateAccount, isPending } = useUpdateAccount(id ?? '')
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
+  const { isManager } = useRole()
 
   const {
     register,
@@ -161,7 +163,7 @@ export default function AccountDetailPage() {
           </div>
         </div>
 
-        {!editing && (
+        {!editing && isManager && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={startEdit}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />

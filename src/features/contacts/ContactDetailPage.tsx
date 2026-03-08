@@ -8,6 +8,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useContact, useUpdateContact, useDeleteContact } from '@/api/endpoints/contacts'
+import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -104,6 +105,7 @@ export default function ContactDetailPage() {
   const { data: contact, isLoading, isError } = useContact(id ?? '')
   const { mutate: updateContact, isPending } = useUpdateContact(id ?? '')
   const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
+  const { isManager } = useRole()
 
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<EditFormData>({
     resolver: zodResolver(editSchema),
@@ -211,7 +213,7 @@ export default function ContactDetailPage() {
           </div>
         </div>
 
-        {!editing && (
+        {!editing && isManager && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={startEdit}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />

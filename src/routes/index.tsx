@@ -52,7 +52,14 @@ export function AppRouter() {
           <Route path="/dashboard" element={<Wrap><DashboardPage /></Wrap>} />
           <Route path="/profile" element={<Wrap><ProfilePage /></Wrap>} />
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
-          <Route path="/accounts/new" element={<Wrap><AccountFormPage /></Wrap>} />
+          <Route
+            path="/accounts/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><AccountFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
           <Route path="/accounts/:id" element={<Wrap><AccountDetailPage /></Wrap>} />
 
           {/* Intern pages — replace PlaceholderPage as each feature is completed */}

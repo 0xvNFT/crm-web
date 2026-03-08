@@ -5,6 +5,7 @@ import { Plus, Building2 } from 'lucide-react'
 import { useAccounts, useAccountSearch } from '@/api/endpoints/accounts'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -26,6 +27,7 @@ const columns: Column<PharmaAccount>[] = [
 
 export default function AccountListPage() {
   const navigate = useNavigate()
+  const { isManager } = useRole()
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -50,12 +52,12 @@ export default function AccountListPage() {
       <PageHeader
         title="Accounts"
         description="Manage your pharmaceutical accounts"
-        actions={
+        actions={isManager ? (
           <Button size="sm" onClick={() => navigate('/accounts/new')}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Account
           </Button>
-        }
+        ) : undefined}
       />
       <SearchInput
         value={query}
@@ -69,7 +71,7 @@ export default function AccountListPage() {
         onRowClick={(row) => navigate(`/accounts/${row.id}`)}
         empty={isSearching
           ? { icon: Building2, title: `No accounts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.', action: <Button size="sm" onClick={() => navigate('/accounts/new')}><Plus className="h-4 w-4 mr-1.5" />New Account</Button> }
+          : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.', action: isManager ? <Button size="sm" onClick={() => navigate('/accounts/new')}><Plus className="h-4 w-4 mr-1.5" />New Account</Button> : undefined }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
