@@ -1,7 +1,8 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSidebarContext } from '@/providers/SidebarProvider'
-import { Bell, Menu, LogOut, User, ChevronDown, ChevronRight } from 'lucide-react'
+import { useUnreadNotifications, useMarkNotificationRead } from '@/api/endpoints/notifications'
+import { Bell, Menu, LogOut, User, ChevronDown, ChevronRight, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { formatDate } from '@/utils/formatters'
+import type { Notification } from '@/api/app-types'
 
 // Route segment → human-readable label
 const ROUTE_LABELS: Record<string, string> = {
@@ -29,6 +32,17 @@ const ROUTE_LABELS: Record<string, string> = {
   new: 'New',
 }
 
+// entityType → route prefix (for navigate-on-click)
+const ENTITY_ROUTES: Record<string, string> = {
+  ACCOUNT: 'accounts',
+  CONTACT: 'contacts',
+  LEAD: 'leads',
+  ORDER: 'orders',
+  QUOTE: 'quotes',
+  ACTIVITY: 'activities',
+  VISIT: 'visits',
+}
+
 function isUuid(s: string) {
   return /^[0-9a-f-]{36}$/i.test(s)
 }
@@ -46,6 +60,89 @@ function useBreadcrumbs() {
   })
 }
 
+// ─── Notification bell + dropdown ──────────────────────────────────────────────
+function NotificationBell() {
+  const navigate = useNavigate()
+  const { data } = useUnreadNotifications()
+  const { mutate: markRead } = useMarkNotificationRead()
+
+  const notifications = data?.content ?? []
+  const unreadCount = notifications.filter((n) => !n.readAt).length
+
+  function handleClick(n: Notification) {
+    if (!n.id) return
+    if (!n.readAt) markRead(n.id)
+    const route = n.entityType ? ENTITY_ROUTES[n.entityType] : null
+    if (route && n.entityId) navigate(`/${route}/${n.entityId}`)
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          aria-label="Notifications"
+        >
+          <Bell className="h-4 w-4" strokeWidth={1.75} />
+          {unreadCount > 0 && (
+            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground leading-none">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+        <DropdownMenuLabel className="flex items-center justify-between">
+          <span>Notifications</span>
+          {unreadCount > 0 && (
+            <span className="text-xs font-normal text-muted-foreground">
+              {unreadCount} unread
+            </span>
+          )}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {notifications.length === 0 ? (
+          <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+            You're all caught up
+          </div>
+        ) : (
+          notifications.map((n) => (
+            <DropdownMenuItem
+              key={n.id}
+              onClick={() => handleClick(n)}
+              className="flex items-start gap-2.5 px-3 py-2.5 cursor-pointer"
+            >
+              {/* Unread indicator */}
+              <span
+                className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                  n.readAt ? 'bg-transparent' : 'bg-primary'
+                }`}
+              />
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <p className={`text-sm leading-snug ${n.readAt ? 'text-muted-foreground' : 'font-medium text-foreground'}`}>
+                  {n.title ?? 'Notification'}
+                </p>
+                {n.body && (
+                  <p className="text-xs text-muted-foreground line-clamp-2">{n.body}</p>
+                )}
+                {n.createdAt && (
+                  <p className="text-[10px] text-muted-foreground/60">{formatDate(n.createdAt)}</p>
+                )}
+              </div>
+              {n.readAt && (
+                <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 mt-0.5" strokeWidth={2} />
+              )}
+            </DropdownMenuItem>
+          ))
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+// ─── TopNav ────────────────────────────────────────────────────────────────────
 export function TopNav() {
   const { user, logout } = useAuth()
   const { toggle } = useSidebarContext()
@@ -91,13 +188,7 @@ export function TopNav() {
 
       {/* Right */}
       <div className="flex items-center gap-1">
-        {/* Notifications */}
-        <button
-          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          title="Notifications"
-        >
-          <Bell className="h-4 w-4" strokeWidth={1.75} />
-        </button>
+        <NotificationBell />
 
         {/* User menu */}
         <DropdownMenu>
