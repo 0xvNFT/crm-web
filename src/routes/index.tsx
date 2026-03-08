@@ -11,6 +11,7 @@ const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/features/auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage'))
 const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
+const AcceptInvitePage = lazy(() => import('@/features/auth/AcceptInvitePage'))
 
 // App pages
 const ProfilePage = lazy(() => import('@/features/auth/ProfilePage'))
@@ -24,6 +25,7 @@ const ContactFormPage = lazy(() => import('@/features/contacts/ContactFormPage')
 
 // Lead dev pages
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'))
+const AdminPage = lazy(() => import('@/features/admin/AdminPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -42,6 +44,7 @@ export function AppRouter() {
         <Route path="/forgot-password" element={<Wrap><ForgotPasswordPage /></Wrap>} />
         <Route path="/reset-password" element={<Wrap><ResetPasswordPage /></Wrap>} />
         <Route path="/verify-email" element={<Wrap><VerifyEmailPage /></Wrap>} />
+        <Route path="/accept-invite" element={<Wrap><AcceptInvitePage /></Wrap>} />
 
         {/* Protected routes — all nested inside AppShell */}
         <Route
@@ -106,7 +109,7 @@ export function AppRouter() {
             path="/admin"
             element={
               <RoleRoute roles={['ADMIN']}>
-                <Wrap><PlaceholderPage name="Admin" /></Wrap>
+                <Wrap><AdminPage /></Wrap>
               </RoleRoute>
             }
           />

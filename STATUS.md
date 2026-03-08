@@ -60,8 +60,8 @@
 | Visits                 | —                | —      | —    | —                               | Lead dev (wave 2)| Not started |
 | Territories            | —                | —      | —    | —                               | Lead dev         | Not started |
 | Teams                  | —                | —      | —    | —                               | Lead dev         | Not started |
-| Reports                | —                | —      | —    | reporting hooks done            | Lead dev         | Not started |
-| Admin                  | —                | —      | —    | —                               | Lead dev         | Not started |
+| Reports                | Done             | —      | —    | All 4 report hooks              | Lead dev         | Done        |
+| Admin                  | Done             | —      | —    | `useStaff`, `useInviteStaff`, `useDeactivateStaff`, `useReactivateStaff`, `useResendInvite` | Lead dev | Done |
 
 ---
 
@@ -95,12 +95,12 @@ None currently.
 
 ### Lead dev (`0xvnft`)
 
-- Leads feature (with convert action — ADMIN/MANAGER only)
-- Visits — check-in / check-out flow
+- Visits — check-in / check-out flow (REP primary daily task)
 - Territories + Teams pages
-- Reports page (hooks already done — wire to charts)
-- Admin page (tenant user management, ADMIN only)
-- Notifications bell in TopNav (`GET /api/notifications` + mark read)
+- ~~Notifications bell~~ — DONE
+- ~~Reports page~~ — DONE
+- ~~Admin page (Team Management)~~ — DONE
+- ~~Accept Invite page (`/accept-invite`)~~ — DONE
 
 ### Interns (`dev-intern`) — Wave 1 (in progress)
 

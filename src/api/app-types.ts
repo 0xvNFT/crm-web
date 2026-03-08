@@ -33,6 +33,9 @@ export type LeadConversionResult     = components['schemas']['LeadConversionResu
 export type User                     = components['schemas']['User']
 export type Notification             = components['schemas']['Notification']
 export type TenantUserSummary        = components['schemas']['TenantUserSummary']
+export type CreateStaffRequest       = components['schemas']['CreateStaffRequest']
+export type UpdateStaffRequest       = components['schemas']['UpdateStaffRequest']
+export type PageUser                 = components['schemas']['PageUser']
 
 // ─── Paginated results (Spring Page<T>) ───────────────────────────────────────
 export type PagePharmaAccount      = components['schemas']['PagePharmaAccount']
@@ -70,6 +73,12 @@ export interface AuthUser {
 
 // ─── Auth request types ────────────────────────────────────────────────────────
 export type UpdateProfileRequest = components['schemas']['UpdateProfileRequest']
+
+// AcceptInvite — spec uses generic map; defined manually from backend contract
+export interface AcceptInviteRequest {
+  token: string
+  password: string
+}
 
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
