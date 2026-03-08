@@ -22,6 +22,9 @@ const ContactListPage = lazy(() => import('@/features/contacts/ContactListPage')
 const ContactDetailPage = lazy(() => import('@/features/contacts/ContactDetailPage'))
 const ContactFormPage = lazy(() => import('@/features/contacts/ContactFormPage'))
 
+// Lead dev pages
+const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'))
+
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
 
@@ -93,7 +96,7 @@ export function AppRouter() {
             path="/reports"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Reports" /></Wrap>
+                <Wrap><ReportsPage /></Wrap>
               </RoleRoute>
             }
           />
