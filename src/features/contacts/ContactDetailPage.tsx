@@ -32,7 +32,7 @@ const editSchema = z.object({
   mobile: z.string().optional(),
   contactType: z.enum(
     ['physician', 'pharmacist', 'nurse_practitioner', 'physician_assistant', 'administrator', 'buyer', 'other'],
-    { errorMap: () => ({ message: 'Contact type is required' }) }
+    { error: 'Contact type is required' }
   ),
   specialty: z.string().optional(),
   npiNumber: z.string().optional(),

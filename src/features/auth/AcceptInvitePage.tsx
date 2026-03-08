@@ -8,9 +8,8 @@ import { AuthLayout } from './components/AuthLayout'
 import { FormField } from './components/FormField'
 import { Button } from '@/components/ui/button'
 import { parseApiError } from '@/utils/errors'
+import { PASSWORD_REGEX } from '@/schemas/auth'
 import type { AcceptInviteRequest } from '@/api/app-types'
-
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_.#\-])[A-Za-z\d@$!%*?&_.#\-]{8,128}$/
 
 const schema = z
   .object({

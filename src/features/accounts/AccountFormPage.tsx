@@ -15,7 +15,7 @@ import { parseApiError } from '@/utils/errors'
 const accountSchema = z.object({
   name: z.string().min(2, 'Account name must be at least 2 characters'),
   accountType: z.enum(['hospital', 'pharmacy', 'clinic', 'distributor'], {
-    errorMap: () => ({ message: 'Account type is required' }),
+    error: 'Account type is required',
   }),
   billingAddress: z.string().optional(),
   shippingAddress: z.string().optional(),

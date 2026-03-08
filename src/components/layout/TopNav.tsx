@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { useSidebarContext } from '@/providers/SidebarProvider'
+import { useSidebarContext } from '@/hooks/useSidebarContext'
 import { useUnreadNotifications, useMarkNotificationRead } from '@/api/endpoints/notifications'
 import { Bell, Menu, LogOut, User, ChevronDown, ChevronRight, Check } from 'lucide-react'
 import {

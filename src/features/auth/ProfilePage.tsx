@@ -11,8 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_.#\-])[A-Za-z\d@$!%*?&_.#\-]{8,128}$/
+import { PASSWORD_REGEX } from '@/schemas/auth'
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 const nameSchema = z.object({

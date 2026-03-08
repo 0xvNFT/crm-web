@@ -1,14 +1,6 @@
-import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
 import { useSidebar } from '@/hooks/useSidebar'
-
-interface SidebarContextValue {
-  open: boolean
-  toggle: () => void
-  close: () => void
-}
-
-const SidebarContext = createContext<SidebarContextValue | null>(null)
+import { SidebarContext } from './SidebarContext'
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const sidebar = useSidebar()
@@ -17,10 +9,4 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
       {children}
     </SidebarContext.Provider>
   )
-}
-
-export function useSidebarContext() {
-  const ctx = useContext(SidebarContext)
-  if (!ctx) throw new Error('useSidebarContext must be used within SidebarProvider')
-  return ctx
 }

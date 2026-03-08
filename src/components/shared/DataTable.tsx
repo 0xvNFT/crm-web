@@ -76,6 +76,7 @@ export function DataTable<T extends { id?: string }>({
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns: columns.map(toColumnDef) as ColumnDef<T>[],

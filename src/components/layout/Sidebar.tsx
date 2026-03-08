@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { useSidebarContext } from '@/providers/SidebarProvider'
+import { useSidebarContext } from '@/hooks/useSidebarContext'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,

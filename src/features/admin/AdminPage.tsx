@@ -46,7 +46,7 @@ const inviteSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Enter a valid email'),
   role: z.enum(['ADMIN', 'MANAGER', 'FIELD_REP'], {
-    errorMap: () => ({ message: 'Role is required' }),
+    error: 'Role is required',
   }),
   jobTitle: z.string().optional(),
   department: z.string().optional(),
