@@ -71,14 +71,18 @@ export interface AuthUser {
   roles: string[]
 }
 
-// ─── Auth request types ────────────────────────────────────────────────────────
-export type UpdateProfileRequest = components['schemas']['UpdateProfileRequest']
+// ─── Auth request types — all sourced from generated spec, never manually defined ──
+export type LoginRequest          = components['schemas']['LoginRequest']           // { email, password }
+export type RegisterRequest       = components['schemas']['RegisterRequest']         // { tenantName, tenantSlug, vertical, firstName, lastName, email, password }
+export type ResetPasswordRequest  = components['schemas']['ResetPasswordRequest']   // { token, newPassword }
+export type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']  // { currentPassword, newPassword }
+export type UpdateProfileRequest  = components['schemas']['UpdateProfileRequest']   // { firstName, lastName }
+export type EmailOnlyRequest      = components['schemas']['EmailOnlyRequest']       // { email } — forgot-password, resend-verification
+export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']    // { token, newPassword }
 
-// AcceptInvite — spec uses generic map; defined manually from backend contract
-export interface AcceptInviteRequest {
-  token: string
-  password: string
-}
+// ─── Shared request types ────────────────────────────────────────────────────
+export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
+export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
 
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {

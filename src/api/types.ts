@@ -3018,6 +3018,44 @@ export interface components {
             phoneWork?: string;
             phoneMobile?: string;
         };
+        UpdateTerritoryRequest: {
+            territoryCode?: string;
+            territoryName?: string;
+            region?: string;
+            description?: string;
+            /** Format: uuid */
+            businessUnitId?: string;
+            /** Format: uuid */
+            parentTerritoryId?: string;
+            /** Format: uuid */
+            primaryRepId?: string;
+            /** Format: uuid */
+            managerId?: string;
+            status?: string;
+            /** Format: date */
+            effectiveFrom?: string;
+            /** Format: date */
+            effectiveTo?: string;
+            targetRevenueAnnual?: number;
+            /** Format: int32 */
+            targetVisitsMonthly?: number;
+            /** Format: int32 */
+            targetNewAccountsQuarterly?: number;
+        };
+        UpdateProductRequest: {
+            ndcNumber?: string;
+            name?: string;
+            genericName?: string;
+            manufacturer?: string;
+            strength?: string;
+            dosageForm?: string;
+            packageSize?: string;
+            unitPrice?: number;
+            status?: string;
+            controlledSubstance?: boolean;
+            deaSchedule?: string;
+            requiresRefrigeration?: boolean;
+        };
         PharmaProduct: {
             /** Format: uuid */
             tenantId?: string;
@@ -3214,15 +3252,15 @@ export interface components {
             territoryId?: string;
         };
         SignatureRequest: {
-            signatureImageUrl?: string;
+            signatureImageUrl: string;
             capturedByName?: string;
             capturedByTitle?: string;
         };
-        RejectRequest: {
-            reason?: string;
+        ReasonRequest: {
+            reason: string;
         };
         CheckOutRequest: {
-            outcome?: string;
+            outcome: string;
             keyDiscussionPoints?: string;
             customerFeedback?: string;
         };
@@ -3269,11 +3307,11 @@ export interface components {
         };
         OverrideRequest: {
             override?: boolean;
-            reason?: string;
+            reason: string;
         };
         CreateAuditRequest: {
             /** Format: uuid */
-            auditorId?: string;
+            auditorId: string;
             feedbackType?: string;
             detailedComments?: string;
         };
@@ -3286,6 +3324,28 @@ export interface components {
             department?: string;
             phoneWork?: string;
             phoneMobile?: string;
+        };
+        CreateTerritoryRequest: {
+            territoryCode: string;
+            territoryName: string;
+            region: string;
+            description?: string;
+            /** Format: uuid */
+            businessUnitId?: string;
+            /** Format: uuid */
+            parentTerritoryId?: string;
+            /** Format: uuid */
+            primaryRepId?: string;
+            /** Format: uuid */
+            managerId?: string;
+            status?: string;
+            /** Format: date */
+            effectiveFrom?: string;
+            targetRevenueAnnual?: number;
+            /** Format: int32 */
+            targetVisitsMonthly?: number;
+            /** Format: int32 */
+            targetNewAccountsQuarterly?: number;
         };
         PharmaAccountTerritory: {
             /** Format: uuid */
@@ -3504,6 +3564,20 @@ export interface components {
             updatedAt?: string;
             expired?: boolean;
         };
+        CreateProductRequest: {
+            ndcNumber: string;
+            name: string;
+            genericName?: string;
+            manufacturer?: string;
+            strength?: string;
+            dosageForm?: string;
+            packageSize?: string;
+            unitPrice: number;
+            status?: string;
+            controlledSubstance?: boolean;
+            deaSchedule?: string;
+            requiresRefrigeration?: boolean;
+        };
         RecordPriceRequest: {
             /** Format: uuid */
             productId: string;
@@ -3561,6 +3635,9 @@ export interface components {
             leadSource?: string;
             type?: string;
             budgetConfirmed?: boolean;
+        };
+        StageRequest: {
+            stage: string;
         };
         CreateMaterialRequest: {
             title: string;
@@ -3759,7 +3836,7 @@ export interface components {
             updatedAt?: string;
         };
         CreateCoachingNoteRequest: {
-            note?: components["schemas"]["PharmaCoachingNote"];
+            note: components["schemas"]["PharmaCoachingNote"];
             /** Format: uuid */
             coachId?: string;
             /** Format: uuid */
@@ -3845,6 +3922,9 @@ export interface components {
             token: string;
             newPassword: string;
         };
+        EmailOnlyRequest: {
+            email: string;
+        };
         RegisterRequest: {
             tenantName: string;
             tenantSlug: string;
@@ -3860,6 +3940,10 @@ export interface components {
         };
         ChangePasswordRequest: {
             currentPassword: string;
+            newPassword: string;
+        };
+        AcceptInviteRequest: {
+            token: string;
             newPassword: string;
         };
         CreateTenantRequest: {
@@ -3930,14 +4014,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -3964,14 +4048,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageUser: {
@@ -3982,14 +4066,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTerritory: {
@@ -4000,14 +4084,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritory"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTeam: {
@@ -4018,14 +4102,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeam"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PipelineSummary: {
@@ -4059,14 +4143,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuote"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaProduct: {
@@ -4077,14 +4161,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOrder: {
@@ -4095,14 +4179,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrder"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOpportunity: {
@@ -4113,14 +4197,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunity"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaMaterial: {
@@ -4131,14 +4215,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterial"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaLead: {
@@ -4149,14 +4233,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLead"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaInvoice: {
@@ -4167,14 +4251,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoice"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaContact: {
@@ -4185,14 +4269,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContact"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaCoachingNote: {
@@ -4203,14 +4287,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNote"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaActivity: {
@@ -4221,14 +4305,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivity"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaAccount: {
@@ -4239,14 +4323,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccount"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Notification: {
@@ -4276,14 +4360,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageApprovalRule: {
@@ -4294,14 +4378,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         TenantUserSummary: {
@@ -4450,7 +4534,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaTerritory"];
+                "application/json": components["schemas"]["UpdateTerritoryRequest"];
             };
         };
         responses: {
@@ -4498,7 +4582,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaProduct"];
+                "application/json": components["schemas"]["UpdateProductRequest"];
             };
         };
         responses: {
@@ -4988,7 +5072,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RejectRequest"];
+                "application/json": components["schemas"]["ReasonRequest"];
             };
         };
         responses: {
@@ -5300,7 +5384,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaTerritory"];
+                "application/json": components["schemas"]["CreateTerritoryRequest"];
             };
         };
         responses: {
@@ -5538,9 +5622,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["ReasonRequest"];
             };
         };
         responses: {
@@ -5630,7 +5712,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaProduct"];
+                "application/json": components["schemas"]["CreateProductRequest"];
             };
         };
         responses: {
@@ -5726,9 +5808,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["ReasonRequest"];
             };
         };
         responses: {
@@ -5822,9 +5902,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["StageRequest"];
             };
         };
         responses: {
@@ -6518,9 +6596,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["EmailOnlyRequest"];
             };
         };
         responses: {
@@ -6612,9 +6688,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["EmailOnlyRequest"];
             };
         };
         responses: {
@@ -6662,9 +6736,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: string;
-                };
+                "application/json": components["schemas"]["AcceptInviteRequest"];
             };
         };
         responses: {

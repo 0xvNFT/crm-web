@@ -46,7 +46,7 @@ export default function AcceptInvitePage() {
   })
 
   function onSubmit(data: FormData) {
-    mutate({ token, password: data.password })
+    mutate({ token, newPassword: data.password })
   }
 
   // Missing or invalid token — caught by the backend, but show early if token is absent

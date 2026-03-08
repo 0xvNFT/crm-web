@@ -1,10 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { AuthUser, UpdateProfileRequest } from '@/api/app-types'
-import type { components } from '@/api/types'
-
-type LoginRequest = components['schemas']['LoginRequest']
-type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']
+import type {
+  AuthUser,
+  LoginRequest,
+  RegisterRequest,
+  ChangePasswordRequest,
+  UpdateProfileRequest,
+  EmailOnlyRequest,
+} from '@/api/app-types'
 
 export function useLogin() {
   return useMutation({
@@ -21,21 +24,14 @@ export function useLogout() {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: (payload: {
-      tenantName: string
-      tenantSlug: string
-      vertical: string
-      firstName: string
-      lastName: string
-      email: string
-      password: string
-    }) => client.post<{ message: string }>('/api/auth/register', payload).then((r) => r.data),
+    mutationFn: (payload: RegisterRequest) =>
+      client.post<{ message: string }>('/api/auth/register', payload).then((r) => r.data),
   })
 }
 
 export function useForgotPassword() {
   return useMutation({
-    mutationFn: (payload: { email: string }) =>
+    mutationFn: (payload: EmailOnlyRequest) =>
       client.post('/api/auth/forgot-password', payload).then((r) => r.data),
   })
 }
@@ -66,7 +62,7 @@ export function useChangePassword() {
 
 export function useResendVerification() {
   return useMutation({
-    mutationFn: (payload: { email: string }) =>
+    mutationFn: (payload: EmailOnlyRequest) =>
       client.post('/api/auth/resend-verification', payload).then((r) => r.data),
   })
 }
