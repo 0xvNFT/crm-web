@@ -29,6 +29,12 @@ const AdminPage = lazy(() => import('@/features/admin/AdminPage'))
 const VisitListPage = lazy(() => import('@/features/visits/VisitListPage'))
 const VisitDetailPage = lazy(() => import('@/features/visits/VisitDetailPage'))
 const VisitScheduleFormPage = lazy(() => import('@/features/visits/VisitScheduleFormPage'))
+const TerritoryListPage = lazy(() => import('@/features/territories/TerritoryListPage'))
+const TerritoryDetailPage = lazy(() => import('@/features/territories/TerritoryDetailPage'))
+const TerritoryFormPage = lazy(() => import('@/features/territories/TerritoryFormPage'))
+const TeamListPage = lazy(() => import('@/features/teams/TeamListPage'))
+const TeamDetailPage = lazy(() => import('@/features/teams/TeamDetailPage'))
+const TeamFormPage = lazy(() => import('@/features/teams/TeamFormPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -88,7 +94,23 @@ export function AppRouter() {
             path="/territories"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Territories" /></Wrap>
+                <Wrap><TerritoryListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/territories/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TerritoryFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/territories/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TerritoryDetailPage /></Wrap>
               </RoleRoute>
             }
           />
@@ -96,7 +118,23 @@ export function AppRouter() {
             path="/teams"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Teams" /></Wrap>
+                <Wrap><TeamListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teams/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TeamFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teams/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TeamDetailPage /></Wrap>
               </RoleRoute>
             }
           />

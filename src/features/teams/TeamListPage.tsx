@@ -1,0 +1,114 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Plus, Users2 } from 'lucide-react'
+import { useTeams, useTeamSearch } from '@/api/endpoints/teams'
+import { usePagination } from '@/hooks/usePagination'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
+import { DataTable, type Column } from '@/components/shared/DataTable'
+import { Pagination } from '@/components/shared/Pagination'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { Button } from '@/components/ui/button'
+import { SearchInput } from '@/components/ui/search-input'
+import { cn } from '@/lib/utils'
+import type { PharmaTeam } from '@/api/app-types'
+
+function ActiveBadge({ isActive }: { isActive?: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold',
+        isActive
+          ? 'bg-green-100 text-green-800 border-green-200'
+          : 'bg-red-100 text-red-800 border-red-200'
+      )}
+    >
+      {isActive ? 'Active' : 'Inactive'}
+    </span>
+  )
+}
+
+const columns: Column<PharmaTeam>[] = [
+  { header: 'Name', accessor: 'name', sortable: true },
+  { header: 'Type', accessor: (row) => row.teamType ?? '—' },
+  { header: 'Administrator', accessor: (row) => row.administrator?.fullName ?? '—' },
+  { header: 'Email', accessor: (row) => row.emailAddress ?? '—' },
+  { header: 'Status', accessor: (row) => <ActiveBadge isActive={row.isActive} /> },
+]
+
+export default function TeamListPage() {
+  const navigate = useNavigate()
+  const { isManager } = useRole()
+  const { page, goToPage } = usePagination()
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
+
+  const isSearching = debouncedQuery.trim().length >= 2
+
+  const listQuery = useTeams(page)
+  const searchQuery = useTeamSearch(debouncedQuery)
+
+  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
+  const isError = isSearching ? searchQuery.isError : listQuery.isError
+  const data: PharmaTeam[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
+  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
+
+  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isError) return <ErrorMessage />
+
+  return (
+    <div className="space-y-4">
+      <PageHeader
+        title="Teams"
+        description="Manage your field force teams"
+        actions={
+          isManager ? (
+            <Button size="sm" onClick={() => navigate('/teams/new')}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              New Team
+            </Button>
+          ) : undefined
+        }
+      />
+      <SearchInput
+        value={query}
+        onChange={(v) => {
+          setQuery(v)
+          goToPage(0)
+        }}
+        placeholder="Search teams…"
+        className="max-w-sm"
+      />
+      <DataTable
+        columns={columns}
+        data={data}
+        onRowClick={(row) => navigate(`/teams/${row.id}`)}
+        empty={
+          isSearching
+            ? {
+                icon: Users2,
+                title: `No teams found for "${debouncedQuery}"`,
+                description: 'Try a different search term.',
+              }
+            : {
+                icon: Users2,
+                title: 'No teams yet',
+                description: 'Create your first team to organize your field reps.',
+                // action: isManager ? (
+                //   <Button size="sm" onClick={() => navigate('/teams/new')}>
+                //     <Plus className="h-4 w-4 mr-1.5" />
+                //     New Team
+                //   </Button>
+                // ) : undefined,
+              }
+        }
+        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+      />
+      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+    </div>
+  )
+}

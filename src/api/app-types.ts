@@ -84,6 +84,13 @@ export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']
 export type CreatePharmaAccountRequest = components['schemas']['CreatePharmaAccountRequest']
 export type UpdatePharmaAccountRequest = components['schemas']['UpdatePharmaAccountRequest']
 
+// ─── Territory request types ──────────────────────────────────────────────────
+export type CreateTerritoryRequest = components['schemas']['CreateTerritoryRequest']
+export type UpdateTerritoryRequest = components['schemas']['UpdateTerritoryRequest']
+
+// ─── Team request types ───────────────────────────────────────────────────────
+export type CreateTeamRequest = components['schemas']['CreateTeamRequest']
+
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
 export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
