@@ -1,32 +1,14 @@
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import client from '@/api/client'
 import { AuthLayout } from './components/AuthLayout'
 import { FormField } from './components/FormField'
 import { Button } from '@/components/ui/button'
 import { parseApiError } from '@/utils/errors'
-import { PASSWORD_REGEX } from '@/schemas/auth'
+import { acceptInviteSchema, type AcceptInviteFormData } from '@/schemas/auth'
 import type { AcceptInviteRequest } from '@/api/app-types'
-
-const schema = z
-  .object({
-    password: z
-      .string()
-      .regex(
-        PASSWORD_REGEX,
-        'Password must be 8–128 characters with uppercase, lowercase, number, and special character'
-      ),
-    confirmPassword: z.string(),
-  })
-  .refine((d) => d.password === d.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
-
-type FormData = z.infer<typeof schema>
 
 export default function AcceptInvitePage() {
   const [params] = useSearchParams()
@@ -41,11 +23,11 @@ export default function AcceptInvitePage() {
     },
   })
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  const { register, handleSubmit, formState: { errors } } = useForm<AcceptInviteFormData>({
+    resolver: zodResolver(acceptInviteSchema),
   })
 
-  function onSubmit(data: FormData) {
+  function onSubmit(data: AcceptInviteFormData) {
     mutate({ token, newPassword: data.password })
   }
 

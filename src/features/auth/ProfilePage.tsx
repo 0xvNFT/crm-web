@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Pencil, X, Check, Shield, User } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useUpdateProfile, useChangePassword } from '@/api/endpoints/auth'
@@ -11,25 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import { PASSWORD_REGEX } from '@/schemas/auth'
-
-// ─── Schemas ──────────────────────────────────────────────────────────────────
-const nameSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-})
-
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().regex(PASSWORD_REGEX, 'Password must be 8–128 chars with uppercase, lowercase, number, and special character'),
-  confirmPassword: z.string().min(1, 'Please confirm your new password'),
-}).refine((d) => d.newPassword === d.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-})
-
-type NameFormData = z.infer<typeof nameSchema>
-type PasswordFormData = z.infer<typeof passwordSchema>
+import {
+  profileNameSchema, type ProfileNameFormData,
+  changePasswordSchema, type ChangePasswordFormData,
+} from '@/schemas/auth'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
@@ -72,8 +56,8 @@ export default function ProfilePage() {
   const { mutate: changePassword, isPending: isChangingPassword } = useChangePassword()
 
   // ── Name form ──
-  const nameForm = useForm<NameFormData>({
-    resolver: zodResolver(nameSchema),
+  const nameForm = useForm<ProfileNameFormData>({
+    resolver: zodResolver(profileNameSchema),
   })
 
   function startEditName() {
@@ -83,7 +67,7 @@ export default function ProfilePage() {
     setEditingName(true)
   }
 
-  function onSubmitName(data: NameFormData) {
+  function onSubmitName(data: ProfileNameFormData) {
     updateProfile(data, {
       onSuccess: () => {
         // Optimistically update AuthContext so TopNav reflects new name immediately
@@ -96,11 +80,11 @@ export default function ProfilePage() {
   }
 
   // ── Password form ──
-  const passwordForm = useForm<PasswordFormData>({
-    resolver: zodResolver(passwordSchema),
+  const passwordForm = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(changePasswordSchema),
   })
 
-  function onSubmitPassword(data: PasswordFormData) {
+  function onSubmitPassword(data: ChangePasswordFormData) {
     changePassword({ currentPassword: data.currentPassword, newPassword: data.newPassword }, {
       onSuccess: () => {
         toast('Password changed successfully', { variant: 'success' })

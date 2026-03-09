@@ -1,4 +1,5 @@
 import { useAuth } from '@/hooks/useAuth'
+import { useRole } from '@/hooks/useRole'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatCard } from './components/StatCard'
 import { PipelineChart } from './components/PipelineChart'
@@ -10,13 +11,11 @@ import { Building2, Target, ShoppingCart, Activity } from 'lucide-react'
 
 export default function DashboardPage() {
   const { user } = useAuth()
+  const { isManager } = useRole()
   const { accounts, leads, pendingOrders, activities } = useDashboardStats()
   const pipeline = usePipelineSummary()
   const leadFunnel = useLeadFunnelSummary()
   const activitySummary = useActivitySummary()
-
-  const isAdmin = user?.roles.includes('ADMIN') ?? false
-  const isManager = isAdmin || (user?.roles.includes('MANAGER') ?? false)
 
   return (
     <div className="space-y-6">

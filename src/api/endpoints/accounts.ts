@@ -1,10 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PharmaAccount, PagePharmaAccount } from '@/api/app-types'
-import type { components } from '@/api/types'
-
-type CreateAccountRequest = components['schemas']['CreatePharmaAccountRequest']
-type UpdateAccountRequest = components['schemas']['UpdatePharmaAccountRequest']
+import type { PharmaAccount, PagePharmaAccount, CreatePharmaAccountRequest, UpdatePharmaAccountRequest } from '@/api/app-types'
 
 export function useAccounts(page = 0, size = 20) {
   return useQuery({
@@ -28,7 +24,7 @@ export function useAccount(id: string) {
 export function useCreateAccount() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: CreateAccountRequest) =>
+    mutationFn: (data: CreatePharmaAccountRequest) =>
       client.post<PharmaAccount>('/api/pharma/accounts', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })
@@ -37,7 +33,7 @@ export function useCreateAccount() {
 export function useUpdateAccount(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: UpdateAccountRequest) =>
+    mutationFn: (data: UpdatePharmaAccountRequest) =>
       client.put<PharmaAccount>(`/api/pharma/accounts/${id}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })

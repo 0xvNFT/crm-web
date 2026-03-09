@@ -80,6 +80,10 @@ export type UpdateProfileRequest  = components['schemas']['UpdateProfileRequest'
 export type EmailOnlyRequest      = components['schemas']['EmailOnlyRequest']       // { email } — forgot-password, resend-verification
 export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']    // { token, newPassword }
 
+// ─── Account request types ───────────────────────────────────────────────────
+export type CreatePharmaAccountRequest = components['schemas']['CreatePharmaAccountRequest']
+export type UpdatePharmaAccountRequest = components['schemas']['UpdatePharmaAccountRequest']
+
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
 export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance

@@ -2979,17 +2979,10 @@ export interface components {
             /** Format: uuid */
             id?: string;
             email?: string;
-            passwordHash?: string;
             firstName?: string;
             lastName?: string;
             status?: string;
             emailVerified?: boolean;
-            verificationToken?: string;
-            /** Format: date-time */
-            verificationTokenExpiresAt?: string;
-            passwordResetToken?: string;
-            /** Format: date-time */
-            passwordResetTokenExpiresAt?: string;
             manager?: components["schemas"]["User"];
             jobTitle?: string;
             department?: string;
@@ -3466,7 +3459,6 @@ export interface components {
             tenantId?: string;
             /** Format: uuid */
             id?: string;
-            quote?: components["schemas"]["PharmaQuote"];
             product?: components["schemas"]["PharmaProduct"];
             /** Format: int32 */
             quantity?: number;
@@ -3516,7 +3508,6 @@ export interface components {
             tenantId?: string;
             /** Format: uuid */
             id?: string;
-            order?: components["schemas"]["PharmaOrder"];
             product?: components["schemas"]["PharmaProduct"];
             batch?: components["schemas"]["PharmaProductBatch"];
             /** Format: int32 */
@@ -4036,8 +4027,8 @@ export interface components {
             sort?: components["schemas"]["SortObject"];
         };
         SortObject: {
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
             empty?: boolean;
         };
         PagePharmaVisitAudit: {
