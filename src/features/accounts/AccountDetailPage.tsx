@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAccount, useUpdateAccount, useDeleteAccount } from '@/api/endpoints/accounts'
 import { useRole } from '@/hooks/useRole'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -65,6 +66,8 @@ export default function AccountDetailPage() {
   const { mutate: updateAccount, isPending } = useUpdateAccount(id ?? '')
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
   const { isManager } = useRole()
+  const accountTypeOptions = useConfigOptions('account.type')
+  const accountStatusOptions = useConfigOptions('account.status')
 
   const {
     register,
@@ -82,13 +85,13 @@ export default function AccountDetailPage() {
   function startEdit() {
     reset({
       name: account?.name ?? '',
-      accountType: (account?.accountType as AccountEditFormData['accountType']) ?? undefined,
+      accountType: account?.accountType ?? undefined,
       billingAddress: account?.billingAddress ?? '',
       shippingAddress: account?.shippingAddress ?? '',
       taxId: account?.taxId ?? '',
       creditLimit: account?.creditLimit != null ? Number(account.creditLimit) : undefined,
       paymentTerms: account?.paymentTerms ?? '',
-      status: (account?.status as AccountEditFormData['status']) ?? undefined,
+      status: account?.status ?? undefined,
       deaNumber: account?.deaNumber ?? '',
       stateLicenseNumber: account?.stateLicenseNumber ?? '',
       controlledSubstanceApproved: account?.controlledSubstanceApproved ?? false,
@@ -274,10 +277,9 @@ export default function AccountDetailPage() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="hospital">Hospital</SelectItem>
-                        <SelectItem value="pharmacy">Pharmacy</SelectItem>
-                        <SelectItem value="clinic">Clinic</SelectItem>
-                        <SelectItem value="distributor">Distributor</SelectItem>
+                        {accountTypeOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}
@@ -291,9 +293,9 @@ export default function AccountDetailPage() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="suspended">Suspended</SelectItem>
+                        {accountStatusOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}

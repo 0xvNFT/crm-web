@@ -8,6 +8,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useContact, useUpdateContact, useDeleteContact } from '@/api/endpoints/contacts'
 import { useRole } from '@/hooks/useRole'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -79,6 +80,8 @@ export default function ContactDetailPage() {
   const { mutate: updateContact, isPending } = useUpdateContact(id ?? '')
   const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
   const { isManager } = useRole()
+  const contactTypeOptions = useConfigOptions('contact.type')
+  const contactStatusOptions = useConfigOptions('contact.status')
 
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ContactEditFormData>({
     resolver: zodResolver(contactEditSchema),
@@ -110,7 +113,7 @@ export default function ContactDetailPage() {
       email: contact?.email ?? '',
       phone: contact?.phone ?? '',
       mobile: contact?.mobile ?? '',
-      contactType: (contact?.contactType as EditFormData['contactType']) ?? undefined,
+      contactType: contact?.contactType ?? '',
       specialty: contact?.specialty ?? '',
       npiNumber: contact?.npiNumber ?? '',
       deaNumber: contact?.deaNumber ?? '',
@@ -120,7 +123,7 @@ export default function ContactDetailPage() {
       patientVolumeMonthly: contact?.patientVolumeMonthly ?? undefined,
       preferredContactMethod: contact?.preferredContactMethod ?? '',
       preferredContactTime: contact?.preferredContactTime ?? '',
-      status: (contact?.status as EditFormData['status']) ?? 'active',
+      status: contact?.status ?? 'active',
       notes: contact?.notes ?? '',
     })
     setEditing(true)
@@ -330,13 +333,9 @@ export default function ContactDetailPage() {
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="physician">Physician</SelectItem>
-                      <SelectItem value="pharmacist">Pharmacist</SelectItem>
-                      <SelectItem value="nurse_practitioner">Nurse Practitioner</SelectItem>
-                      <SelectItem value="physician_assistant">Physician Assistant</SelectItem>
-                      <SelectItem value="administrator">Administrator</SelectItem>
-                      <SelectItem value="buyer">Buyer</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      {contactTypeOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}
@@ -353,9 +352,9 @@ export default function ContactDetailPage() {
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="suspended">Suspended</SelectItem>
+                      {contactStatusOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}

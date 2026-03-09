@@ -215,7 +215,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List all field visits (paginated) */
+        get: operations["getAll"];
         put?: never;
         /** Schedule a new field visit */
         post: operations["schedule"];
@@ -386,7 +387,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all users in this tenant (paginated) */
-        get: operations["getAll"];
+        get: operations["getAll_1"];
         put?: never;
         /**
          * Invite a new staff member (sends invite email)
@@ -458,7 +459,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all active territories (paginated) */
-        get: operations["getAll_1"];
+        get: operations["getAll_2"];
         put?: never;
         /** Create a new territory */
         post: operations["create_1"];
@@ -492,11 +493,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all active teams for this tenant (paginated) */
-        get: operations["getActive"];
+        /** List all teams for this tenant (paginated) */
+        get: operations["getAll_3"];
         put?: never;
         /** Create a new team (ADMIN/MANAGER only) */
         post: operations["create_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/teams/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reactivate a previously deactivated team (ADMIN/MANAGER only) */
+        post: operations["reactivate_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -546,7 +564,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all quotes (paginated) */
-        get: operations["getAll_2"];
+        get: operations["getAll_4"];
         put?: never;
         /** Create a new quote (draft) */
         post: operations["create_3"];
@@ -632,7 +650,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all products (paginated) */
-        get: operations["getAll_3"];
+        get: operations["getAll_5"];
         put?: never;
         /** Create a new product */
         post: operations["create_4"];
@@ -667,7 +685,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all orders (paginated) */
-        get: operations["getAll_4"];
+        get: operations["getAll_6"];
         put?: never;
         /** Create a new order */
         post: operations["create_5"];
@@ -719,7 +737,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all opportunities (paginated) */
-        get: operations["getAll_5"];
+        get: operations["getAll_7"];
         put?: never;
         /** Create a new opportunity */
         post: operations["create_6"];
@@ -757,7 +775,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all materials (paginated) */
-        get: operations["getAll_6"];
+        get: operations["getAll_8"];
         put?: never;
         /** Create a new material in draft status (ADMIN/MANAGER only) */
         post: operations["create_7"];
@@ -809,7 +827,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all leads (paginated) */
-        get: operations["getAll_7"];
+        get: operations["getAll_9"];
         put?: never;
         /** Create a new lead */
         post: operations["create_8"];
@@ -847,7 +865,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all invoices (paginated) */
-        get: operations["getAll_8"];
+        get: operations["getAll_10"];
         put?: never;
         /** Create a new invoice (ADMIN/MANAGER only) */
         post: operations["create_9"];
@@ -969,7 +987,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all activities (paginated) */
-        get: operations["getAll_9"];
+        get: operations["getAll_11"];
         put?: never;
         /** Create a new activity (call, meeting, task, email, note) */
         post: operations["create_11"];
@@ -1004,7 +1022,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all accounts (paginated) */
-        get: operations["getAll_10"];
+        get: operations["getAll_12"];
         put?: never;
         /** Create a new account */
         post: operations["create_12"];
@@ -1056,7 +1074,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all approval rules (paginated) */
-        get: operations["getAll_12"];
+        get: operations["getAll_14"];
         put?: never;
         /** Create a new approval rule */
         post: operations["create_13"];
@@ -2339,6 +2357,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all valid enum values for dropdown fields */
+        get: operations["getConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/coaching/overdue-followups": {
         parameters: {
             query?: never;
@@ -2605,7 +2640,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get all notifications (read + unread) for the current user (paginated) */
-        get: operations["getAll_11"];
+        get: operations["getAll_13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2726,6 +2761,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UpdateVisitRequest: {
+            subject?: string;
+            /** @enum {string} */
+            visitType?: "doctor_visit" | "clinic_visit" | "hospital_round" | "sample_drop" | "presentation" | "training" | "event";
+            /** @enum {string} */
+            priority?: "high" | "normal" | "low";
+            /** Format: date-time */
+            scheduledStart?: string;
+            /** Format: date-time */
+            scheduledEnd?: string;
+            callObjectives?: string;
+            productsDiscussed?: Record<string, never>;
+            materialsUsed?: Record<string, never>;
+            samplesDropped?: boolean;
+            objectionsRaised?: string;
+            nextBestAction?: string;
+            /** Format: date */
+            nextVisitDate?: string;
+            followUpRequired?: boolean;
+            followUpNotes?: string;
+            notes?: string;
+        };
         BusinessUnit: {
             /** Format: uuid */
             tenantId?: string;
@@ -3003,7 +3060,8 @@ export interface components {
             fullName?: string;
         };
         UpdateStaffRequest: {
-            role?: string;
+            /** @enum {string} */
+            role?: "ADMIN" | "MANAGER" | "FIELD_REP";
             firstName?: string;
             lastName?: string;
             jobTitle?: string;
@@ -3014,7 +3072,8 @@ export interface components {
         UpdateTerritoryRequest: {
             territoryCode?: string;
             territoryName?: string;
-            region?: string;
+            /** @enum {string} */
+            region?: "NCR" | "Luzon" | "Visayas" | "Mindanao" | "National";
             description?: string;
             /** Format: uuid */
             businessUnitId?: string;
@@ -3024,7 +3083,8 @@ export interface components {
             primaryRepId?: string;
             /** Format: uuid */
             managerId?: string;
-            status?: string;
+            /** @enum {string} */
+            status?: "active" | "inactive" | "realigned";
             /** Format: date */
             effectiveFrom?: string;
             /** Format: date */
@@ -3044,7 +3104,8 @@ export interface components {
             dosageForm?: string;
             packageSize?: string;
             unitPrice?: number;
-            status?: string;
+            /** @enum {string} */
+            status?: "active" | "discontinued" | "backordered";
             controlledSubstance?: boolean;
             deaSchedule?: string;
             requiresRefrigeration?: boolean;
@@ -3079,7 +3140,8 @@ export interface components {
             probabilityPct?: number;
             /** Format: date */
             estCloseDate?: string;
-            forecastCategory?: string;
+            /** @enum {string} */
+            forecastCategory?: "pipeline" | "best_case" | "commit" | "omitted";
             leadSource?: string;
             type?: string;
             budgetConfirmed?: boolean;
@@ -3122,8 +3184,10 @@ export interface components {
             companyName?: string;
             email?: string;
             phone?: string;
-            leadStatus?: string;
-            rating?: string;
+            /** @enum {string} */
+            leadStatus?: "new" | "assigned" | "in_process" | "converted" | "recycled" | "dead";
+            /** @enum {string} */
+            rating?: "hot" | "warm" | "cold";
             /** Format: int32 */
             leadScore?: number;
             leadSource?: string;
@@ -3199,13 +3263,15 @@ export interface components {
         };
         UpdatePharmaAccountRequest: {
             name?: string;
-            accountType?: string;
+            /** @enum {string} */
+            accountType?: "hospital" | "pharmacy" | "clinic" | "distributor";
             billingAddress?: string;
             shippingAddress?: string;
             taxId?: string;
             creditLimit?: number;
             paymentTerms?: string;
-            status?: string;
+            /** @enum {string} */
+            status?: "active" | "suspended" | "inactive";
             deaNumber?: string;
             stateLicenseNumber?: string;
             controlledSubstanceApproved?: boolean;
@@ -3253,7 +3319,8 @@ export interface components {
             reason: string;
         };
         CheckOutRequest: {
-            outcome: string;
+            /** @enum {string} */
+            outcome: "successful" | "rescheduled" | "no_show" | "canceled" | "do_not_return";
             keyDiscussionPoints?: string;
             customerFeedback?: string;
         };
@@ -3305,14 +3372,16 @@ export interface components {
         CreateAuditRequest: {
             /** Format: uuid */
             auditorId: string;
-            feedbackType?: string;
+            /** @enum {string} */
+            feedbackType?: "process" | "compliance" | "quality" | "performance";
             detailedComments?: string;
         };
         CreateStaffRequest: {
             firstName: string;
             lastName: string;
             email: string;
-            role: string;
+            /** @enum {string} */
+            role: "ADMIN" | "MANAGER" | "FIELD_REP";
             jobTitle?: string;
             department?: string;
             phoneWork?: string;
@@ -3321,7 +3390,8 @@ export interface components {
         CreateTerritoryRequest: {
             territoryCode: string;
             territoryName: string;
-            region: string;
+            /** @enum {string} */
+            region: "NCR" | "Luzon" | "Visayas" | "Mindanao" | "National";
             description?: string;
             /** Format: uuid */
             businessUnitId?: string;
@@ -3331,7 +3401,8 @@ export interface components {
             primaryRepId?: string;
             /** Format: uuid */
             managerId?: string;
-            status?: string;
+            /** @enum {string} */
+            status?: "active" | "inactive" | "realigned";
             /** Format: date */
             effectiveFrom?: string;
             targetRevenueAnnual?: number;
@@ -3373,7 +3444,8 @@ export interface components {
         };
         CreateTeamRequest: {
             name: string;
-            teamType?: string;
+            /** @enum {string} */
+            teamType?: "owner" | "access";
             description?: string;
             emailAddress?: string;
             /** Format: uuid */
@@ -3398,14 +3470,16 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
-        PharmaTeamMember: {
-            /** Format: uuid */
-            tenantId?: string;
+        TeamMemberResponse: {
             /** Format: uuid */
             id?: string;
-            user?: components["schemas"]["User"];
+            /** Format: uuid */
+            userId?: string;
+            fullName?: string;
+            email?: string;
+            jobTitle?: string;
             /** Format: date-time */
-            createdAt?: string;
+            joinedAt?: string;
         };
         CreateQuoteRequest: {
             quote: components["schemas"]["PharmaQuote"];
@@ -3564,7 +3638,8 @@ export interface components {
             dosageForm?: string;
             packageSize?: string;
             unitPrice: number;
-            status?: string;
+            /** @enum {string} */
+            status?: "active" | "discontinued" | "backordered";
             controlledSubstance?: boolean;
             deaSchedule?: string;
             requiresRefrigeration?: boolean;
@@ -3575,7 +3650,8 @@ export interface components {
             /** Format: uuid */
             accountId?: string;
             price: number;
-            priceType: string;
+            /** @enum {string} */
+            priceType: "list_price" | "contract_price" | "promotional_price" | "special_quote";
             discountPercent?: number;
             changeReason?: string;
             /** Format: date-time */
@@ -3615,14 +3691,16 @@ export interface components {
             contactId?: string;
             /** Format: uuid */
             territoryId?: string;
-            salesStage?: string;
+            /** @enum {string} */
+            salesStage?: "prospecting" | "qualification" | "proposal" | "negotiation" | "closed_won" | "closed_lost";
             estRevenue?: number;
             /** Format: int32 */
             probabilityPct?: number;
             currency?: string;
             /** Format: date */
             estCloseDate?: string;
-            forecastCategory?: string;
+            /** @enum {string} */
+            forecastCategory?: "pipeline" | "best_case" | "commit" | "omitted";
             leadSource?: string;
             type?: string;
             budgetConfirmed?: boolean;
@@ -3635,7 +3713,8 @@ export interface components {
             fileName: string;
             description?: string;
             fileType?: string;
-            status?: string;
+            /** @enum {string} */
+            status?: "draft" | "pending_approval" | "approved" | "archived";
             category?: string;
             subCategory?: string;
             versionNumber?: string;
@@ -3685,8 +3764,10 @@ export interface components {
             companyName?: string;
             email?: string;
             phone?: string;
-            leadStatus?: string;
-            rating?: string;
+            /** @enum {string} */
+            leadStatus?: "new" | "assigned" | "in_process" | "converted" | "recycled" | "dead";
+            /** @enum {string} */
+            rating?: "hot" | "warm" | "cold";
             /** Format: int32 */
             leadScore?: number;
             leadSource?: string;
@@ -3839,11 +3920,14 @@ export interface components {
         };
         CreateActivityRequest: {
             subject: string;
-            activityType: string;
+            /** @enum {string} */
+            activityType: "call" | "meeting" | "task" | "email" | "note";
             /** Format: uuid */
             assignedUserId: string;
-            status?: string;
-            priority?: string;
+            /** @enum {string} */
+            status?: "planned" | "held" | "completed" | "canceled" | "pending_input";
+            /** @enum {string} */
+            priority?: "high" | "normal" | "low";
             /** Format: uuid */
             accountId?: string;
             /** Format: uuid */
@@ -3861,7 +3945,8 @@ export interface components {
             location?: string;
             description?: string;
             isPrivate?: boolean;
-            direction?: string;
+            /** @enum {string} */
+            direction?: "inbound" | "outbound";
             phoneNumber?: string;
             leftVoiceMail?: boolean;
         };
@@ -3899,7 +3984,8 @@ export interface components {
         };
         CreatePharmaAccountRequest: {
             name: string;
-            accountType: string;
+            /** @enum {string} */
+            accountType: "hospital" | "pharmacy" | "clinic" | "distributor";
             billingAddress?: string;
             shippingAddress?: string;
             taxId?: string;
@@ -4016,12 +4102,12 @@ export interface components {
             empty?: boolean;
         };
         PageableObject: {
-            paged?: boolean;
-            unpaged?: boolean;
-            /** Format: int32 */
-            pageSize?: number;
             /** Format: int32 */
             pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            paged?: boolean;
+            unpaged?: boolean;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
@@ -4429,7 +4515,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaFieldVisit"];
+                "application/json": components["schemas"]["UpdateVisitRequest"];
             };
         };
         responses: {
@@ -4980,6 +5066,28 @@ export interface operations {
             };
         };
     };
+    getAll: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagePharmaFieldVisit"];
+                };
+            };
+        };
+    };
     schedule: {
         parameters: {
             query?: never;
@@ -5230,7 +5338,7 @@ export interface operations {
             };
         };
     };
-    getAll: {
+    getAll_1: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5344,7 +5452,7 @@ export interface operations {
             };
         };
     };
-    getAll_1: {
+    getAll_2: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5413,7 +5521,7 @@ export interface operations {
             };
         };
     };
-    getActive: {
+    getAll_3: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5459,6 +5567,28 @@ export interface operations {
             };
         };
     };
+    reactivate_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaTeam"];
+                };
+            };
+        };
+    };
     addMember: {
         parameters: {
             query?: never;
@@ -5477,7 +5607,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTeamMember"];
+                    "*/*": components["schemas"]["TeamMemberResponse"];
                 };
             };
             /** @description User already a member */
@@ -5486,7 +5616,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTeamMember"];
+                    "*/*": components["schemas"]["TeamMemberResponse"];
                 };
             };
         };
@@ -5534,7 +5664,7 @@ export interface operations {
             };
         };
     };
-    getAll_2: {
+    getAll_4: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5672,7 +5802,7 @@ export interface operations {
             };
         };
     };
-    getAll_3: {
+    getAll_5: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5742,7 +5872,7 @@ export interface operations {
             };
         };
     };
-    getAll_4: {
+    getAll_6: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5836,7 +5966,7 @@ export interface operations {
             };
         };
     };
-    getAll_5: {
+    getAll_7: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5908,7 +6038,7 @@ export interface operations {
             };
         };
     };
-    getAll_6: {
+    getAll_8: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -5998,7 +6128,7 @@ export interface operations {
             };
         };
     };
-    getAll_7: {
+    getAll_9: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -6070,7 +6200,7 @@ export interface operations {
             };
         };
     };
-    getAll_8: {
+    getAll_10: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -6300,7 +6430,7 @@ export interface operations {
             };
         };
     };
-    getAll_9: {
+    getAll_11: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -6368,7 +6498,7 @@ export interface operations {
             };
         };
     };
-    getAll_10: {
+    getAll_12: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -6457,7 +6587,7 @@ export interface operations {
             };
         };
     };
-    getAll_12: {
+    getAll_14: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -7282,7 +7412,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTeamMember"][];
+                    "*/*": components["schemas"]["TeamMemberResponse"][];
                 };
             };
         };
@@ -7326,7 +7456,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTeamMember"][];
+                    "*/*": components["schemas"]["TeamMemberResponse"][];
                 };
             };
         };
@@ -8223,6 +8353,28 @@ export interface operations {
             };
         };
     };
+    getConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: string[];
+                    };
+                };
+            };
+        };
+    };
     getOverdueFollowUps: {
         parameters: {
             query?: never;
@@ -8566,7 +8718,7 @@ export interface operations {
             };
         };
     };
-    getAll_11: {
+    getAll_13: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];

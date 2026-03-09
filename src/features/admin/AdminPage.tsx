@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { UserPlus, MailCheck, UserX, UserCheck, Search } from 'lucide-react'
@@ -55,6 +56,7 @@ function roleLabel(roleName: string | undefined) {
 // ─── Invite Dialog ─────────────────────────────────────────────────────────────
 function InviteDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { mutate: invite, isPending } = useInviteStaff()
+  const roleOptions = useConfigOptions('user.role')
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<InviteStaffFormData>({
     resolver: zodResolver(inviteStaffSchema),
   })
@@ -122,9 +124,9 @@ function InviteDialog({ open, onClose }: { open: boolean; onClose: () => void })
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="MANAGER">Manager</SelectItem>
-                    <SelectItem value="FIELD_REP">Field Rep</SelectItem>
+                    {roleOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

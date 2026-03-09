@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTerritory } from '@/api/endpoints/territories'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,6 +49,8 @@ function FormRow({
 export default function TerritoryFormPage() {
   const navigate = useNavigate()
   const { mutate: createTerritory, isPending } = useCreateTerritory()
+  const regionOptions = useConfigOptions('territory.region')
+  const territoryStatusOptions = useConfigOptions('territory.status')
 
   const {
     register,
@@ -87,7 +90,22 @@ export default function TerritoryFormPage() {
             <Input {...register('territoryName')} placeholder="e.g. Metro Manila North" />
           </FormRow>
           <FormRow label="Region" required error={errors.region?.message}>
-            <Input {...register('region')} placeholder="e.g. NCR" />
+            <Controller
+              name="region"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select region" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {regionOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Status" error={errors.status?.message}>
             <Controller
@@ -99,8 +117,9 @@ export default function TerritoryFormPage() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    {territoryStatusOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

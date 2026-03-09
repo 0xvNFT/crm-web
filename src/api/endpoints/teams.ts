@@ -3,7 +3,7 @@ import client from '@/api/client'
 import type {
   PharmaTeam,
   PagePharmaTeam,
-  PharmaTeamMember,
+  TeamMemberResponse,
   CreateTeamRequest,
 } from '@/api/app-types'
 
@@ -42,7 +42,7 @@ export function useTeamMembers(id: string) {
   return useQuery({
     queryKey: ['teams', id, 'members'],
     queryFn: () =>
-      client.get<PharmaTeamMember[]>(`/api/pharma/teams/${id}/members`).then((r) => r.data),
+      client.get<TeamMemberResponse[]>(`/api/pharma/teams/${id}/members`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -65,11 +65,20 @@ export function useDeactivateTeam(id: string) {
   })
 }
 
+export function useReactivateTeam(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      client.post<PharmaTeam>(`/api/pharma/teams/${id}/reactivate`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['teams'] }),
+  })
+}
+
 export function useAddTeamMember(teamId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (userId: string) =>
-      client.post<PharmaTeamMember>(`/api/pharma/teams/${teamId}/members/${userId}`).then((r) => r.data),
+      client.post<TeamMemberResponse>(`/api/pharma/teams/${teamId}/members/${userId}`).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['teams', teamId, 'members'] })
       qc.invalidateQueries({ queryKey: ['teams'] })

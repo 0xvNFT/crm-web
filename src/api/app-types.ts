@@ -5,6 +5,10 @@
  */
 import type { components } from './types'
 
+// ─── Config (GET /api/pharma/config) ─────────────────────────────────────────
+// Map of field name → valid string values for all constrained dropdown fields
+export type CrmConfig = Record<string, string[]>
+
 // ─── Core entities ────────────────────────────────────────────────────────────
 export type PharmaAccount            = components['schemas']['PharmaAccount']
 export type PharmaContact            = components['schemas']['PharmaContact']
@@ -81,15 +85,44 @@ export type EmailOnlyRequest      = components['schemas']['EmailOnlyRequest']   
 export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']    // { token, newPassword }
 
 // ─── Account request types ───────────────────────────────────────────────────
-export type CreatePharmaAccountRequest = components['schemas']['CreatePharmaAccountRequest']
-export type UpdatePharmaAccountRequest = components['schemas']['UpdatePharmaAccountRequest']
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreatePharmaAccountRequest = Omit<components['schemas']['CreatePharmaAccountRequest'], 'accountType'> & { accountType: string }
+export type UpdatePharmaAccountRequest = Omit<components['schemas']['UpdatePharmaAccountRequest'], 'accountType' | 'status'> & { accountType?: string; status?: string }
 
 // ─── Territory request types ──────────────────────────────────────────────────
-export type CreateTerritoryRequest = components['schemas']['CreateTerritoryRequest']
-export type UpdateTerritoryRequest = components['schemas']['UpdateTerritoryRequest']
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreateTerritoryRequest = Omit<components['schemas']['CreateTerritoryRequest'], 'region' | 'status'> & { region: string; status?: string }
+export type UpdateTerritoryRequest = Omit<components['schemas']['UpdateTerritoryRequest'], 'region' | 'status'> & { region?: string; status?: string }
 
 // ─── Team request types ───────────────────────────────────────────────────────
-export type CreateTeamRequest = components['schemas']['CreateTeamRequest']
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreateTeamRequest = Omit<components['schemas']['CreateTeamRequest'], 'teamType'> & { teamType?: string }
+
+// ─── Team member response — manually defined (backend DTO not in spec yet) ────
+// Backend returns TeamMemberResponse DTO (flat projection, avoids lazy User entity)
+// Fields: id, userId, fullName, email, jobTitle, joinedAt
+export interface TeamMemberResponse {
+  id: string
+  userId: string
+  fullName: string
+  email: string
+  jobTitle?: string
+  joinedAt: string
+}
+
+// ─── Lead request types ───────────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateLeadRequest = Omit<components['schemas']['CreateLeadRequest'], 'leadStatus' | 'rating'> & { leadStatus?: string; rating?: string }
+export type UpdateLeadRequest = Omit<components['schemas']['UpdateLeadRequest'], 'leadStatus' | 'rating'> & { leadStatus?: string; rating?: string }
+
+// ─── Activity request types ───────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction'> & { activityType: string; status?: string; priority?: string; direction?: string }
+
+// ─── Opportunity request types ────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateOpportunityRequest = Omit<components['schemas']['CreateOpportunityRequest'], 'salesStage' | 'forecastCategory'> & { salesStage?: string; forecastCategory?: string }
+export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'forecastCategory'> & { forecastCategory?: string }
 
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
@@ -98,7 +131,9 @@ export type StageRequest          = components['schemas']['StageRequest']       
 // ─── Visit request types ──────────────────────────────────────────────────────
 export type ScheduleVisitRequest  = components['schemas']['ScheduleVisitRequest']  // { visit, repId, accountId, contactId?, territoryId? }
 export type CheckInRequest        = components['schemas']['CheckInRequest']         // { latitude, longitude }
-export type CheckOutRequest       = components['schemas']['CheckOutRequest']        // { outcome, keyDiscussionPoints?, customerFeedback? }
+// Widen config-driven union literals to string
+export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'], 'outcome'> & { outcome: string }
+export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority'> & { visitType?: string; priority?: string }
 export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
 
 // ─── API errors ───────────────────────────────────────────────────────────────

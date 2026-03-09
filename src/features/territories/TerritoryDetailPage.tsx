@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTerritory, useUpdateTerritory, useTerritoryAccounts } from '@/api/endpoints/territories'
 import { useRole } from '@/hooks/useRole'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -72,6 +73,8 @@ export default function TerritoryDetailPage() {
   const { data: territory, isLoading, isError } = useTerritory(id ?? '')
   const { mutate: updateTerritory, isPending } = useUpdateTerritory(id ?? '')
   const { data: accounts, isLoading: isLoadingAccounts } = useTerritoryAccounts(id ?? '')
+  const regionOptions = useConfigOptions('territory.region')
+  const territoryStatusOptions = useConfigOptions('territory.status')
 
   const {
     register,
@@ -92,7 +95,7 @@ export default function TerritoryDetailPage() {
       territoryName: territory?.territoryName ?? '',
       region: territory?.region ?? '',
       description: territory?.description ?? '',
-      status: (territory?.status as UpdateTerritoryFormData['status']) ?? undefined,
+      status: territory?.status ?? undefined,
       effectiveFrom: territory?.effectiveFrom ?? '',
       targetRevenueAnnual: territory?.targetRevenueAnnual != null ? Number(territory.targetRevenueAnnual) : undefined,
       targetVisitsMonthly: territory?.targetVisitsMonthly ?? undefined,
@@ -216,7 +219,22 @@ export default function TerritoryDetailPage() {
                 <Input {...register('territoryName')} />
               </FormRow>
               <FormRow label="Region" error={errors.region?.message}>
-                <Input {...register('region')} />
+                <Controller
+                  name="region"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select region" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {regionOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </FormRow>
               <FormRow label="Status" error={errors.status?.message}>
                 <Controller
@@ -228,8 +246,9 @@ export default function TerritoryDetailPage() {
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
+                        {territoryStatusOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}

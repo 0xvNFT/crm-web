@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Trash2, UserPlus, Users2 } from 'lucide-react'
-import { useTeam, useTeamMembers, useDeactivateTeam, useAddTeamMember, useRemoveTeamMember } from '@/api/endpoints/teams'
+import { useTeam, useTeamMembers, useDeactivateTeam, useReactivateTeam, useAddTeamMember, useRemoveTeamMember } from '@/api/endpoints/teams'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -68,7 +68,8 @@ export default function TeamDetailPage() {
   const [showAddMember, setShowAddMember] = useState(false)
   const [userQuery, setUserQuery] = useState('')
   const [selectedUser, setSelectedUser] = useState<TenantUserSummary | null>(null)
-  const [removingUserId, setRemovingMemberId] = useState<string | null>(null)
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null)
+  const [showReactivate, setShowReactivate] = useState(false)
 
   const debouncedQuery = useDebounce(userQuery, 300)
 
@@ -76,6 +77,7 @@ export default function TeamDetailPage() {
   const { data: members, isLoading: isLoadingMembers } = useTeamMembers(id ?? '')
   const { data: userResults, isFetching: isSearching } = useStaffSearch(debouncedQuery)
   const { mutate: deactivateTeam, isPending: isDeactivating } = useDeactivateTeam(id ?? '')
+  const { mutate: reactivateTeam, isPending: isReactivating } = useReactivateTeam(id ?? '')
   const { mutate: addMember, isPending: isAddingMember } = useAddTeamMember(id ?? '')
   const { mutate: removeMember, isPending: isRemovingMember } = useRemoveTeamMember(id ?? '')
 
@@ -131,17 +133,19 @@ export default function TeamDetailPage() {
 
         {isManager && (
           <div className="flex items-center gap-2 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAddMember((v) => !v)}
-            >
-              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
-              Add Member
-            </Button>
             {team.isActive && (
+              <Button variant="outline" size="sm" onClick={() => setShowAddMember((v) => !v)}>
+                <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                Add Member
+              </Button>
+            )}
+            {team.isActive ? (
               <Button variant="destructive" size="sm" onClick={() => setShowDeactivate(true)}>
                 Deactivate
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => setShowReactivate(true)}>
+                Reactivate
               </Button>
             )}
           </div>
@@ -234,17 +238,20 @@ export default function TeamDetailPage() {
             {members.map((member) => (
               <div key={member.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-foreground">{member.user?.fullName ?? '—'}</p>
-                  <p className="text-xs text-muted-foreground">{member.user?.email ?? '—'}</p>
+                  <p className="text-sm font-medium text-foreground">{member.fullName}</p>
+                  <p className="text-xs text-muted-foreground">{member.email}</p>
+                  {member.jobTitle && (
+                    <p className="text-xs text-muted-foreground">{member.jobTitle}</p>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground">{formatDate(member.createdAt)}</span>
-                  {isManager && (
+                  <span className="text-xs text-muted-foreground">{formatDate(member.joinedAt)}</span>
+                  {isManager && team.isActive && (
                     <Button
                       variant="ghost"
                       size="icon"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setRemovingMemberId(member.user?.id ?? null)}
+                      onClick={() => setRemovingUserId(member.userId)}
                       aria-label="Remove member"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -276,16 +283,35 @@ export default function TeamDetailPage() {
         isPending={isDeactivating}
       />
 
+      {/* Reactivate confirm dialog */}
+      <ConfirmDialog
+        open={showReactivate}
+        onCancel={() => setShowReactivate(false)}
+        onConfirm={() =>
+          reactivateTeam(undefined, {
+            onSuccess: () => {
+              toast('Team reactivated', { variant: 'success' })
+              setShowReactivate(false)
+            },
+            onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+          })
+        }
+        title="Reactivate Team?"
+        description="This will reactivate the team and allow new assignments."
+        confirmLabel="Reactivate"
+        isPending={isReactivating}
+      />
+
       {/* Remove member confirm dialog */}
       <ConfirmDialog
         open={removingUserId !== null}
-        onCancel={() => setRemovingMemberId(null)}
+        onCancel={() => setRemovingUserId(null)}
         onConfirm={() => {
           if (!removingUserId) return
           removeMember(removingUserId, {
             onSuccess: () => {
               toast('Member removed', { variant: 'success' })
-              setRemovingMemberId(null)
+              setRemovingUserId(null)
             },
             onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
           })

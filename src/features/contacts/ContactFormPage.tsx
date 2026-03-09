@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
 import { useAccounts } from '@/api/endpoints/accounts'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -52,6 +53,11 @@ export default function ContactFormPage() {
   // Fetch accounts for the picker — size=100 is enough for a dropdown
   const { data: accountsPage, isLoading: accountsLoading } = useAccounts(0, 100)
   const accounts = accountsPage?.content ?? []
+
+  const contactTypeOptions = useConfigOptions('contact.type')
+  const SALUTATIONS = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Prof.']
+  const customerClassOptions = useConfigOptions('contact.customerClass')
+  const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
 
   const {
     register,
@@ -135,11 +141,9 @@ export default function ContactFormPage() {
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Dr.">Dr.</SelectItem>
-                    <SelectItem value="Mr.">Mr.</SelectItem>
-                    <SelectItem value="Ms.">Ms.</SelectItem>
-                    <SelectItem value="Mrs.">Mrs.</SelectItem>
-                    <SelectItem value="Prof.">Prof.</SelectItem>
+                    {SALUTATIONS.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -165,13 +169,9 @@ export default function ContactFormPage() {
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="physician">Physician</SelectItem>
-                    <SelectItem value="pharmacist">Pharmacist</SelectItem>
-                    <SelectItem value="nurse_practitioner">Nurse Practitioner</SelectItem>
-                    <SelectItem value="physician_assistant">Physician Assistant</SelectItem>
-                    <SelectItem value="administrator">Administrator</SelectItem>
-                    <SelectItem value="buyer">Buyer</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {contactTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -208,9 +208,9 @@ export default function ContactFormPage() {
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="A">A</SelectItem>
-                    <SelectItem value="B">B</SelectItem>
-                    <SelectItem value="C">C</SelectItem>
+                    {customerClassOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -224,11 +224,9 @@ export default function ContactFormPage() {
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="unaware">Unaware</SelectItem>
-                    <SelectItem value="aware">Aware</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="advocate">Advocate</SelectItem>
-                    <SelectItem value="champion">Champion</SelectItem>
+                    {adoptionStageOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

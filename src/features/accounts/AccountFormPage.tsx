@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { accountSchema, type AccountFormData } from '@/schemas/accounts'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -42,6 +43,7 @@ function FormRow({ label, required, error, children }: {
 export default function AccountFormPage() {
   const navigate = useNavigate()
   const { mutate: createAccount, isPending } = useCreateAccount()
+  const accountTypeOptions = useConfigOptions('account.type')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
@@ -80,10 +82,9 @@ export default function AccountFormPage() {
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hospital">Hospital</SelectItem>
-                    <SelectItem value="pharmacy">Pharmacy</SelectItem>
-                    <SelectItem value="clinic">Clinic</SelectItem>
-                    <SelectItem value="distributor">Distributor</SelectItem>
+                    {accountTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

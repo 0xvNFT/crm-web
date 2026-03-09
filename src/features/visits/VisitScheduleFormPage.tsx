@@ -14,15 +14,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { scheduleVisitSchema, type ScheduleVisitFormData } from '@/schemas/visits'
-
-const VISIT_TYPES = [
-  { value: 'detailing', label: 'Detailing' },
-  { value: 'follow_up', label: 'Follow Up' },
-  { value: 'sample_drop', label: 'Sample Drop' },
-  { value: 'educational', label: 'Educational' },
-  { value: 'relationship', label: 'Relationship Building' },
-  { value: 'other', label: 'Other' },
-]
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 
 function FormRow({ label, required, error, children }: {
   label: string
@@ -57,6 +49,7 @@ export default function VisitScheduleFormPage() {
   const { mutate: scheduleVisit, isPending } = useScheduleVisit()
   const { data: accountsPage } = useAccounts(0, 100)
   const accounts = accountsPage?.content ?? []
+  const visitTypeOptions = useConfigOptions('visit.type')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<ScheduleVisitFormData>({
     resolver: zodResolver(scheduleVisitSchema),
@@ -138,10 +131,8 @@ export default function VisitScheduleFormPage() {
                     <SelectValue placeholder="Select type…" />
                   </SelectTrigger>
                   <SelectContent>
-                    {VISIT_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
+                    {visitTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

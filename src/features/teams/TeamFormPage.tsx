@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTeam } from '@/api/endpoints/teams'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,6 +49,7 @@ function FormRow({
 export default function TeamFormPage() {
   const navigate = useNavigate()
   const { mutate: createTeam, isPending } = useCreateTeam()
+  const teamTypeOptions = useConfigOptions('team.type')
 
   const {
     register,
@@ -101,8 +103,9 @@ export default function TeamFormPage() {
                     <SelectValue placeholder="Select type…" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="owner">Owner</SelectItem>
-                    <SelectItem value="access">Access</SelectItem>
+                    {teamTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
