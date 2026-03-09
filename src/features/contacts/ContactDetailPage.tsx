@@ -6,7 +6,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check, Trash2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useContact, useUpdateContact, useDeleteContact } from '@/api/endpoints/contacts'
 import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -21,33 +20,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
-
-// ─── Edit schema — only fields that PharmaContactService.update() patches ─────
-const editSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  title: z.string().optional(),
-  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  mobile: z.string().optional(),
-  contactType: z.enum(
-    ['physician', 'pharmacist', 'nurse_practitioner', 'physician_assistant', 'administrator', 'buyer', 'other'],
-    { error: 'Contact type is required' }
-  ),
-  specialty: z.string().optional(),
-  npiNumber: z.string().optional(),
-  deaNumber: z.string().optional(),
-  stateLicenseNumber: z.string().optional(),
-  prescribingAuthority: z.boolean().optional(),
-  yearsOfExperience: z.coerce.number().int().nonnegative().optional(),
-  patientVolumeMonthly: z.coerce.number().int().nonnegative().optional(),
-  preferredContactMethod: z.string().optional(),
-  preferredContactTime: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'suspended']).optional(),
-  notes: z.string().optional(),
-})
-
-type EditFormData = z.infer<typeof editSchema>
+import { contactEditSchema, type ContactEditFormData } from '@/schemas/contacts'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -107,8 +80,8 @@ export default function ContactDetailPage() {
   const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
   const { isManager } = useRole()
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<EditFormData>({
-    resolver: zodResolver(editSchema),
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ContactEditFormData>({
+    resolver: zodResolver(contactEditSchema),
   })
 
   if (isLoading) return <LoadingSpinner />
@@ -158,7 +131,7 @@ export default function ContactDetailPage() {
     reset()
   }
 
-  function onSubmit(data: EditFormData) {
+  function onSubmit(data: ContactEditFormData) {
     // Strip empty strings — backend patches only non-null fields
     const payload = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)

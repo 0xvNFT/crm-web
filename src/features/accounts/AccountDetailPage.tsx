@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, X, Check, Globe, Phone, Mail, Building2, Trash2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useAccount, useUpdateAccount, useDeleteAccount } from '@/api/endpoints/accounts'
 import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -17,23 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { formatDate, formatCurrency, formatLabel, formatNumber } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
-
-// ─── Edit schema — mirrors UpdatePharmaAccountRequest validation ───────────────
-const editSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
-  accountType: z.enum(['hospital', 'pharmacy', 'clinic', 'distributor']).optional(),
-  billingAddress: z.string().optional(),
-  shippingAddress: z.string().optional(),
-  taxId: z.string().optional(),
-  creditLimit: z.coerce.number().nonnegative('Must be 0 or greater').optional(),
-  paymentTerms: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'suspended']).optional(),
-  deaNumber: z.string().optional(),
-  stateLicenseNumber: z.string().optional(),
-  controlledSubstanceApproved: z.boolean().optional(),
-})
-
-type EditFormData = z.infer<typeof editSchema>
+import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -89,8 +72,8 @@ export default function AccountDetailPage() {
     reset,
     control,
     formState: { errors },
-  } = useForm<EditFormData>({
-    resolver: zodResolver(editSchema),
+  } = useForm<AccountEditFormData>({
+    resolver: zodResolver(accountEditSchema),
   })
 
   if (isLoading) return <LoadingSpinner />
@@ -99,13 +82,13 @@ export default function AccountDetailPage() {
   function startEdit() {
     reset({
       name: account?.name ?? '',
-      accountType: (account?.accountType as EditFormData['accountType']) ?? undefined,
+      accountType: (account?.accountType as AccountEditFormData['accountType']) ?? undefined,
       billingAddress: account?.billingAddress ?? '',
       shippingAddress: account?.shippingAddress ?? '',
       taxId: account?.taxId ?? '',
       creditLimit: account?.creditLimit != null ? Number(account.creditLimit) : undefined,
       paymentTerms: account?.paymentTerms ?? '',
-      status: (account?.status as EditFormData['status']) ?? undefined,
+      status: (account?.status as AccountEditFormData['status']) ?? undefined,
       deaNumber: account?.deaNumber ?? '',
       stateLicenseNumber: account?.stateLicenseNumber ?? '',
       controlledSubstanceApproved: account?.controlledSubstanceApproved ?? false,
@@ -118,7 +101,7 @@ export default function AccountDetailPage() {
     reset()
   }
 
-  function onSubmit(data: EditFormData) {
+  function onSubmit(data: AccountEditFormData) {
     updateAccount(data, {
       onSuccess: () => {
         toast('Account updated', { variant: 'success' })

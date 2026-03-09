@@ -26,6 +26,9 @@ const ContactFormPage = lazy(() => import('@/features/contacts/ContactFormPage')
 // Lead dev pages
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'))
 const AdminPage = lazy(() => import('@/features/admin/AdminPage'))
+const VisitListPage = lazy(() => import('@/features/visits/VisitListPage'))
+const VisitDetailPage = lazy(() => import('@/features/visits/VisitDetailPage'))
+const VisitScheduleFormPage = lazy(() => import('@/features/visits/VisitScheduleFormPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -76,7 +79,9 @@ export function AppRouter() {
           <Route path="/orders" element={<Wrap><PlaceholderPage name="Orders" /></Wrap>} />
           <Route path="/quotes" element={<Wrap><PlaceholderPage name="Quotes" /></Wrap>} />
           <Route path="/activities" element={<Wrap><PlaceholderPage name="Activities" /></Wrap>} />
-          <Route path="/visits" element={<Wrap><PlaceholderPage name="Visits" /></Wrap>} />
+          <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
+          <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
+          <Route path="/visits/:id" element={<Wrap><VisitDetailPage /></Wrap>} />
 
           {/* MANAGER+ only */}
           <Route

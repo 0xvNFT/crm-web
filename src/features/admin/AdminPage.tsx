@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { UserPlus, MailCheck, UserX, UserCheck, Search } from 'lucide-react'
 import {
   useStaff,
@@ -39,20 +38,7 @@ import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import type { User } from '@/api/app-types'
-
-// ─── Invite form schema ────────────────────────────────────────────────────────
-const inviteSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Enter a valid email'),
-  role: z.enum(['ADMIN', 'MANAGER', 'FIELD_REP'], {
-    error: 'Role is required',
-  }),
-  jobTitle: z.string().optional(),
-  department: z.string().optional(),
-})
-
-type InviteFormData = z.infer<typeof inviteSchema>
+import { inviteStaffSchema, type InviteStaffFormData } from '@/schemas/admin'
 
 // ─── Role label mapping ────────────────────────────────────────────────────────
 // User.roles is Role[] where Role has a `name` field
@@ -69,11 +55,11 @@ function roleLabel(roleName: string | undefined) {
 // ─── Invite Dialog ─────────────────────────────────────────────────────────────
 function InviteDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { mutate: invite, isPending } = useInviteStaff()
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<InviteFormData>({
-    resolver: zodResolver(inviteSchema),
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<InviteStaffFormData>({
+    resolver: zodResolver(inviteStaffSchema),
   })
 
-  function onSubmit(data: InviteFormData) {
+  function onSubmit(data: InviteStaffFormData) {
     invite(data, {
       onSuccess: () => {
         toast('Invitation sent', { variant: 'success' })

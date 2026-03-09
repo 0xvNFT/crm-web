@@ -57,7 +57,7 @@
 | Orders                 | —                | —      | —    | —                               | MarcLaxa         | Assigned    |
 | Quotes                 | —                | —      | —    | —                               | JaredHLopez      | Assigned    |
 | Activities             | —                | —      | —    | —                               | jaelmusika-cmyk  | Assigned    |
-| Visits                 | —                | —      | —    | —                               | Lead dev (wave 2)| Not started |
+| Visits                 | Done             | Done   | Done | `useVisits`, `useVisit`, `useVisitSearch`, `useScheduleVisit`, `useSubmitVisit`, `useApproveVisit`, `useRejectVisit`, `useCheckInVisit`, `useCheckOutVisit`, `useCaptureSignature` | Lead dev | Complete |
 | Territories            | —                | —      | —    | —                               | Lead dev         | Not started |
 | Teams                  | —                | —      | —    | —                               | Lead dev         | Not started |
 | Reports                | Done             | —      | —    | All 4 report hooks              | Lead dev         | Done        |
@@ -95,7 +95,7 @@ None currently.
 
 ### Lead dev (`0xvnft`)
 
-- Visits — check-in / check-out flow (REP primary daily task)
+- ~~Visits — check-in / check-out flow~~ — DONE
 - Territories + Teams pages
 - ~~Notifications bell~~ — DONE
 - ~~Reports page~~ — DONE

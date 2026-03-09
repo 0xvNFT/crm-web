@@ -84,6 +84,12 @@ export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
 export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
 
+// ─── Visit request types ──────────────────────────────────────────────────────
+export type ScheduleVisitRequest  = components['schemas']['ScheduleVisitRequest']  // { visit, repId, accountId, contactId?, territoryId? }
+export type CheckInRequest        = components['schemas']['CheckInRequest']         // { latitude, longitude }
+export type CheckOutRequest       = components['schemas']['CheckOutRequest']        // { outcome, keyDiscussionPoints?, customerFeedback? }
+export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
+
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
   error?: string       // HTTP status name (e.g. "Conflict") — from Spring default error body

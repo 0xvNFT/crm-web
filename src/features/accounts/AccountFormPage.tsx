@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useCreateAccount } from '@/api/endpoints/accounts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,23 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-
-const accountSchema = z.object({
-  name: z.string().min(2, 'Account name must be at least 2 characters'),
-  accountType: z.enum(['hospital', 'pharmacy', 'clinic', 'distributor'], {
-    error: 'Account type is required',
-  }),
-  billingAddress: z.string().optional(),
-  shippingAddress: z.string().optional(),
-  taxId: z.string().optional(),
-  creditLimit: z.coerce.number().nonnegative('Must be 0 or greater').optional(),
-  paymentTerms: z.string().optional(),
-  deaNumber: z.string().optional(),
-  stateLicenseNumber: z.string().optional(),
-  controlledSubstanceApproved: z.boolean().optional(),
-})
-
-type AccountFormData = z.infer<typeof accountSchema>
+import { accountSchema, type AccountFormData } from '@/schemas/accounts'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (

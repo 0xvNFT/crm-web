@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
 import { useAccounts } from '@/api/endpoints/accounts'
 import { Button } from '@/components/ui/button'
@@ -13,39 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-const contactSchema = z.object({
-  // Required
-  accountId: z.string().min(1, 'Primary account is required'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  contactType: z.enum(
-    ['physician', 'pharmacist', 'nurse_practitioner', 'physician_assistant', 'administrator', 'buyer', 'other'],
-    { error: 'Contact type is required' }
-  ),
-  // Optional
-  salutation: z.string().optional(),
-  middleName: z.string().optional(),
-  title: z.string().optional(),
-  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  mobile: z.string().optional(),
-  specialty: z.string().optional(),
-  customerClass: z.string().optional(),
-  adoptionStage: z.enum(['unaware', 'aware', 'user', 'advocate', 'champion']).optional(),
-  prescribingAuthority: z.boolean().optional(),
-  prcNumber: z.string().optional(),
-  leadSource: z.string().optional(),
-  addressStreet: z.string().optional(),
-  addressBarangay: z.string().optional(),
-  addressCity: z.string().optional(),
-  addressProvince: z.string().optional(),
-  addressPostalCode: z.string().optional(),
-  notes: z.string().optional(),
-})
-
-type ContactFormData = z.infer<typeof contactSchema>
+import { contactSchema, type ContactFormData } from '@/schemas/contacts'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
