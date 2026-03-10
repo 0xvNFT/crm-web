@@ -7,7 +7,7 @@ export const scheduleVisitSchema = z.object({
   subject: z.string().min(1, 'Subject is required').max(255),
   visitType: z.string().min(1, 'Visit type is required'),
   scheduledStart: z.string().min(1, 'Start date/time is required'),
-  scheduledEnd: z.string().min(1, 'End date/time is required'),
+  scheduledEnd: z.string().optional(),
   callObjectives: z.string().optional(),
   notes: z.string().optional(),
 })

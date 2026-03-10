@@ -11,10 +11,16 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaFieldVisit } from '@/api/app-types'
+
+const VISIT_FILTERS: FilterDef[] = [
+  { param: 'visitType', label: 'Visit Type', configKey: 'visit.type' },
+  { param: 'status', label: 'Status', configKey: 'visit.status' },
+]
 
 const columns: Column<PharmaFieldVisit>[] = [
   { header: 'Visit #', accessor: 'visitNumber', sortable: true },
@@ -47,11 +53,22 @@ export default function VisitListPage() {
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
+  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useVisits(page)
+  const listQuery = useVisits(page, 20, filters)
   const searchQuery = useVisitSearch(debouncedQuery)
+
+  function handleFilterChange(param: string, value: string) {
+    setFilters((prev) => ({ ...prev, [param]: value }))
+    goToPage(0)
+  }
+
+  function handleFilterClear() {
+    setFilters({})
+    goToPage(0)
+  }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -85,6 +102,15 @@ export default function VisitListPage() {
         className="max-w-sm"
       />
 
+      {!isSearching && (
+        <FilterBar
+          filters={VISIT_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
+
       <DataTable
         columns={columns}
         data={data}
@@ -100,12 +126,12 @@ export default function VisitListPage() {
                 icon: MapPin,
                 title: 'No visits yet',
                 description: 'Schedule your first field visit to get started.',
-                action: isRep ? (
-                  <Button size="sm" onClick={() => navigate('/visits/new')}>
-                    <Plus className="h-4 w-4 mr-1.5" />
-                    Schedule Visit
-                  </Button>
-                ) : undefined,
+                // action: isRep ? (
+                //   <Button size="sm" onClick={() => navigate('/visits/new')}>
+                //     <Plus className="h-4 w-4 mr-1.5" />
+                //     Schedule Visit
+                //   </Button>
+                // ) : undefined,
               }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}

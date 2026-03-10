@@ -129,7 +129,8 @@ export type ReasonRequest         = components['schemas']['ReasonRequest']      
 export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
 
 // ─── Visit request types ──────────────────────────────────────────────────────
-export type ScheduleVisitRequest  = components['schemas']['ScheduleVisitRequest']  // { visit, repId, accountId, contactId?, territoryId? }
+// Widen config-driven union literals to string
+export type ScheduleVisitRequest  = Omit<components['schemas']['ScheduleVisitRequest'], 'visitType' | 'priority'> & { visitType: string; priority?: string }
 export type CheckInRequest        = components['schemas']['CheckInRequest']         // { latitude, longitude }
 // Widen config-driven union literals to string
 export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'], 'outcome'> & { outcome: string }

@@ -12,10 +12,16 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import type { PharmaAccount } from '@/api/app-types'
+
+const ACCOUNT_FILTERS: FilterDef[] = [
+  { param: 'accountType', label: 'Type', configKey: 'account.type' },
+  { param: 'status', label: 'Status', configKey: 'account.status' },
+]
 
 const columns: Column<PharmaAccount>[] = [
   { header: 'Name', accessor: 'name', sortable: true, cell: (row) => row.name ?? '—' },
@@ -31,11 +37,22 @@ export default function AccountListPage() {
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
+  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useAccounts(page)
+  const listQuery = useAccounts(page, 20, filters)
   const searchQuery = useAccountSearch(debouncedQuery)
+
+  function handleFilterChange(param: string, value: string) {
+    setFilters((prev) => ({ ...prev, [param]: value }))
+    goToPage(0)
+  }
+
+  function handleFilterClear() {
+    setFilters({})
+    goToPage(0)
+  }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -65,6 +82,14 @@ export default function AccountListPage() {
         placeholder="Search by name…"
         className="max-w-sm"
       />
+      {!isSearching && (
+        <FilterBar
+          filters={ACCOUNT_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
       <DataTable
         columns={columns}
         data={data}

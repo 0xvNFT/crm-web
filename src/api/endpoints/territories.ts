@@ -8,12 +8,15 @@ import type {
   UpdateTerritoryRequest,
 } from '@/api/app-types'
 
-export function useTerritories(page = 0, size = 20) {
+export function useTerritories(page = 0, size = 20, filters: Record<string, string> = {}) {
+  const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
   return useQuery({
-    queryKey: ['territories', 'list', { page, size }],
+    queryKey: ['territories', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaTerritory>('/api/pharma/territories', { params: { page, size, sort: 'createdAt,desc' } })
+        .get<PagePharmaTerritory>('/api/pharma/territories', {
+          params: { page, size, sort: 'createdAt,desc', ...cleanFilters },
+        })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
   })

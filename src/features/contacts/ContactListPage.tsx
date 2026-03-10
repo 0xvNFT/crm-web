@@ -10,10 +10,16 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatLabel } from '@/utils/formatters'
 import type { PharmaContact } from '@/api/app-types'
+
+const CONTACT_FILTERS: FilterDef[] = [
+  { param: 'contactType', label: 'Type', configKey: 'contact.type' },
+  { param: 'status', label: 'Status', configKey: 'contact.status' },
+]
 
 const columns: Column<PharmaContact>[] = [
   {
@@ -42,11 +48,22 @@ export default function ContactListPage() {
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
+  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useContacts(page)
+  const listQuery = useContacts(page, 20, filters)
   const searchQuery = useContactSearch(debouncedQuery)
+
+  function handleFilterChange(param: string, value: string) {
+    setFilters((prev) => ({ ...prev, [param]: value }))
+    goToPage(0)
+  }
+
+  function handleFilterClear() {
+    setFilters({})
+    goToPage(0)
+  }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -76,13 +93,23 @@ export default function ContactListPage() {
         placeholder="Search by name…"
         className="max-w-sm"
       />
+      {!isSearching && (
+        <FilterBar
+          filters={CONTACT_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
       <DataTable
         columns={columns}
         data={data}
         onRowClick={(row) => navigate(`/contacts/${row.id}`)}
         empty={isSearching
           ? { icon: Users, title: `No contacts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Users, title: 'No contacts yet', description: 'Add your first contact to get started.', action: <Button size="sm" onClick={() => navigate('/contacts/new')}><Plus className="h-4 w-4 mr-1.5" />New Contact</Button> }
+          : { icon: Users, title: 'No contacts yet', description: 'Add your first contact to get started.', 
+            // action: <Button size="sm" onClick={() => navigate('/contacts/new')}><Plus className="h-4 w-4 mr-1.5" />New Contact</Button> 
+          }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />

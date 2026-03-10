@@ -3,6 +3,8 @@ import client from '@/api/client'
 import type {
   PharmaFieldVisit,
   PagePharmaFieldVisit,
+  ScheduleVisitRequest,
+  UpdateVisitRequest,
   CheckInRequest,
   CheckOutRequest,
   SignatureRequest,
@@ -10,13 +12,14 @@ import type {
 
 // ─── Queries ───────────────────────────────────────────────────────────────────
 
-export function useVisits(page = 0, size = 20) {
+export function useVisits(page = 0, size = 20, filters: Record<string, string> = {}) {
+  const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
   return useQuery({
-    queryKey: ['visits', 'list', { page, size }],
+    queryKey: ['visits', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
         .get<PagePharmaFieldVisit>('/api/pharma/visits', {
-          params: { page, size, sort: 'scheduledStart,desc' },
+          params: { page, size, sort: 'scheduledStart,desc', ...cleanFilters },
         })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
@@ -62,13 +65,7 @@ export function useVisitsPendingReview(page = 0, size = 20) {
 export function useScheduleVisit() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: {
-      visit: Partial<PharmaFieldVisit>
-      repId: string
-      accountId: string
-      contactId?: string
-      territoryId?: string
-    }) =>
+    mutationFn: (data: ScheduleVisitRequest) =>
       client.post<PharmaFieldVisit>('/api/pharma/visits', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['visits'] }),
   })
@@ -79,7 +76,7 @@ export function useScheduleVisit() {
 export function useUpdateVisit(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Partial<PharmaFieldVisit>) =>
+    mutationFn: (data: UpdateVisitRequest) =>
       client.put<PharmaFieldVisit>(`/api/pharma/visits/${id}`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['visits', id] })

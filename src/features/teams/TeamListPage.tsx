@@ -10,10 +10,15 @@ import { Pagination } from '@/components/shared/Pagination'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { cn } from '@/lib/utils'
 import type { PharmaTeam } from '@/api/app-types'
+
+const TEAM_FILTERS: FilterDef[] = [
+  { param: 'teamType', label: 'Type', configKey: 'team.type' },
+]
 
 function ActiveBadge({ isActive }: { isActive?: boolean }) {
   return (
@@ -44,11 +49,22 @@ export default function TeamListPage() {
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
+  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useTeams(page)
+  const listQuery = useTeams(page, 20, filters)
   const searchQuery = useTeamSearch(debouncedQuery)
+
+  function handleFilterChange(param: string, value: string) {
+    setFilters((prev) => ({ ...prev, [param]: value }))
+    goToPage(0)
+  }
+
+  function handleFilterClear() {
+    setFilters({})
+    goToPage(0)
+  }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -83,6 +99,14 @@ export default function TeamListPage() {
         placeholder="Search teams…"
         className="max-w-sm"
       />
+      {!isSearching && (
+        <FilterBar
+          filters={TEAM_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
       <DataTable
         columns={columns}
         data={data}

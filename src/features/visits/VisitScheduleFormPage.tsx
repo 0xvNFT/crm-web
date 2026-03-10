@@ -57,21 +57,18 @@ export default function VisitScheduleFormPage() {
 
   function onSubmit(data: ScheduleVisitFormData) {
     if (!user?.userId) return
-    const { accountId, contactId, territoryId, ...visitFields } = data
     scheduleVisit(
       {
-        visit: {
-          subject: visitFields.subject,
-          visitType: visitFields.visitType,
-          scheduledStart: visitFields.scheduledStart,
-          scheduledEnd: visitFields.scheduledEnd,
-          callObjectives: visitFields.callObjectives,
-          notes: visitFields.notes,
-        },
         repId: user.userId,
-        accountId,
-        contactId: contactId || undefined,
-        territoryId: territoryId || undefined,
+        accountId: data.accountId,
+        contactId: data.contactId || undefined,
+        territoryId: data.territoryId || undefined,
+        subject: data.subject,
+        visitType: data.visitType,
+        scheduledStart: data.scheduledStart,
+        scheduledEnd: data.scheduledEnd || undefined,
+        callObjectives: data.callObjectives || undefined,
+        notes: data.notes || undefined,
       },
       {
         onSuccess: (visit) => {
@@ -145,7 +142,7 @@ export default function VisitScheduleFormPage() {
           <FormRow label="Scheduled Start" required error={errors.scheduledStart?.message}>
             <Input {...register('scheduledStart')} type="datetime-local" />
           </FormRow>
-          <FormRow label="Scheduled End" required error={errors.scheduledEnd?.message}>
+          <FormRow label="Scheduled End" error={errors.scheduledEnd?.message}>
             <Input {...register('scheduledEnd')} type="datetime-local" />
           </FormRow>
         </FormSection>

@@ -11,9 +11,15 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import type { PharmaTerritory } from '@/api/app-types'
+
+const TERRITORY_FILTERS: FilterDef[] = [
+  { param: 'region', label: 'Region', configKey: 'territory.region' },
+  { param: 'status', label: 'Status', configKey: 'territory.status' },
+]
 
 const columns: Column<PharmaTerritory>[] = [
   { header: 'Code', accessor: 'territoryCode', sortable: true },
@@ -41,11 +47,22 @@ export default function TerritoryListPage() {
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
+  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useTerritories(page)
+  const listQuery = useTerritories(page, 20, filters)
   const searchQuery = useTerritorySearch(debouncedQuery)
+
+  function handleFilterChange(param: string, value: string) {
+    setFilters((prev) => ({ ...prev, [param]: value }))
+    goToPage(0)
+  }
+
+  function handleFilterClear() {
+    setFilters({})
+    goToPage(0)
+  }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -80,6 +97,14 @@ export default function TerritoryListPage() {
         placeholder="Search territories…"
         className="max-w-sm"
       />
+      {!isSearching && (
+        <FilterBar
+          filters={TERRITORY_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
       <DataTable
         columns={columns}
         data={data}
