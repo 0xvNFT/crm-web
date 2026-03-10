@@ -221,7 +221,7 @@ export default function VisitDetailPage() {
               }
             />
             <DetailField label="Assigned Rep" value={assignedRep?.fullName} />
-            <DetailField label="Territory" value={visit.territory?.name} />
+            <DetailField label="Territory" value={visit.territory?.territoryName} />
             <DetailField label="Visit Type" value={visit.visitType?.replace(/_/g, ' ')} />
             <DetailField label="Priority" value={visit.priority} />
           </div>

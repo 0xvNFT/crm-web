@@ -23,7 +23,7 @@ function FilterSelect({ def, value, onChange }: FilterSelectProps) {
         <SelectValue placeholder={def.label} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="__all__">All {def.label}s</SelectItem>
+        <SelectItem value="__all__">All {def.label}</SelectItem>
         {options.map((opt) => (
           <SelectItem key={opt.value} value={opt.value}>
             {opt.label}
