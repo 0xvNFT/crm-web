@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { useSidebarContext } from '@/providers/SidebarProvider'
+import { useSidebarContext } from '@/hooks/useSidebarContext'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -101,7 +101,13 @@ function getInitials(name: string) {
 
 function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const userRoles = user?.roles ?? []
+
+  async function handleLogout() {
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <div className="flex h-full flex-col bg-auth-panel">
@@ -133,7 +139,7 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
             <p className="truncate text-[10px] text-white/40">{user?.roles[0]}</p>
           </div>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             title="Sign out"
             className="rounded p-1 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
           >

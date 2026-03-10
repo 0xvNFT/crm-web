@@ -11,8 +11,10 @@ const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/features/auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage'))
 const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
+const AcceptInvitePage = lazy(() => import('@/features/auth/AcceptInvitePage'))
 
 // App pages
+const ProfilePage = lazy(() => import('@/features/auth/ProfilePage'))
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'))
 const AccountListPage = lazy(() => import('@/features/accounts/AccountListPage'))
 const AccountDetailPage = lazy(() => import('@/features/accounts/AccountDetailPage'))
@@ -20,6 +22,19 @@ const AccountFormPage = lazy(() => import('@/features/accounts/AccountFormPage')
 const ContactListPage = lazy(() => import('@/features/contacts/ContactListPage'))
 const ContactDetailPage = lazy(() => import('@/features/contacts/ContactDetailPage'))
 const ContactFormPage = lazy(() => import('@/features/contacts/ContactFormPage'))
+
+// Lead dev pages
+const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'))
+const AdminPage = lazy(() => import('@/features/admin/AdminPage'))
+const VisitListPage = lazy(() => import('@/features/visits/VisitListPage'))
+const VisitDetailPage = lazy(() => import('@/features/visits/VisitDetailPage'))
+const VisitScheduleFormPage = lazy(() => import('@/features/visits/VisitScheduleFormPage'))
+const TerritoryListPage = lazy(() => import('@/features/territories/TerritoryListPage'))
+const TerritoryDetailPage = lazy(() => import('@/features/territories/TerritoryDetailPage'))
+const TerritoryFormPage = lazy(() => import('@/features/territories/TerritoryFormPage'))
+const TeamListPage = lazy(() => import('@/features/teams/TeamListPage'))
+const TeamDetailPage = lazy(() => import('@/features/teams/TeamDetailPage'))
+const TeamFormPage = lazy(() => import('@/features/teams/TeamFormPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -38,6 +53,7 @@ export function AppRouter() {
         <Route path="/forgot-password" element={<Wrap><ForgotPasswordPage /></Wrap>} />
         <Route path="/reset-password" element={<Wrap><ResetPasswordPage /></Wrap>} />
         <Route path="/verify-email" element={<Wrap><VerifyEmailPage /></Wrap>} />
+        <Route path="/accept-invite" element={<Wrap><AcceptInvitePage /></Wrap>} />
 
         {/* Protected routes — all nested inside AppShell */}
         <Route
@@ -49,8 +65,16 @@ export function AppRouter() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Wrap><DashboardPage /></Wrap>} />
+          <Route path="/profile" element={<Wrap><ProfilePage /></Wrap>} />
           <Route path="/accounts" element={<Wrap><AccountListPage /></Wrap>} />
-          <Route path="/accounts/new" element={<Wrap><AccountFormPage /></Wrap>} />
+          <Route
+            path="/accounts/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><AccountFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
           <Route path="/accounts/:id" element={<Wrap><AccountDetailPage /></Wrap>} />
 
           {/* Intern pages — replace PlaceholderPage as each feature is completed */}
@@ -61,14 +85,32 @@ export function AppRouter() {
           <Route path="/orders" element={<Wrap><PlaceholderPage name="Orders" /></Wrap>} />
           <Route path="/quotes" element={<Wrap><PlaceholderPage name="Quotes" /></Wrap>} />
           <Route path="/activities" element={<Wrap><PlaceholderPage name="Activities" /></Wrap>} />
-          <Route path="/visits" element={<Wrap><PlaceholderPage name="Visits" /></Wrap>} />
+          <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
+          <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
+          <Route path="/visits/:id" element={<Wrap><VisitDetailPage /></Wrap>} />
 
           {/* MANAGER+ only */}
           <Route
             path="/territories"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Territories" /></Wrap>
+                <Wrap><TerritoryListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/territories/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TerritoryFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/territories/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TerritoryDetailPage /></Wrap>
               </RoleRoute>
             }
           />
@@ -76,7 +118,23 @@ export function AppRouter() {
             path="/teams"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Teams" /></Wrap>
+                <Wrap><TeamListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teams/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TeamFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teams/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TeamDetailPage /></Wrap>
               </RoleRoute>
             }
           />
@@ -84,7 +142,7 @@ export function AppRouter() {
             path="/reports"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
-                <Wrap><PlaceholderPage name="Reports" /></Wrap>
+                <Wrap><ReportsPage /></Wrap>
               </RoleRoute>
             }
           />
@@ -94,7 +152,7 @@ export function AppRouter() {
             path="/admin"
             element={
               <RoleRoute roles={['ADMIN']}>
-                <Wrap><PlaceholderPage name="Admin" /></Wrap>
+                <Wrap><AdminPage /></Wrap>
               </RoleRoute>
             }
           />

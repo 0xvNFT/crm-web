@@ -1,47 +1,19 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
 import { useAccounts } from '@/api/endpoints/accounts'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/shared/PageHeader'
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-const contactSchema = z.object({
-  // Required
-  accountId: z.string().min(1, 'Primary account is required'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  contactType: z.enum(
-    ['physician', 'pharmacist', 'nurse_practitioner', 'physician_assistant', 'administrator', 'buyer', 'other'],
-    { errorMap: () => ({ message: 'Contact type is required' }) }
-  ),
-  // Optional
-  salutation: z.string().optional(),
-  middleName: z.string().optional(),
-  title: z.string().optional(),
-  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  mobile: z.string().optional(),
-  specialty: z.string().optional(),
-  customerClass: z.string().optional(),
-  adoptionStage: z.enum(['unaware', 'aware', 'user', 'advocate', 'champion']).optional(),
-  prescribingAuthority: z.boolean().optional(),
-  prcNumber: z.string().optional(),
-  leadSource: z.string().optional(),
-  addressStreet: z.string().optional(),
-  addressBarangay: z.string().optional(),
-  addressCity: z.string().optional(),
-  addressProvince: z.string().optional(),
-  addressPostalCode: z.string().optional(),
-  notes: z.string().optional(),
-})
-
-type ContactFormData = z.infer<typeof contactSchema>
+import { toast } from '@/hooks/useToast'
+import { parseApiError } from '@/utils/errors'
+import { contactSchema, type ContactFormData } from '@/schemas/contacts'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -72,8 +44,6 @@ function FormRow({ label, required, error, className, children }: {
   )
 }
 
-const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactFormPage() {
@@ -84,9 +54,15 @@ export default function ContactFormPage() {
   const { data: accountsPage, isLoading: accountsLoading } = useAccounts(0, 100)
   const accounts = accountsPage?.content ?? []
 
+  const contactTypeOptions = useConfigOptions('contact.type')
+  const SALUTATIONS = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Prof.']
+  const customerClassOptions = useConfigOptions('contact.customerClass')
+  const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -113,7 +89,11 @@ export default function ContactFormPage() {
     )
 
     createContact(clean, {
-      onSuccess: (contact) => navigate(`/contacts/${contact.id}`),
+      onSuccess: (contact) => {
+        toast('Contact created', { variant: 'success' })
+        navigate(`/contacts/${contact.id}`)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 
@@ -130,32 +110,44 @@ export default function ContactFormPage() {
         {/* Primary Account — required */}
         <FormSection title="Primary Account">
           <FormRow label="Account" required error={errors.accountId?.message} className="sm:col-span-2">
-            <select
-              {...register('accountId')}
-              disabled={accountsLoading}
-              className={SELECT_CLASS}
-            >
-              <option value="">{accountsLoading ? 'Loading accounts…' : 'Select account'}</option>
-              {accounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} — {a.accountType}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="accountId"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange} disabled={accountsLoading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={accountsLoading ? 'Loading accounts…' : 'Select account'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id ?? ''}>
+                        {a.name} — {a.accountType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
         </FormSection>
 
         {/* Basic Info */}
         <FormSection title="Basic Info">
           <FormRow label="Salutation" error={errors.salutation?.message}>
-            <select {...register('salutation')} className={SELECT_CLASS}>
-              <option value="">None</option>
-              <option value="Dr.">Dr.</option>
-              <option value="Mr.">Mr.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Mrs.">Mrs.</option>
-              <option value="Prof.">Prof.</option>
-            </select>
+            <Controller
+              name="salutation"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent>
+                    {SALUTATIONS.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="First Name" required error={errors.firstName?.message}>
             <Input {...register('firstName')} autoFocus />
@@ -170,16 +162,20 @@ export default function ContactFormPage() {
             <Input {...register('title')} placeholder="e.g. Cardiologist" />
           </FormRow>
           <FormRow label="Contact Type" required error={errors.contactType?.message}>
-            <select {...register('contactType')} className={SELECT_CLASS}>
-              <option value="">Select type</option>
-              <option value="physician">Physician</option>
-              <option value="pharmacist">Pharmacist</option>
-              <option value="nurse_practitioner">Nurse Practitioner</option>
-              <option value="physician_assistant">Physician Assistant</option>
-              <option value="administrator">Administrator</option>
-              <option value="buyer">Buyer</option>
-              <option value="other">Other</option>
-            </select>
+            <Controller
+              name="contactType"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    {contactTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Specialty" error={errors.specialty?.message}>
             <Input {...register('specialty')} placeholder="e.g. Cardiology" />
@@ -205,21 +201,36 @@ export default function ContactFormPage() {
         {/* Segmentation */}
         <FormSection title="Segmentation">
           <FormRow label="Customer Class" error={errors.customerClass?.message}>
-            <select {...register('customerClass')} className={SELECT_CLASS}>
-              <option value="">None</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
+            <Controller
+              name="customerClass"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent>
+                    {customerClassOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Adoption Stage" error={errors.adoptionStage?.message}>
-            <select {...register('adoptionStage')} className={SELECT_CLASS}>
-              <option value="unaware">Unaware</option>
-              <option value="aware">Aware</option>
-              <option value="user">User</option>
-              <option value="advocate">Advocate</option>
-              <option value="champion">Champion</option>
-            </select>
+            <Controller
+              name="adoptionStage"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
+                  <SelectContent>
+                    {adoptionStageOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="PRC Number" error={errors.prcNumber?.message}>
             <Input {...register('prcNumber')} />
@@ -259,15 +270,15 @@ export default function ContactFormPage() {
         {/* Notes */}
         <div className="rounded-xl border bg-background p-5 space-y-2">
           <Label className="text-sm font-semibold text-foreground">Notes</Label>
-          <textarea
+          <Textarea
             {...register('notes')}
             rows={3}
-            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             placeholder="Any additional notes about this contact…"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        {/* Sticky footer — always visible regardless of form length */}
+        <div className="sticky bottom-0 -mx-6 border-t bg-background px-6 py-3 flex items-center justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>

@@ -11,19 +11,19 @@ type Status = 'loading' | 'success' | 'error'
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') ?? ''
-  const [status, setStatus] = useState<Status>('loading')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [status, setStatus] = useState<Status>(() =>
+    token ? 'loading' : 'error'
+  )
+  const [errorMessage, setErrorMessage] = useState(() =>
+    token ? '' : 'Invalid verification link — no token found.'
+  )
   const called = useRef(false)
 
   useEffect(() => {
     if (called.current) return
     called.current = true
 
-    if (!token) {
-      setStatus('error')
-      setErrorMessage('Invalid verification link — no token found.')
-      return
-    }
+    if (!token) return
 
     client
       .get('/api/auth/verify', { params: { token } })

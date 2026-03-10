@@ -5,6 +5,10 @@
  */
 import type { components } from './types'
 
+// ─── Config (GET /api/pharma/config) ─────────────────────────────────────────
+// Map of field name → valid string values for all constrained dropdown fields
+export type CrmConfig = Record<string, string[]>
+
 // ─── Core entities ────────────────────────────────────────────────────────────
 export type PharmaAccount            = components['schemas']['PharmaAccount']
 export type PharmaContact            = components['schemas']['PharmaContact']
@@ -33,6 +37,9 @@ export type LeadConversionResult     = components['schemas']['LeadConversionResu
 export type User                     = components['schemas']['User']
 export type Notification             = components['schemas']['Notification']
 export type TenantUserSummary        = components['schemas']['TenantUserSummary']
+export type CreateStaffRequest       = components['schemas']['CreateStaffRequest']
+export type UpdateStaffRequest       = components['schemas']['UpdateStaffRequest']
+export type PageUser                 = components['schemas']['PageUser']
 
 // ─── Paginated results (Spring Page<T>) ───────────────────────────────────────
 export type PagePharmaAccount      = components['schemas']['PagePharmaAccount']
@@ -68,8 +75,71 @@ export interface AuthUser {
   roles: string[]
 }
 
+// ─── Auth request types — all sourced from generated spec, never manually defined ──
+export type LoginRequest          = components['schemas']['LoginRequest']           // { email, password }
+export type RegisterRequest       = components['schemas']['RegisterRequest']         // { tenantName, tenantSlug, vertical, firstName, lastName, email, password }
+export type ResetPasswordRequest  = components['schemas']['ResetPasswordRequest']   // { token, newPassword }
+export type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']  // { currentPassword, newPassword }
+export type UpdateProfileRequest  = components['schemas']['UpdateProfileRequest']   // { firstName, lastName }
+export type EmailOnlyRequest      = components['schemas']['EmailOnlyRequest']       // { email } — forgot-password, resend-verification
+export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']    // { token, newPassword }
+
+// ─── Account request types ───────────────────────────────────────────────────
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreatePharmaAccountRequest = Omit<components['schemas']['CreatePharmaAccountRequest'], 'accountType'> & { accountType: string }
+export type UpdatePharmaAccountRequest = Omit<components['schemas']['UpdatePharmaAccountRequest'], 'accountType' | 'status'> & { accountType?: string; status?: string }
+
+// ─── Territory request types ──────────────────────────────────────────────────
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreateTerritoryRequest = Omit<components['schemas']['CreateTerritoryRequest'], 'region' | 'status'> & { region: string; status?: string }
+export type UpdateTerritoryRequest = Omit<components['schemas']['UpdateTerritoryRequest'], 'region' | 'status'> & { region?: string; status?: string }
+
+// ─── Team request types ───────────────────────────────────────────────────────
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreateTeamRequest = Omit<components['schemas']['CreateTeamRequest'], 'teamType'> & { teamType?: string }
+
+// ─── Team member response — manually defined (backend DTO not in spec yet) ────
+// Backend returns TeamMemberResponse DTO (flat projection, avoids lazy User entity)
+// Fields: id, userId, fullName, email, jobTitle, joinedAt
+export interface TeamMemberResponse {
+  id: string
+  userId: string
+  fullName: string
+  email: string
+  jobTitle?: string
+  joinedAt: string
+}
+
+// ─── Lead request types ───────────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateLeadRequest = Omit<components['schemas']['CreateLeadRequest'], 'leadStatus' | 'rating'> & { leadStatus?: string; rating?: string }
+export type UpdateLeadRequest = Omit<components['schemas']['UpdateLeadRequest'], 'leadStatus' | 'rating'> & { leadStatus?: string; rating?: string }
+
+// ─── Activity request types ───────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction'> & { activityType: string; status?: string; priority?: string; direction?: string }
+
+// ─── Opportunity request types ────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateOpportunityRequest = Omit<components['schemas']['CreateOpportunityRequest'], 'salesStage' | 'forecastCategory'> & { salesStage?: string; forecastCategory?: string }
+export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'forecastCategory'> & { forecastCategory?: string }
+
+// ─── Shared request types ────────────────────────────────────────────────────
+export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
+export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
+
+// ─── Visit request types ──────────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type ScheduleVisitRequest  = Omit<components['schemas']['ScheduleVisitRequest'], 'visitType' | 'priority'> & { visitType: string; priority?: string }
+export type CheckInRequest        = components['schemas']['CheckInRequest']         // { latitude, longitude }
+// Widen config-driven union literals to string
+export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'], 'outcome'> & { outcome: string }
+export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority'> & { visitType?: string; priority?: string }
+export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
+
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
-  error: string
+  error?: string       // HTTP status name (e.g. "Conflict") — from Spring default error body
+  message?: string     // Human-readable backend message — prefer this over error
   validationErrors?: Record<string, string>
 }

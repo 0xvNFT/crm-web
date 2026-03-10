@@ -1,41 +1,30 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, X, Check, Globe, Phone, Mail, Building2 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { ArrowLeft, Pencil, X, Check, Globe, Phone, Mail, Building2, Trash2 } from 'lucide-react'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useAccount, useUpdateAccount } from '@/api/endpoints/accounts'
+import { useAccount, useUpdateAccount, useDeleteAccount } from '@/api/endpoints/accounts'
+import { useRole } from '@/hooks/useRole'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatDate, formatCurrency, formatLabel, formatNumber } from '@/utils/formatters'
-
-// ─── Edit schema — mirrors UpdatePharmaAccountRequest validation ───────────────
-const editSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
-  accountType: z.enum(['hospital', 'pharmacy', 'clinic', 'distributor']).optional(),
-  billingAddress: z.string().optional(),
-  shippingAddress: z.string().optional(),
-  taxId: z.string().optional(),
-  creditLimit: z.coerce.number().nonnegative('Must be 0 or greater').optional(),
-  paymentTerms: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'suspended']).optional(),
-  deaNumber: z.string().optional(),
-  stateLicenseNumber: z.string().optional(),
-  controlledSubstanceApproved: z.boolean().optional(),
-})
-
-type EditFormData = z.infer<typeof editSchema>
+import { parseApiError } from '@/utils/errors'
+import { toast } from '@/hooks/useToast'
+import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
     </div>
   )
 }
@@ -71,17 +60,23 @@ export default function AccountDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
   const { data: account, isLoading, isError } = useAccount(id ?? '')
   const { mutate: updateAccount, isPending } = useUpdateAccount(id ?? '')
+  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
+  const { isManager } = useRole()
+  const accountTypeOptions = useConfigOptions('account.type')
+  const accountStatusOptions = useConfigOptions('account.status')
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
-  } = useForm<EditFormData>({
-    resolver: zodResolver(editSchema),
+  } = useForm<AccountEditFormData>({
+    resolver: zodResolver(accountEditSchema),
   })
 
   if (isLoading) return <LoadingSpinner />
@@ -90,13 +85,13 @@ export default function AccountDetailPage() {
   function startEdit() {
     reset({
       name: account?.name ?? '',
-      accountType: (account?.accountType as EditFormData['accountType']) ?? undefined,
+      accountType: account?.accountType ?? undefined,
       billingAddress: account?.billingAddress ?? '',
       shippingAddress: account?.shippingAddress ?? '',
       taxId: account?.taxId ?? '',
       creditLimit: account?.creditLimit != null ? Number(account.creditLimit) : undefined,
       paymentTerms: account?.paymentTerms ?? '',
-      status: (account?.status as EditFormData['status']) ?? undefined,
+      status: account?.status ?? undefined,
       deaNumber: account?.deaNumber ?? '',
       stateLicenseNumber: account?.stateLicenseNumber ?? '',
       controlledSubstanceApproved: account?.controlledSubstanceApproved ?? false,
@@ -109,9 +104,13 @@ export default function AccountDetailPage() {
     reset()
   }
 
-  function onSubmit(data: EditFormData) {
+  function onSubmit(data: AccountEditFormData) {
     updateAccount(data, {
-      onSuccess: () => setEditing(false),
+      onSuccess: () => {
+        toast('Account updated', { variant: 'success' })
+        setEditing(false)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 
@@ -150,11 +149,17 @@ export default function AccountDetailPage() {
           </div>
         </div>
 
-        {!editing && (
-          <Button variant="outline" size="sm" onClick={startEdit} className="shrink-0">
-            <Pencil className="h-3.5 w-3.5 mr-1.5" />
-            Edit
-          </Button>
+        {!editing && isManager && (
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={startEdit}>
+              <Pencil className="h-3.5 w-3.5 mr-1.5" />
+              Edit
+            </Button>
+            <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              Delete
+            </Button>
+          </div>
         )}
       </div>
 
@@ -238,6 +243,23 @@ export default function AccountDetailPage() {
         </div>
       )}
 
+      <ConfirmDialog
+        open={showDelete}
+        onCancel={() => setShowDelete(false)}
+        onConfirm={() =>
+          deleteAccount(id ?? '', {
+            onSuccess: () => {
+              toast('Account deleted', { variant: 'success' })
+              navigate('/accounts')
+            },
+            onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+          })
+        }
+        title="Delete Account?"
+        description={`This will permanently delete "${account.name}" and all associated data. This cannot be undone.`}
+        isPending={isDeleting}
+      />
+
       {/* Edit mode */}
       {editing && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -248,27 +270,36 @@ export default function AccountDetailPage() {
                 <Input {...register('name')} />
               </FormRow>
               <FormRow label="Account Type" error={errors.accountType?.message}>
-                <select
-                  {...register('accountType')}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  <option value="">Select type</option>
-                  <option value="hospital">Hospital</option>
-                  <option value="pharmacy">Pharmacy</option>
-                  <option value="clinic">Clinic</option>
-                  <option value="distributor">Distributor</option>
-                </select>
+                <Controller
+                  name="accountType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                      <SelectContent>
+                        {accountTypeOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </FormRow>
               <FormRow label="Status" error={errors.status?.message}>
-                <select
-                  {...register('status')}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  <option value="">Select status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="suspended">Suspended</option>
-                </select>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                      <SelectContent>
+                        {accountStatusOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </FormRow>
               <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
                 <Input {...register('paymentTerms')} placeholder="e.g. NET30" />

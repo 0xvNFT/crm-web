@@ -2,15 +2,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
 import type { PharmaContact, PagePharmaContact } from '@/api/app-types'
 
-export function useContacts(page = 0, size = 20) {
+export function useContacts(page = 0, size = 20, filters: Record<string, string> = {}) {
+  const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
   return useQuery({
-    queryKey: ['contacts', 'list', { page, size }],
+    queryKey: ['contacts', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
         .get<PagePharmaContact>('/api/pharma/contacts', {
-          params: { page, size, sort: 'lastName,asc' },
+          params: { page, size, sort: 'lastName,asc', ...cleanFilters },
         })
         .then((r) => r.data),
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useContactSearch(name: string) {
+  return useQuery({
+    queryKey: ['contacts', 'search', name],
+    queryFn: () =>
+      client
+        .get<PharmaContact[]>('/api/pharma/contacts/search', { params: { name } })
+        .then((r) => r.data),
+    enabled: name.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
 }
@@ -39,5 +52,17 @@ export function useUpdateContact(id: string) {
     mutationFn: (data: Partial<PharmaContact>) =>
       client.put<PharmaContact>(`/api/pharma/contacts/${id}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
+  })
+}
+
+export function useDeleteContact() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => client.delete(`/api/pharma/contacts/${id}`),
+    onSuccess: (_data, id) => {
+      // Remove the detail cache entry immediately — prevents a 400 refetch after navigation
+      qc.removeQueries({ queryKey: ['contacts', id] })
+      qc.invalidateQueries({ queryKey: ['contacts', 'list'] })
+    },
   })
 }
