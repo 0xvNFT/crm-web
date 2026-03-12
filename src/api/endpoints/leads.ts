@@ -23,6 +23,18 @@ export function useLead(id: string) {
   })
 }
 
+export function useLeadSearch(name: string) {
+  return useQuery({
+    queryKey: ['leads', 'search', name],
+    queryFn: () =>
+      client
+        .get<PharmaLead[]>('/api/pharma/leads/search', { params: { name } })
+        .then((r) => r.data),
+    enabled: name.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useCreateLead() {
   const qc = useQueryClient()
   return useMutation({

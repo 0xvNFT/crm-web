@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { useLeads } from '@/api/endpoints/leads'
+import { useLeads, useLeadSearch } from '@/api/endpoints/leads'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -46,13 +47,20 @@ export default function LeadListPage() {
     goToPage(0)
   }
 
-  const { data, isLoading, isError } = useLeads(page, 20, filters)
-  const leads = (data?.content ?? []).filter((row) => {
-    const search = debouncedQuery.trim().toLowerCase()
-    if (!search) return true
-    const fullName = `${row.firstName ?? ''} ${row.lastName ?? ''}`.trim().toLowerCase()
-    return fullName.includes(search) || (row.companyName ?? '').toLowerCase().includes(search)
-  })
+  const isSearching = debouncedQuery.trim().length >= 2
+
+  const listQuery = useLeads(page, 20, filters)
+  const searchQuery = useLeadSearch(debouncedQuery)
+
+  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
+  const isError = isSearching ? searchQuery.isError : listQuery.isError
+  const data: PharmaLead[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
+  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
+
+  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isError) return <ErrorMessage />
 
   return (
     <div className="space-y-6">
@@ -66,23 +74,25 @@ export default function LeadListPage() {
         placeholder="Search by name…"
         className="max-w-sm"
       />
-      <FilterBar
-        filters={LEAD_FILTERS}
-        values={filters}
-        onChange={handleFilterChange}
-        onClear={handleFilterClear}
-      />
-
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : isError ? (
-        <ErrorMessage />
-      ) : (
-        <>
-          <DataTable columns={columns} data={leads} onRowClick={(row) => navigate(`/leads/${row.id}`)} />
-          <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
-        </>
+      {!isSearching && (
+        <FilterBar
+          filters={LEAD_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
       )}
+      <DataTable
+        columns={columns}
+        data={data}
+        onRowClick={(row) => navigate(`/leads/${row.id}`)}
+        empty={isSearching
+          ? { icon: Users, title: `No leads found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: Users, title: 'No leads yet', description: 'No leads have been added yet.' }
+        }
+        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+      />
+      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>
   )
 }
