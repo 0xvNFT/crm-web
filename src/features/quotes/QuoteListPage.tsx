@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
-import { useQuotes } from '@/api/endpoints/quotes'
+import { useQuotes, useQuoteSearch } from '@/api/endpoints/quotes'
 import { usePagination } from '@/hooks/usePagination'
+import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -10,6 +11,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
+import { SearchInput } from '@/components/ui/search-input'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 import type { PharmaQuote } from '@/api/app-types'
 
@@ -20,12 +22,14 @@ const QUOTE_FILTERS: FilterDef[] = [
 const columns: Column<PharmaQuote>[] = [
   {
     header: 'Quote #',
-    accessor: (row) => <p className="font-medium text-foreground">{row.quoteNumber ?? '—'}</p>,
+    accessor: (row) => (
+      <p className="font-medium text-foreground">{row.quoteNumber ?? '—'}</p>
+    ),
   },
   { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={(row.status ?? '').toUpperCase()} />,
+    accessor: (row) => <StatusBadge status={row.status ?? ''} />,
   },
   {
     header: 'Total',
@@ -38,9 +42,14 @@ const columns: Column<PharmaQuote>[] = [
 export default function QuoteListPage() {
   const navigate = useNavigate()
   const { page, goToPage } = usePagination()
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
   const [filters, setFilters] = useState<Record<string, string>>({})
 
-  const { data, isLoading, isError } = useQuotes(page, 20, filters)
+  const isSearching = debouncedQuery.trim().length >= 2
+
+  const listQuery = useQuotes(page, 20, filters)
+  const searchQuery = useQuoteSearch(debouncedQuery)
 
   function handleFilterChange(param: string, value: string) {
     setFilters((prev) => ({ ...prev, [param]: value }))
@@ -52,7 +61,14 @@ export default function QuoteListPage() {
     goToPage(0)
   }
 
-  if (isLoading) return <LoadingSpinner />
+  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
+  const isError = isSearching ? searchQuery.isError : listQuery.isError
+  const data: PharmaQuote[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
+  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
+
+  if (isLoading && !isSearching) return <LoadingSpinner />
   if (isError) return <ErrorMessage />
 
   return (
@@ -61,24 +77,31 @@ export default function QuoteListPage() {
         title="Quotes"
         description="Sales quotes and proposals"
       />
-      <FilterBar
-        filters={QUOTE_FILTERS}
-        values={filters}
-        onChange={handleFilterChange}
-        onClear={handleFilterClear}
+      <SearchInput
+        value={query}
+        onChange={(v) => { setQuery(v); goToPage(0) }}
+        placeholder="Search quotes…"
+        className="max-w-sm"
       />
+      {!isSearching && (
+        <FilterBar
+          filters={QUOTE_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
       <DataTable
         columns={columns}
-        data={data?.content ?? []}
+        data={data}
         onRowClick={(row) => navigate(`/quotes/${row.id}`)}
-        empty={{
-          icon: FileText,
-          title: 'No quotes yet',
-          description: 'Quotes will appear here once created.',
-        }}
-        totalElements={data?.totalElements}
+        empty={isSearching
+          ? { icon: FileText, title: `No quotes found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: FileText, title: 'No quotes yet', description: 'Quotes will appear here once created.' }
+        }
+        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
-      <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
+      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>
   )
 }

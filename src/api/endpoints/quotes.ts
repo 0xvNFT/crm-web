@@ -16,6 +16,18 @@ export function useQuotes(page = 0, size = 20, filters: Record<string, string> =
   })
 }
 
+export function useQuoteSearch(q: string) {
+  return useQuery({
+    queryKey: ['quotes', 'search', q],
+    queryFn: () =>
+      client
+        .get<PharmaQuote[]>('/api/pharma/quotes/search', { params: { q } })
+        .then((r) => r.data),
+    enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useQuote(id: string) {
   return useQuery({
     queryKey: ['quotes', id],

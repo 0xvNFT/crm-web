@@ -53,7 +53,7 @@ export default function QuoteDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{quote.quoteNumber}</h1>
-            <StatusBadge status={(quote.status ?? '').toUpperCase()} />
+            <StatusBadge status={quote.status ?? ''} />
           </div>
           {quote.account?.name && (
             <p className="mt-1 text-sm text-muted-foreground">{quote.account.name}</p>
@@ -66,6 +66,7 @@ export default function QuoteDetailPage() {
         <DetailField label="Quote Number" value={quote.quoteNumber} />
         <DetailField label="Status" value={quote.status} />
         <DetailField label="Valid From" value={formatDate(quote.validFrom)} />
+        <DetailField label="Valid Until" value={formatDate(quote.validUntil)} />
       </DetailSection>
 
       {/* Account */}
