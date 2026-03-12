@@ -72,8 +72,6 @@ export default function LeadDetailPage() {
           <DetailSection title="Contact Info">
             <DetailField label="Email" value={lead.email} />
             <DetailField label="Phone" value={lead.phone} />
-            <DetailField label="Mobile" value="—" />
-            <DetailField label="Website" value="—" />
           </DetailSection>
         </div>
 
