@@ -1,104 +1,110 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { useOrder } from '@/api/endpoints/orders'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { StatusBadge } from '@/components/shared/StatusBadge'
-import { Button } from '@/components/ui/button'
-import { formatCurrency, formatDate } from '@/utils/formatters'
+import { useParams, useNavigate } from 'react-router-dom';
+import { useOrder } from '@/api/endpoints/orders';
+import { StatusBadge } from '@/components/StatusBadge';
+import { formatCurrency, formatDate } from '@/utils/formatters';
 
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
-    </div>
-  )
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+interface DetailRowProps {
+  label: string;
+  value: React.ReactNode;
 }
 
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-
+function DetailRow({ label, value }: DetailRowProps) {
   return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
+    <div className="grid grid-cols-3 gap-4 py-2 border-b last:border-0">
+      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
+      <dd className="col-span-2 text-sm">{value ?? '—'}</dd>
     </div>
-  )
+  );
 }
+
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Section({ title, children }: SectionProps) {
+  return (
+    <div className="rounded-md border p-4 space-y-1">
+      <h2 className="text-base font-semibold mb-3">{title}</h2>
+      <dl>{children}</dl>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function OrderDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  const { data: order, isLoading, isError } = useOrder(id ?? '')
+  const { data: order, isLoading, isError } = useOrder(id ?? '');
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError || !order) return <ErrorMessage message="Order not found." />
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading order…</p>
+      </div>
+    );
+  }
+
+  if (isError || !order) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-destructive">Order not found.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="p-6 space-y-5 max-w-3xl">
       {/* Header */}
-      <div className="flex items-start gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Order #{order.orderNumber}
-            </h1>
-            <StatusBadge status={(order.status ?? '').toUpperCase()} />
-          </div>
-          <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {order.account?.name && <span>{order.account.name}</span>}
-            {order.owner?.fullName && (
-              <>
-                <span>·</span>
-                <span>{order.owner.fullName}</span>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          ← Back
+        </button>
+        <h1 className="text-2xl font-semibold">{order.orderNumber}</h1>
+        <StatusBadge status={order.status} />
       </div>
 
-      {/* Sections */}
-      <DetailSection title="Order Info">
-        <DetailField label="Order Number" value={order.orderNumber} />
-        <DetailField label="Status" value={order.status} />
-        <DetailField label="Order Date" value={formatDate(order.orderDate)} />
-        <DetailField label="Delivery Date" value={formatDate(order.deliveryDate)} />
-      </DetailSection>
+      {/* Order Info */}
+      <Section title="Order Info">
+        <DetailRow label="Order #" value={order.orderNumber} />
+        <DetailRow label="Status" value={<StatusBadge status={order.status} />} />
+        <DetailRow label="Order Date" value={formatDate(order.orderDate)} />
+        <DetailRow label="Delivery Date" value={formatDate(order.deliveryDate)} />
+      </Section>
 
-      <DetailSection title="Account">
-        <DetailField label="Account Name" value={order.account?.name} />
-        <DetailField label="Account Type" value={order.account?.accountType} />
-      </DetailSection>
+      {/* Account */}
+      <Section title="Account">
+        <DetailRow label="Name" value={order.account?.name} />
+        <DetailRow label="Account Type" value={order.account?.accountType} />
+      </Section>
 
-      <DetailSection title="Amounts">
-        <DetailField label="Subtotal" value={formatCurrency(order.subtotal)} />
-        <DetailField label="Discount" value={formatCurrency(order.discountAmount)} />
-        <DetailField label="Tax" value={formatCurrency(order.taxAmount)} />
-        <DetailField label="Total" value={formatCurrency(order.totalAmount)} />
-      </DetailSection>
+      {/* Amounts */}
+      <Section title="Amounts">
+        <DetailRow label="Subtotal" value={formatCurrency(order.subtotal)} />
+        <DetailRow label="Discount" value={formatCurrency(order.discountAmount)} />
+        <DetailRow label="Tax" value={formatCurrency(order.taxAmount)} />
+        <DetailRow label="Total" value={formatCurrency(order.totalAmount)} />
+      </Section>
 
-      <DetailSection title="Approval">
-        <DetailField label="Approval Status" value={order.approvalStatus} />
-        <DetailField label="Approved By" value={order.approvedBy} />
-        <DetailField label="Approved At" value={formatDate(order.approvedAt)} />
-      </DetailSection>
+      {/* Approval */}
+      <Section title="Approval">
+        <DetailRow label="Approval Status" value={order.approvalStatus} />
+        <DetailRow label="Approved By" value={order.approvedBy} />
+        <DetailRow label="Approved At" value={formatDate(order.approvedAt)} />
+      </Section>
 
-      <div className="rounded-xl border bg-background p-5">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <DetailField label="Created" value={formatDate(order.createdAt)} />
-          <DetailField label="Last Updated" value={formatDate(order.updatedAt)} />
-        </div>
-      </div>
+      {/* Timestamps */}
+      <Section title="Timestamps">
+        <DetailRow label="Created" value={formatDate(order.createdAt)} />
+        <DetailRow label="Updated" value={formatDate(order.updatedAt)} />
+      </Section>
     </div>
-  )
+  );
 }
