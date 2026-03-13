@@ -14,12 +14,12 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
-import { formatLabel, formatDateTime } from '@/utils/formatters'
+import { formatLabel, formatDate } from '@/utils/formatters'
 import type { PharmaActivity } from '@/api/app-types'
 
 // fields present in API response but missing from generated spec — remove when spec is updated
 interface ActivityRow extends PharmaActivity {
-  scheduledAt?: string
+  dueDate?: string
   durationMinutes?: number
   followUpRequired?: boolean
 }
@@ -48,8 +48,8 @@ const columns: Column<ActivityRow>[] = [
     accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} />,
   },
   {
-    header: 'Scheduled At',
-    accessor: (row) => (row.scheduledAt ? formatDateTime(row.scheduledAt) : '—'),
+    header: 'Due Date',
+    accessor: (row) => (row.dueDate ? formatDate(row.dueDate) : '—'),
   },
   {
     header: 'Duration',
@@ -132,7 +132,7 @@ export default function ActivityListPage() {
         onRowClick={(row) => navigate(`/activities/${row.id}`)}
         empty={isSearching
           ? { icon: Calendar, title: `No activities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Calendar, title: 'No activities yet', description: 'Add your first activity to get started.', action: isManager ? <Button size="sm" onClick={() => navigate('/activities/new')}><Plus className="h-4 w-4 mr-1.5" />New Activity</Button> : undefined }
+          : { icon: Calendar, title: 'No activities yet', description: 'No activities have been recorded yet.' }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />

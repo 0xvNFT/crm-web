@@ -9,7 +9,7 @@ export function useActivities(page = 0, size = 20, filters: Record<string, strin
     queryKey: ['activities', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client.get<PagePharmaActivity>('/api/pharma/activities', {
-        params: { page, size, sort: 'scheduledAt,desc', ...cleanFilters },
+        params: { page, size, sort: 'createdAt,desc', ...cleanFilters },
       }).then((r) => r.data),
     placeholderData: (prev) => prev,
   })

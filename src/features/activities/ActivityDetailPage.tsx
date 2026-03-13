@@ -11,7 +11,7 @@ import type { PharmaActivity } from '@/api/app-types'
 // Fix 4: Added comment for the workaround interface
 // fields present in API response but missing from generated spec — remove when spec is updated
 interface ActivityDetail extends PharmaActivity {
-  scheduledAt?: string
+  dueDate?: string
   completedAt?: string
   durationMinutes?: number
   outcome?: string
@@ -74,7 +74,7 @@ export default function ActivityDetailPage() {
       <div className="space-y-4">
         <DetailSection title="Activity Details">
           <DetailField label="Activity Type" value={activity.activityType ? formatLabel(activity.activityType) : null} />
-          <DetailField label="Scheduled At" value={activity.scheduledAt ? formatDateTime(activity.scheduledAt) : null} />
+          <DetailField label="Due Date" value={activity.dueDate ? formatDate(activity.dueDate) : null} />
           <DetailField label="Completed At" value={activity.completedAt ? formatDateTime(activity.completedAt) : null} />
           <DetailField label="Duration" value={activity.durationMinutes != null ? `${activity.durationMinutes} min` : null} />
         </DetailSection>

@@ -30,8 +30,8 @@ interface SectionProps {
 
 function Section({ title, children }: SectionProps) {
   return (
-    <div className="rounded-md border p-4 space-y-1">
-      <h2 className="text-base font-semibold mb-3">{title}</h2>
+    <div className="rounded-xl border bg-background p-5 space-y-4">
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
       <dl>{children}</dl>
     </div>
   )
@@ -49,7 +49,7 @@ export default function OrderDetailPage() {
   if (isError || !order) return <ErrorMessage message="Order not found." />
 
   return (
-    <div className="p-6 space-y-5 max-w-3xl">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>

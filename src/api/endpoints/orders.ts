@@ -39,6 +39,9 @@ export function useOrderSearch(q: string) {
   })
 }
 
+// TODO: Backend needs flat CreateOrderRequest / UpdateOrderRequest DTOs before these can be used.
+// Current spec has { order: PharmaOrder, items: PharmaOrderItem[] } — entity-wrapped, not usable.
+// Wire these up when order create/edit forms are scoped.
 export function useCreateOrder() {
   const qc = useQueryClient()
   return useMutation({
