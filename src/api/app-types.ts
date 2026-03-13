@@ -124,6 +124,19 @@ export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRe
 export type CreateOpportunityRequest = Omit<components['schemas']['CreateOpportunityRequest'], 'salesStage' | 'forecastCategory'> & { salesStage?: string; forecastCategory?: string }
 export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'forecastCategory'> & { forecastCategory?: string }
 
+// ─── Order request types ─────────────────────────────────────────────────────
+export type CreateOrderRequest    = components['schemas']['CreateOrderRequest']
+export type UpdateOrderRequest    = components['schemas']['UpdateOrderRequest']
+export type OrderItemRequest      = components['schemas']['OrderItemRequest']
+
+// ─── Quote request types ──────────────────────────────────────────────────────
+export type CreateQuoteRequest    = components['schemas']['CreateQuoteRequest']
+export type UpdateQuoteRequest    = components['schemas']['UpdateQuoteRequest']
+export type QuoteItemRequest      = components['schemas']['QuoteItemRequest']
+
+// ─── Lead conversion ─────────────────────────────────────────────────────────
+export type ConvertLeadRequest    = components['schemas']['ConvertLeadRequest']
+
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
 export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
