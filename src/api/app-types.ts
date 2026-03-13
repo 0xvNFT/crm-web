@@ -125,6 +125,11 @@ export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRe
 export type CreateOpportunityRequest = Omit<components['schemas']['CreateOpportunityRequest'], 'salesStage' | 'forecastCategory'> & { salesStage?: string; forecastCategory?: string }
 export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'forecastCategory'> & { forecastCategory?: string }
 
+// ─── Product request types ────────────────────────────────────────────────────
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status'> & { status?: string }
+export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status'> & { status?: string }
+
 // ─── Order request types ─────────────────────────────────────────────────────
 export type CreateOrderRequest    = components['schemas']['CreateOrderRequest']
 export type UpdateOrderRequest    = components['schemas']['UpdateOrderRequest']

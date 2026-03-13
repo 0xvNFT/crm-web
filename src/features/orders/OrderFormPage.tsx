@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft } from 'lucide-react'
 import { useCreateOrder } from '@/api/endpoints/orders'
@@ -54,6 +54,8 @@ export default function OrderFormPage() {
       notes: '',
     },
   })
+
+  const watchedAccountId = useWatch({ control, name: 'accountId' })
 
   function onSubmit(data: OrderFormData) {
     createOrder(data, {
@@ -157,7 +159,7 @@ export default function OrderFormPage() {
 
         {/* Line Items */}
         <div className="rounded-xl border bg-background p-5">
-          <LineItemsField control={control} errors={errors} />
+          <LineItemsField control={control} errors={errors} accountId={watchedAccountId ?? ''} />
         </div>
 
         <div className="flex gap-3">

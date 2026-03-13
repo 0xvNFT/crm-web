@@ -47,6 +47,10 @@ const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDeta
 const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
 const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
 
+const ProductListPage = lazy(() => import('@/features/products/ProductListPage'))
+const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPage'))
+const ProductFormPage = lazy(() => import('@/features/products/ProductFormPage'))
+
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
 
@@ -152,6 +156,38 @@ export function AppRouter() {
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
                 <Wrap><TeamDetailPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><ProductListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/products/new"
+            element={
+              <RoleRoute roles={['ADMIN']}>
+                <Wrap><ProductFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/products/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><ProductDetailPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/products/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN']}>
+                <Wrap><ProductFormPage /></Wrap>
               </RoleRoute>
             }
           />

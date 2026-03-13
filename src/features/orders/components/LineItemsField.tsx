@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useFieldArray, useWatch, useController } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { Trash2, Plus } from 'lucide-react'
-import { useProductSearch, useProductBatches } from '@/api/endpoints/products'
+import { useProductSearch, useProductBatches, useCurrentPrice } from '@/api/endpoints/products'
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,7 @@ import type { OrderFormData } from '@/schemas/orders'
 interface LineItemsFieldProps {
   control: Control<OrderFormData>
   errors: FieldErrors<OrderFormData>
+  accountId: string
 }
 
 interface RowProps {
@@ -22,9 +23,10 @@ interface RowProps {
   errors: FieldErrors<OrderFormData>
   onRemove: () => void
   canRemove: boolean
+  accountId: string
 }
 
-function LineItemRow({ index, control, errors, onRemove, canRemove }: RowProps) {
+function LineItemRow({ index, control, errors, onRemove, canRemove, accountId }: RowProps) {
   const [productQuery, setProductQuery] = useState('')
   const [cachedProducts, setCachedProducts] = useState<PharmaProduct[]>([])
 
@@ -58,7 +60,8 @@ function LineItemRow({ index, control, errors, onRemove, canRemove }: RowProps) 
   const hasBatches = availableBatches.length > 0
 
   const selectedProduct = mergedProducts.find((p) => p.id === productId)
-  const unitPrice = selectedProduct?.unitPrice ?? 0
+  const { data: resolvedPrice } = useCurrentPrice(productId ?? '', accountId)
+  const unitPrice = resolvedPrice ?? selectedProduct?.unitPrice ?? 0
   const qty = Number(quantity) || 0
   const discount = Number(discountPercent) || 0
   const lineTotal = qty * unitPrice * (1 - discount / 100)
@@ -188,7 +191,7 @@ function LineItemRow({ index, control, errors, onRemove, canRemove }: RowProps) 
   )
 }
 
-export function LineItemsField({ control, errors }: LineItemsFieldProps) {
+export function LineItemsField({ control, errors, accountId }: LineItemsFieldProps) {
   const { fields, append, remove } = useFieldArray({ control, name: 'items' })
 
   return (
@@ -222,6 +225,7 @@ export function LineItemsField({ control, errors }: LineItemsFieldProps) {
             errors={errors}
             onRemove={() => remove(index)}
             canRemove={fields.length > 1}
+            accountId={accountId}
           />
         ))}
       </div>
