@@ -220,16 +220,15 @@ In the PR description, briefly note:
 
 ### Keeping Your Branch Up to Date
 
-If `dev-intern` gets new commits while you're working, pull them into your branch:
+If `dev-intern` gets new commits while you're working, rebase your branch on top of it:
 
 ```bash
-git checkout dev-intern
-git pull origin dev-intern
+git fetch origin
 git checkout feature/contacts
-git merge dev-intern
+git rebase origin/dev-intern
 ```
 
-Resolve any conflicts, then continue working.
+Resolve any conflicts, then continue. **Never use `git merge dev-intern`** — it creates merge commits that pollute your branch history and cause conflicts on the PR.
 
 ---
 
