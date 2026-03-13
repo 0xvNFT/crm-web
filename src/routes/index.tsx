@@ -41,6 +41,8 @@ const OrderListPage = lazy(() => import('@/features/orders/OrderListPage'))
 const OrderDetailPage = lazy(() => import('@/features/orders/OrderDetailPage'))
 const ActivityListPage = lazy(() => import('@/features/activities/ActivityListPage'))
 const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDetailPage'))
+const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
+const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
 
 // Intern-owned pages — swap PlaceholderPage with the real component as each is built
 const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
@@ -90,7 +92,8 @@ export function AppRouter() {
           <Route path="/leads" element={<Wrap><PlaceholderPage name="Leads" /></Wrap>} />
           <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
           <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
-          <Route path="/quotes" element={<Wrap><PlaceholderPage name="Quotes" /></Wrap>} />
+          <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
+          <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
           <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
