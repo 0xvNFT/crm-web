@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime, formatLabel } from '@/utils/formatters'
 import type { PharmaActivity } from '@/api/app-types'
 
+// Fix 4: Added comment for the workaround interface
+// fields present in API response but missing from generated spec — remove when spec is updated
 interface ActivityDetail extends PharmaActivity {
   scheduledAt?: string
   completedAt?: string
@@ -51,7 +53,8 @@ export default function ActivityDetailPage() {
   if (isLoading) return <LoadingSpinner />
   if (isError || !data) return <ErrorMessage message="Activity not found." />
 
-  const activity = data as ActivityDetail
+  // Fix 3: Typed variable declaration
+  const activity: ActivityDetail = data
 
   return (
     <div className="space-y-4">
@@ -62,7 +65,8 @@ export default function ActivityDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{activity.subject}</h1>
-            <StatusBadge status={activity.status ?? ''} />
+            {/* Fix 1: Added status fallback to avoid empty badge */}
+            <StatusBadge status={activity.status || 'UNKNOWN'} />
           </div>
         </div>
       </div>
@@ -90,7 +94,7 @@ export default function ActivityDetailPage() {
         </DetailSection>
 
         <DetailSection title="Timestamps">
-          <DetailField label="Activity ID" value={activity.id} />
+          {/* Fix 2: Removed Activity ID row */}
           <DetailField label="Created" value={activity.createdAt ? formatDate(activity.createdAt) : null} />
           <DetailField label="Last Updated" value={activity.updatedAt ? formatDate(activity.updatedAt) : null} />
         </DetailSection>

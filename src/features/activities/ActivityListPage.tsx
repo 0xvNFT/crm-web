@@ -17,6 +17,7 @@ import { SearchInput } from '@/components/ui/search-input'
 import { formatLabel, formatDateTime } from '@/utils/formatters'
 import type { PharmaActivity } from '@/api/app-types'
 
+// fields present in API response but missing from generated spec — remove when spec is updated
 interface ActivityRow extends PharmaActivity {
   scheduledAt?: string
   durationMinutes?: number
@@ -86,9 +87,10 @@ export default function ActivityListPage() {
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
   
-  const data = isSearching
-    ? (searchQuery.data as ActivityRow[] ?? [])
-    : (listQuery.data?.content as ActivityRow[] ?? [])
+  // Fix 3: Removed type cast, used typed variable declaration
+  const data: ActivityRow[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
     
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
