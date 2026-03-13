@@ -23,14 +23,14 @@ export function useLead(id: string) {
   })
 }
 
-export function useLeadSearch(name: string) {
+export function useLeadSearch(q: string) {
   return useQuery({
-    queryKey: ['leads', 'search', name],
+    queryKey: ['leads', 'search', q],
     queryFn: () =>
       client
-        .get<PharmaLead[]>('/api/pharma/leads/search', { params: { name } })
+        .get<PharmaLead[]>('/api/pharma/leads/search', { params: { q } })
         .then((r) => r.data),
-    enabled: name.trim().length >= 2,
+    enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
 }

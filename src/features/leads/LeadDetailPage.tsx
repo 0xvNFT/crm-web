@@ -9,11 +9,9 @@ import { formatDate } from '@/utils/formatters'
 
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-medium">{title}</h3>
-      <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 sm:grid-cols-2">
-        {children}
-      </div>
+    <div className="rounded-xl border bg-background p-5 space-y-4">
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
     </div>
   )
 }
