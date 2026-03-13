@@ -1871,6 +1871,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/products/{id}/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List batches for a product (for order line-item batch selection) */
+        get: operations["getBatches"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/products/search": {
         parameters: {
             query?: never;
@@ -4166,9 +4183,9 @@ export interface components {
             paged?: boolean;
             unpaged?: boolean;
             /** Format: int32 */
-            pageSize?: number;
-            /** Format: int32 */
             pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
@@ -7856,6 +7873,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PagePharmaQuote"];
+                };
+            };
+        };
+    };
+    getBatches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaProductBatch"][];
                 };
             };
         };

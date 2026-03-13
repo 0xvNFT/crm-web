@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Plus } from 'lucide-react'
 import { useOrders, useOrderSearch } from '@/api/endpoints/orders'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -12,6 +12,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { SearchInput } from '@/components/ui/search-input'
+import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import type { PharmaOrder } from '@/api/app-types'
 
@@ -65,6 +66,12 @@ export default function OrderListPage() {
       <PageHeader
         title="Orders"
         description="Manage your pharmaceutical orders"
+        actions={
+          <Button onClick={() => navigate('/orders/new')}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Order
+          </Button>
+        }
       />
       <SearchInput
         value={query}
