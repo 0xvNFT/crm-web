@@ -1,11 +1,11 @@
-import { useParams } from 'react-router-dom'
-import { Mail, Phone } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { ArrowLeft, Mail, Phone } from 'lucide-react'
 import { useLead } from '@/api/endpoints/leads'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { formatDate } from '@/utils/formatters'
+import { Button } from '@/components/ui/button'
+import { formatDate, formatLabel } from '@/utils/formatters'
 
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -16,17 +16,25 @@ function DetailSection({ title, children }: { title: string; children: React.Rea
   )
 }
 
-function DetailField({ label, value }: { label: string; value: React.ReactNode }) {
+function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
+  const display =
+    value === null || value === undefined || value === ''
+      ? '—'
+      : typeof value === 'boolean'
+      ? value ? 'Yes' : 'No'
+      : String(value)
+
   return (
-    <div className="space-y-1">
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      <div className="text-sm">{value || '—'}</div>
+    <div className="space-y-0.5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="text-sm text-foreground">{display}</p>
     </div>
   )
 }
 
 export default function LeadDetailPage() {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { data: lead, isLoading, isError } = useLead(id ?? '')
 
   if (isLoading) return <LoadingSpinner />
@@ -35,60 +43,66 @@ export default function LeadDetailPage() {
   const leadName = `${lead.firstName ?? ''} ${lead.lastName}`.trim()
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={leadName}
-        description={lead.companyName}
-      />
-
-      <div className="flex flex-wrap gap-6">
-        {lead.email && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Mail className="h-4 w-4" />
-            {lead.email}
+    <div className="space-y-4">
+      <div className="flex items-start gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">{leadName}</h1>
+            {lead.leadStatus && <StatusBadge status={lead.leadStatus} />}
           </div>
-        )}
-        {lead.phone && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Phone className="h-4 w-4" />
-            {lead.phone}
-          </div>
-        )}
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-6">
-          <DetailSection title="Lead Info">
-            <DetailField label="Lead Name" value={leadName} />
-            <DetailField label="Company" value={lead.companyName} />
-            <DetailField label="Status" value={<StatusBadge status={lead.leadStatus ?? 'UNKNOWN'} />} />
-            <DetailField label="Rating" value={lead.rating} />
-            <DetailField label="Source" value={lead.leadSource} />
-            <DetailField label="Score" value={lead.leadScore} />
-          </DetailSection>
-
-          <DetailSection title="Contact Info">
-            <DetailField label="Email" value={lead.email} />
-            <DetailField label="Phone" value={lead.phone} />
-          </DetailSection>
-        </div>
-
-        <div className="space-y-6">
-          <DetailSection title="Assignment">
-            <DetailField label="Owner" value={lead.assignedUser?.fullName} />
-          </DetailSection>
-
-          <DetailSection title="Qualification">
-            <DetailField label="Converted" value={lead.isConverted ? 'Yes' : 'No'} />
-            <DetailField label="Converted Date" value={formatDate(lead.convertedDate)} />
-          </DetailSection>
-
-          <DetailSection title="Timestamps">
-            <DetailField label="Created At" value={formatDate(lead.createdAt)} />
-            <DetailField label="Updated At" value={formatDate(lead.updatedAt)} />
-          </DetailSection>
+          {lead.companyName && (
+            <p className="mt-1 text-sm text-muted-foreground">{lead.companyName}</p>
+          )}
         </div>
       </div>
+
+      {(lead.email || lead.phone) && (
+        <div className="flex flex-wrap gap-6">
+          {lead.email && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Mail className="h-4 w-4" />
+              {lead.email}
+            </div>
+          )}
+          {lead.phone && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Phone className="h-4 w-4" />
+              {lead.phone}
+            </div>
+          )}
+        </div>
+      )}
+
+      <DetailSection title="Lead Info">
+        <DetailField label="Lead Name" value={leadName} />
+        <DetailField label="Company" value={lead.companyName} />
+        <DetailField label="Status" value={lead.leadStatus ? formatLabel(lead.leadStatus) : null} />
+        <DetailField label="Rating" value={lead.rating} />
+        <DetailField label="Source" value={lead.leadSource} />
+        <DetailField label="Score" value={lead.leadScore} />
+      </DetailSection>
+
+      <DetailSection title="Contact Info">
+        <DetailField label="Email" value={lead.email} />
+        <DetailField label="Phone" value={lead.phone} />
+      </DetailSection>
+
+      <DetailSection title="Assignment">
+        <DetailField label="Owner" value={lead.assignedUser?.fullName} />
+      </DetailSection>
+
+      <DetailSection title="Qualification">
+        <DetailField label="Converted" value={lead.isConverted} />
+        <DetailField label="Converted Date" value={lead.convertedDate ? formatDate(lead.convertedDate) : null} />
+      </DetailSection>
+
+      <DetailSection title="Timestamps">
+        <DetailField label="Created" value={lead.createdAt ? formatDate(lead.createdAt) : null} />
+        <DetailField label="Last Updated" value={lead.updatedAt ? formatDate(lead.updatedAt) : null} />
+      </DetailSection>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLeads, useLeadSearch } from '@/api/endpoints/leads'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { DataTable } from '@/components/shared/DataTable'
+import { DataTable, type Column } from '@/components/shared/DataTable'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -14,7 +14,6 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { usePagination } from '@/hooks/usePagination'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaLead } from '@/api/app-types'
-import type { Column } from '@/components/shared/DataTable'
 
 const LEAD_FILTERS: FilterDef[] = [
   { param: 'leadStatus', label: 'Status', configKey: 'lead.status' },
@@ -63,7 +62,7 @@ export default function LeadListPage() {
   if (isError) return <ErrorMessage />
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Leads"
         description="Potential customers and prospects"

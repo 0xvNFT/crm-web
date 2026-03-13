@@ -31,7 +31,6 @@ export function useLeadSearch(q: string) {
         .get<PharmaLead[]>('/api/pharma/leads/search', { params: { q } })
         .then((r) => r.data),
     enabled: q.trim().length >= 2,
-    placeholderData: (prev) => prev,
   })
 }
 

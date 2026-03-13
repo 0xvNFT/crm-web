@@ -37,6 +37,8 @@ const TeamDetailPage = lazy(() => import('@/features/teams/TeamDetailPage'))
 const TeamFormPage = lazy(() => import('@/features/teams/TeamFormPage'))
 
 // Intern-owned pages
+const LeadListPage = lazy(() => import('@/features/leads/LeadListPage'))
+const LeadDetailPage = lazy(() => import('@/features/leads/LeadDetailPage'))
 const OrderListPage = lazy(() => import('@/features/orders/OrderListPage'))
 const OrderDetailPage = lazy(() => import('@/features/orders/OrderDetailPage'))
 const ActivityListPage = lazy(() => import('@/features/activities/ActivityListPage'))
@@ -89,7 +91,8 @@ export function AppRouter() {
           <Route path="/contacts" element={<Wrap><ContactListPage /></Wrap>} />
           <Route path="/contacts/new" element={<Wrap><ContactFormPage /></Wrap>} />
           <Route path="/contacts/:id" element={<Wrap><ContactDetailPage /></Wrap>} />
-          <Route path="/leads" element={<Wrap><PlaceholderPage name="Leads" /></Wrap>} />
+          <Route path="/leads" element={<Wrap><LeadListPage /></Wrap>} />
+          <Route path="/leads/:id" element={<Wrap><LeadDetailPage /></Wrap>} />
           <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
           <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
           <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
