@@ -99,6 +99,7 @@ export function AppRouter() {
           <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
+          <Route path="/opportunities" element={<Wrap><PlaceholderPage name="Opportunities" /></Wrap>} />
           <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
           <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
           <Route path="/visits/:id" element={<Wrap><VisitDetailPage /></Wrap>} />

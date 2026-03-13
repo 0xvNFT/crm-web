@@ -15,6 +15,7 @@ interface ConfirmDialogProps {
   title: string
   description: string
   confirmLabel?: string
+  pendingLabel?: string
   isPending?: boolean
 }
 
@@ -25,6 +26,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel = 'Delete',
+  pendingLabel,
   isPending = false,
 }: ConfirmDialogProps) {
   return (
@@ -39,7 +41,7 @@ export function ConfirmDialog({
             Cancel
           </Button>
           <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
-            {isPending ? 'Deleting…' : confirmLabel}
+            {isPending ? (pendingLabel ?? `${confirmLabel}ing…`) : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

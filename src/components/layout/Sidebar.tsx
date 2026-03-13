@@ -17,6 +17,7 @@ import {
   Settings,
   LogOut,
   X,
+  TrendingUp,
 } from 'lucide-react'
 
 interface NavItem {
@@ -34,6 +35,7 @@ const NAV_MAIN: NavItem[] = [
   { to: '/orders', label: 'Orders', icon: ShoppingCart },
   { to: '/quotes', label: 'Quotes', icon: FileText },
   { to: '/activities', label: 'Activities', icon: Activity },
+  { to: '/opportunities', label: 'Opportunities', icon: TrendingUp },
   { to: '/visits', label: 'Visits', icon: MapPin },
 ]
 
