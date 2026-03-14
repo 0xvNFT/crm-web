@@ -46,6 +46,7 @@ const ActivityListPage = lazy(() => import('@/features/activities/ActivityListPa
 const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDetailPage'))
 const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
 const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
+const QuoteFormPage = lazy(() => import('@/features/quotes/QuoteFormPage'))
 
 const ProductListPage = lazy(() => import('@/features/products/ProductListPage'))
 const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPage'))
@@ -102,6 +103,7 @@ export function AppRouter() {
           <Route path="/orders/new" element={<Wrap><OrderFormPage /></Wrap>} />
           <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
           <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
+          <Route path="/quotes/new" element={<Wrap><QuoteFormPage /></Wrap>} />
           <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />

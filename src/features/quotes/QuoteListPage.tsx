@@ -12,6 +12,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { SearchInput } from '@/components/ui/search-input'
+import { Button } from '@/components/ui/button'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 import type { PharmaQuote } from '@/api/app-types'
 
@@ -71,6 +72,7 @@ export default function QuoteListPage() {
       <PageHeader
         title="Quotes"
         description="Sales quotes and proposals"
+        actions={<Button onClick={() => navigate('/quotes/new')}>New Quote</Button>}
       />
       <SearchInput
         value={query}
