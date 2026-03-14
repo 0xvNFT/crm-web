@@ -80,7 +80,7 @@ export function LeadFunnelChart({ data, isLoading, isError }: LeadFunnelChartPro
               width={72}
             />
             <Tooltip
-              formatter={(value: number | undefined) => [value ?? 0, 'Leads']}
+              formatter={(value) => [Number(value) ?? 0, 'Leads']}
               contentStyle={{
                 fontSize: 12,
                 borderRadius: '8px',
