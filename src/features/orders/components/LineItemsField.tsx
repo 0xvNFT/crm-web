@@ -42,7 +42,7 @@ function LineItemRow({ index, control, errors, onRemove, canRemove, accountId }:
     .filter((p) => p.id && p.name)
     .map((p) => ({
       value: p.id!,
-      label: p.name,
+      label: p.name!,
       sublabel: p.genericName ?? undefined,
     }))
 

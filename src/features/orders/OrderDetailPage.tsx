@@ -83,7 +83,7 @@ export default function OrderDetailPage() {
       {/* Order Info */}
       <Section title="Order Info">
         <DetailRow label="Order #"       value={order.orderNumber} />
-        <DetailRow label="Status"        value={<StatusBadge status={order.status} />} />
+        <DetailRow label="Status"        value={order.status ? <StatusBadge status={order.status} /> : '—'} />
         <DetailRow label="Order Date"    value={order.orderDate ? formatDate(order.orderDate) : null} />
         <DetailRow label="Delivery Date" value={order.deliveryDate ? formatDate(order.deliveryDate) : null} />
         {order.notes && <DetailRow label="Notes" value={order.notes} />}

@@ -41,7 +41,7 @@ export default function QuoteFormPage() {
 
   const accountOptions = mergedAccounts
     .filter((a) => a.id && a.name)
-    .map((a) => ({ value: a.id!, label: a.name, sublabel: a.accountType ?? undefined }))
+    .map((a) => ({ value: a.id!, label: a.name!, sublabel: a.accountType ?? undefined }))
 
   const contactOptions = mergedContacts
     .filter((c) => c.id)

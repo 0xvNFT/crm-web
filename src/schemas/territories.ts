@@ -9,9 +9,9 @@ export const createTerritorySchema = z.object({
   description: z.string().optional(),
   status: z.string().optional(),
   effectiveFrom: z.string().optional(),
-  targetRevenueAnnual: z.coerce.number().nonnegative().optional(),
-  targetVisitsMonthly: z.coerce.number().int().nonnegative().optional(),
-  targetNewAccountsQuarterly: z.coerce.number().int().nonnegative().optional(),
+  targetRevenueAnnual: z.number({ coerce: true }).nonnegative().optional(),
+  targetVisitsMonthly: z.number({ coerce: true }).int().nonnegative().optional(),
+  targetNewAccountsQuarterly: z.number({ coerce: true }).int().nonnegative().optional(),
 })
 export type CreateTerritoryFormData = z.infer<typeof createTerritorySchema>
 

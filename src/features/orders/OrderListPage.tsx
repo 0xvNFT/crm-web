@@ -25,7 +25,7 @@ const columns: Column<PharmaOrder>[] = [
   { header: 'Account',  accessor: 'account',                      cell: (row) => row.account?.name ?? '—' },
   { header: 'Status',   accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
   { header: 'Total',    accessor: (row) => formatCurrency(row.totalAmount) },
-  { header: 'Owner',    accessor: 'owner',                        cell: (row) => row.owner?.fullName ?? '—' },
+  { header: 'Owner',    accessor: 'createdBy',                    cell: (row) => row.createdBy?.fullName ?? '—' },
   { header: 'Created',  accessor: (row) => formatDate(row.createdAt) },
 ]
 

@@ -32,7 +32,7 @@ export default function OrderFormPage() {
     .filter((a) => a.id && a.name)
     .map((a) => ({
       value: a.id!,
-      label: a.name,
+      label: a.name!,
       sublabel: a.accountType ?? undefined,
     }))
 
