@@ -63,7 +63,7 @@ export function PipelineChart({ data, isLoading, isError }: PipelineChartProps) 
               width={60}
             />
             <Tooltip
-              formatter={(value) => [formatRevenue(Number(value) ?? 0), 'Est. Revenue']}
+              formatter={(value) => [formatRevenue(Number(value)), 'Est. Revenue']}
               labelFormatter={(label) => formatStage(String(label ?? ''))}
               contentStyle={{
                 fontSize: 12,
