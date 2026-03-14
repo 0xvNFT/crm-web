@@ -36,6 +36,23 @@ export function useCreateQuote() {
   })
 }
 
+export function useApproveQuote(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => client.post<PharmaQuote>(`/api/pharma/quotes/${id}/approve`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes', id] }),
+  })
+}
+
+export function useRejectQuote(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (reason: string) =>
+      client.post<PharmaQuote>(`/api/pharma/quotes/${id}/reject`, { reason }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes', id] }),
+  })
+}
+
 export function useQuote(id: string) {
   return useQuery({
     queryKey: ['quotes', id],

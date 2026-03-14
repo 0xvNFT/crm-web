@@ -1,10 +1,15 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useQuote } from '@/api/endpoints/quotes'
+import { useQuote, useApproveQuote, useRejectQuote } from '@/api/endpoints/quotes'
+import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/useToast'
+import { parseApiError } from '@/utils/errors'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -35,11 +40,20 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function QuoteDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { isManager } = useRole()
 
   const { data: quote, isLoading, isError } = useQuote(id ?? '')
+  const { mutate: approveQuote, isPending: isApproving } = useApproveQuote(id ?? '')
+  const { mutate: rejectQuote, isPending: isRejecting } = useRejectQuote(id ?? '')
+
+  const [showApprove, setShowApprove] = useState(false)
+  const [showReject, setShowReject] = useState(false)
 
   if (isLoading) return <LoadingSpinner />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
+
+  const isSubmitted = quote.status === 'submitted' || quote.status === 'pending'
+  const canAct = isManager && isSubmitted
 
   return (
     <div className="space-y-4">
@@ -56,13 +70,23 @@ export default function QuoteDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground">{quote.account.name}</p>
           )}
         </div>
+        {canAct && (
+          <div className="flex gap-2 shrink-0">
+            <Button variant="outline" onClick={() => setShowApprove(true)}>
+              Approve
+            </Button>
+            <Button variant="destructive" onClick={() => setShowReject(true)}>
+              Reject
+            </Button>
+          </div>
+        )}
       </div>
 
       <DetailSection title="Quote Info">
         <DetailField label="Quote Number" value={quote.quoteNumber} />
-        <DetailField label="Status" value={quote.status} />
-        <DetailField label="Valid From" value={quote.validFrom ? formatDate(quote.validFrom) : null} />
-        <DetailField label="Valid Until" value={quote.validUntil ? formatDate(quote.validUntil) : null} />
+        <DetailField label="Status"       value={quote.status} />
+        <DetailField label="Valid From"   value={quote.validFrom ? formatDate(quote.validFrom) : null} />
+        <DetailField label="Valid Until"  value={quote.validUntil ? formatDate(quote.validUntil) : null} />
       </DetailSection>
 
       <DetailSection title="Account">
@@ -71,16 +95,62 @@ export default function QuoteDetailPage() {
       </DetailSection>
 
       <DetailSection title="Amounts">
-        <DetailField label="Subtotal" value={quote.subtotal != null ? formatCurrency(quote.subtotal) : undefined} />
-        <DetailField label="Discount" value={quote.discountAmount != null ? formatCurrency(quote.discountAmount) : undefined} />
-        <DetailField label="Tax" value={quote.taxAmount != null ? formatCurrency(quote.taxAmount) : undefined} />
-        <DetailField label="Total" value={quote.totalAmount != null ? formatCurrency(quote.totalAmount) : undefined} />
+        <DetailField label="Subtotal" value={quote.subtotal != null ? formatCurrency(quote.subtotal) : null} />
+        <DetailField label="Discount" value={quote.discountAmount != null ? formatCurrency(quote.discountAmount) : null} />
+        <DetailField label="Tax"      value={quote.taxAmount != null ? formatCurrency(quote.taxAmount) : null} />
+        <DetailField label="Total"    value={quote.totalAmount != null ? formatCurrency(quote.totalAmount) : null} />
       </DetailSection>
 
       <DetailSection title="Timestamps">
-        <DetailField label="Created" value={quote.createdAt ? formatDate(quote.createdAt) : null} />
+        <DetailField label="Created"      value={quote.createdAt ? formatDate(quote.createdAt) : null} />
         <DetailField label="Last Updated" value={quote.updatedAt ? formatDate(quote.updatedAt) : null} />
       </DetailSection>
+
+      {/* Approve dialog */}
+      <ConfirmDialog
+        open={showApprove}
+        onCancel={() => setShowApprove(false)}
+        onConfirm={() =>
+          approveQuote(undefined, {
+            onSuccess: () => {
+              toast('Quote approved', { variant: 'success' })
+              setShowApprove(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowApprove(false)
+            },
+          })
+        }
+        title="Approve Quote?"
+        description="This will approve the quote and notify the rep. This action cannot be undone."
+        confirmLabel="Approve"
+        isPending={isApproving}
+      />
+
+      {/* Reject dialog */}
+      <ConfirmDialog
+        open={showReject}
+        onCancel={() => setShowReject(false)}
+        onConfirm={(reason) =>
+          rejectQuote(reason!, {
+            onSuccess: () => {
+              toast('Quote rejected', { variant: 'success' })
+              setShowReject(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowReject(false)
+            },
+          })
+        }
+        title="Reject Quote?"
+        description="Provide a reason for rejection. The rep will be notified."
+        confirmLabel="Reject"
+        isPending={isRejecting}
+        requireReason
+        reasonPlaceholder="e.g. Pricing not aligned, needs revision..."
+      />
     </div>
   )
 }

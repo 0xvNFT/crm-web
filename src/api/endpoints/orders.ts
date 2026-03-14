@@ -48,6 +48,23 @@ export function useCreateOrder() {
   })
 }
 
+export function useApproveOrder(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => client.post<PharmaOrder>(`/api/pharma/orders/${id}/approve`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['orders', id] }),
+  })
+}
+
+export function useRejectOrder(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (reason: string) =>
+      client.post<PharmaOrder>(`/api/pharma/orders/${id}/reject`, { reason }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['orders', id] }),
+  })
+}
+
 export function useUpdateOrder(id: string) {
   const qc = useQueryClient()
   return useMutation({
