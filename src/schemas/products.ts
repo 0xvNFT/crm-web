@@ -8,7 +8,7 @@ export const productSchema = z.object({
   strength: z.string().optional(),
   dosageForm: z.string().optional(),
   packageSize: z.string().optional(),
-  unitPrice: z.number({ coerce: true }).min(0, 'Price must be 0 or greater'),
+  unitPrice: z.coerce.number<number>().min(0, 'Price must be 0 or greater'),
   status: z.string().min(1, 'Status is required'),
   controlledSubstance: z.boolean().optional(),
   deaSchedule: z.string().optional(),

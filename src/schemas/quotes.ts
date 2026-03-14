@@ -2,8 +2,8 @@ import { z } from 'zod'
 
 export const quoteItemSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
-  quantity: z.number({ coerce: true }).int().min(1, 'Quantity must be at least 1'),
-  discountPercent: z.number({ coerce: true }).min(0).max(100).default(0),
+  quantity: z.coerce.number<number>().int().min(1, 'Quantity must be at least 1'),
+  discountPercent: z.coerce.number<number>().min(0).max(100).default(0),
   notes: z.string().optional(),
 })
 
@@ -13,8 +13,8 @@ export const quoteSchema = z.object({
   validFrom: z.string().min(1, 'Valid from date is required'),
   validUntil: z.string().min(1, 'Valid until date is required'),
   items: z.array(quoteItemSchema).min(1, 'At least one item is required'),
-  discountPercent: z.number({ coerce: true }).min(0).max(100).optional(),
-  taxAmount: z.number({ coerce: true }).min(0).optional(),
+  discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
+  taxAmount: z.coerce.number<number>().min(0).optional(),
   notes: z.string().optional(),
 })
 
