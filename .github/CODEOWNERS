@@ -1,0 +1,11 @@
+# Global owner — all PRs require review from you
+* @0xvNFT
+
+# CI/CD workflows — extra protection
+.github/ @0xvNFT
+
+# Core architecture files
+src/api/ @0xvNFT
+src/lib/ @0xvNFT
+src/schemas/ @0xvNFT
+src/components/ui/ @0xvNFT
