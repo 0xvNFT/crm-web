@@ -99,11 +99,8 @@ function QuoteLineItemRow({ index, control, errors, onRemove, canRemove, account
           <Input
             type="number"
             min={1}
-            value={quantityField.value ?? ''}
+            {...quantityField}
             onChange={(e) => quantityField.onChange(e.target.value === '' ? '' : Number(e.target.value))}
-            onBlur={quantityField.onBlur}
-            name={quantityField.name}
-            ref={quantityField.ref}
             className={itemErrors?.quantity ? 'border-destructive' : ''}
           />
           {itemErrors?.quantity && (
@@ -119,11 +116,8 @@ function QuoteLineItemRow({ index, control, errors, onRemove, canRemove, account
             min={0}
             max={100}
             step={0.01}
-            value={discountField.value ?? ''}
+            {...discountField}
             onChange={(e) => discountField.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
-            onBlur={discountField.onBlur}
-            name={discountField.name}
-            ref={discountField.ref}
           />
         </div>
 
@@ -146,12 +140,9 @@ function QuoteLineItemRow({ index, control, errors, onRemove, canRemove, account
       <div className="space-y-1">
         <p className="text-xs font-medium text-muted-foreground">Item Notes</p>
         <Input
-          placeholder="Optional note for this item..."
+          {...notesField}
           value={notesField.value ?? ''}
-          onChange={notesField.onChange}
-          onBlur={notesField.onBlur}
-          name={notesField.name}
-          ref={notesField.ref}
+          placeholder="Optional note for this item..."
         />
       </div>
 
