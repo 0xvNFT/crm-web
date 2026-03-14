@@ -79,9 +79,9 @@ export default function QuoteFormPage() {
     const payload = {
       ...data,
       repId: user!.userId,
-      // Strip empty optional strings to undefined
       contactId: data.contactId || undefined,
       notes: data.notes || undefined,
+      items: data.items.map((item) => ({ ...item, discountPercent: item.discountPercent ?? 0 })),
     }
     createQuote(payload, {
       onSuccess: (quote) => {

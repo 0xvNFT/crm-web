@@ -58,7 +58,11 @@ export default function OrderFormPage() {
   const watchedAccountId = useWatch({ control, name: 'accountId' })
 
   function onSubmit(data: OrderFormData) {
-    createOrder(data, {
+    const payload = {
+      ...data,
+      items: data.items.map((item) => ({ ...item, discountPercent: item.discountPercent ?? 0 })),
+    }
+    createOrder(payload, {
       onSuccess: () => {
         toast('Order created successfully', { variant: 'success' })
         navigate('/orders')

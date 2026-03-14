@@ -4,7 +4,7 @@ export const orderItemSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
   batchId: z.string().optional(),
   quantity: z.coerce.number<number>().int().min(1, 'Quantity must be at least 1'),
-  discountPercent: z.coerce.number<number>().min(0).max(100).default(0),
+  discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
 })
 
 export const orderSchema = z.object({
