@@ -69,7 +69,7 @@ export function ActivityChart({ data, isLoading, isError }: ActivityChartProps) 
               ))}
             </Pie>
             <Tooltip
-              formatter={(value, name) => [Number(value) ?? 0, formatType(String(name ?? ''))]}
+              formatter={(value, name) => [Number(value), formatType(String(name ?? ''))]}
               contentStyle={{
                 fontSize: 12,
                 borderRadius: '8px',

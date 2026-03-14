@@ -72,7 +72,7 @@ function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps)
               width={64}
             />
             <Tooltip
-              formatter={(value) => [formatCurrency(Number(value) ?? 0), 'Balance Due']}
+              formatter={(value) => [formatCurrency(Number(value)), 'Balance Due']}
               contentStyle={{
                 fontSize: 12,
                 borderRadius: '8px',
