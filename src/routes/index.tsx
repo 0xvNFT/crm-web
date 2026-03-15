@@ -48,6 +48,9 @@ const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
 const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
 const QuoteFormPage = lazy(() => import('@/features/quotes/QuoteFormPage'))
 
+const InvoiceListPage = lazy(() => import('@/features/invoices/InvoiceListPage'))
+const InvoiceDetailPage = lazy(() => import('@/features/invoices/InvoiceDetailPage'))
+
 const ProductListPage = lazy(() => import('@/features/products/ProductListPage'))
 const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPage'))
 const ProductFormPage = lazy(() => import('@/features/products/ProductFormPage'))
@@ -107,6 +110,8 @@ export function AppRouter() {
           <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
+          <Route path="/invoices" element={<Wrap><InvoiceListPage /></Wrap>} />
+          <Route path="/invoices/:id" element={<Wrap><InvoiceDetailPage /></Wrap>} />
           <Route path="/opportunities" element={<Wrap><PlaceholderPage name="Opportunities" /></Wrap>} />
           <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
           <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />

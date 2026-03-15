@@ -131,6 +131,11 @@ export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportu
 export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status'> & { status?: string }
 export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status'> & { status?: string }
 
+// ─── Invoice request types ────────────────────────────────────────────────────
+export type CreateInvoiceRequest  = components['schemas']['CreateInvoiceRequest']
+export type UpdateInvoiceRequest  = components['schemas']['UpdateInvoiceRequest']
+export type InvoiceItemRequest    = components['schemas']['InvoiceItemRequest']
+
 // ─── Order request types ─────────────────────────────────────────────────────
 export type CreateOrderRequest    = components['schemas']['CreateOrderRequest']
 export type UpdateOrderRequest    = components['schemas']['UpdateOrderRequest']
