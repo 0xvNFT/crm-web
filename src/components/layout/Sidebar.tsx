@@ -19,6 +19,7 @@ import {
   X,
   TrendingUp,
   Package,
+  Receipt,
 } from 'lucide-react'
 
 interface NavItem {
@@ -38,6 +39,7 @@ const NAV_MAIN: NavItem[] = [
   { to: '/activities', label: 'Activities', icon: Activity },
   { to: '/opportunities', label: 'Opportunities', icon: TrendingUp },
   { to: '/visits', label: 'Visits', icon: MapPin },
+  { to: '/invoices', label: 'Invoices', icon: Receipt },
 ]
 
 const NAV_MANAGER: NavItem[] = [

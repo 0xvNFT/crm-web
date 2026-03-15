@@ -150,6 +150,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get invoice by ID */
+        get: operations["getById_12"];
+        /** Update a draft invoice — subject, dates, addresses (ADMIN/MANAGER only) */
+        put: operations["update_8"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/contacts/{id}": {
         parameters: {
             query?: never;
@@ -179,7 +197,7 @@ export interface paths {
         /** Get coaching note by ID */
         get: operations["getById_13"];
         /** Update a coaching note */
-        put: operations["update_8"];
+        put: operations["update_9"];
         post?: never;
         delete?: never;
         options?: never;
@@ -197,7 +215,7 @@ export interface paths {
         /** Get activity by ID */
         get: operations["getById_14"];
         /** Update activity details */
-        put: operations["update_9"];
+        put: operations["update_10"];
         post?: never;
         /** Delete an activity */
         delete: operations["delete_2"];
@@ -216,7 +234,7 @@ export interface paths {
         /** Get account by ID */
         get: operations["getById_15"];
         /** Update an existing account */
-        put: operations["update_10"];
+        put: operations["update_11"];
         post?: never;
         /** Delete an account */
         delete: operations["delete_3"];
@@ -235,7 +253,7 @@ export interface paths {
         /** Get approval rule by ID */
         get: operations["getById_16"];
         /** Update an existing approval rule */
-        put: operations["update_11"];
+        put: operations["update_12"];
         post?: never;
         /** Delete an approval rule */
         delete: operations["delete_4"];
@@ -920,11 +938,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all invoices (paginated). Optional filter: status */
+        /** List invoices (paginated). Optional filters: status, accountId */
         get: operations["getAll_10"];
         put?: never;
-        /** Create a new invoice (ADMIN/MANAGER only) */
+        /** Create a new invoice — invoiceNumber auto-generated (ADMIN/MANAGER only) */
         post: operations["create_9"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pharma/invoices/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Void invoice — any non-paid status → canceled (ADMIN/MANAGER only) */
+        post: operations["voidInvoice"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2128,32 +2163,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/{id}": {
+    "/api/pharma/invoices/search": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get invoice by ID */
-        get: operations["getById_12"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/invoices/by-account/{accountId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List invoices by account (paginated) */
-        get: operations["getByAccount_4"];
+        /** Search invoices by invoice number or subject */
+        get: operations["search_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2323,7 +2341,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search activities by subject */
-        get: operations["search_8"];
+        get: operations["search_9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2374,7 +2392,7 @@ export interface paths {
             cookie?: never;
         };
         /** List activities by account (paginated) */
-        get: operations["getByAccount_5"];
+        get: operations["getByAccount_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2408,7 +2426,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search accounts by name */
-        get: operations["search_9"];
+        get: operations["search_10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3189,6 +3207,67 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        UpdateInvoiceRequest: {
+            subject?: string;
+            /** Format: date */
+            invoiceDate?: string;
+            /** Format: date */
+            dueDate?: string;
+            billingAddress?: string;
+            shippingAddress?: string;
+            shippingMethod?: string;
+            paymentTerms?: string;
+            currency?: string;
+            taxExempt?: boolean;
+        };
+        PharmaInvoice: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            invoiceNumber: string;
+            subject: string;
+            status?: string;
+            account: components["schemas"]["PharmaAccount"];
+            contact?: components["schemas"]["PharmaContact"];
+            order?: components["schemas"]["PharmaOrder"];
+            quote?: components["schemas"]["PharmaQuote"];
+            /** Format: date */
+            invoiceDate: string;
+            /** Format: date */
+            dueDate: string;
+            paymentTerms?: string;
+            totalAmount?: number;
+            balanceDue?: number;
+            currency?: string;
+            billingAddress: string;
+            shippingAddress?: string;
+            shippingMethod?: string;
+            isLocked?: boolean;
+            taxExempt?: boolean;
+            items?: components["schemas"]["PharmaInvoiceItem"][];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaInvoiceItem: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            product?: components["schemas"]["PharmaProduct"];
+            description?: string;
+            quantity: number;
+            unitPrice: number;
+            discountAmount?: number;
+            taxAmount?: number;
+            extendedAmount: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
         UpdateContactRequest: {
             /** Format: uuid */
             accountId?: string;
@@ -3770,7 +3849,6 @@ export interface components {
             opportunity?: components["schemas"]["PharmaOpportunity"];
         };
         CreateInvoiceRequest: {
-            invoiceNumber: string;
             subject: string;
             /** Format: uuid */
             accountId: string;
@@ -3800,54 +3878,6 @@ export interface components {
             unitPrice: number;
             discountAmount?: number;
             taxAmount?: number;
-        };
-        PharmaInvoice: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            invoiceNumber: string;
-            subject: string;
-            status?: string;
-            account: components["schemas"]["PharmaAccount"];
-            contact?: components["schemas"]["PharmaContact"];
-            order?: components["schemas"]["PharmaOrder"];
-            quote?: components["schemas"]["PharmaQuote"];
-            /** Format: date */
-            invoiceDate: string;
-            /** Format: date */
-            dueDate: string;
-            paymentTerms?: string;
-            totalAmount?: number;
-            balanceDue?: number;
-            currency?: string;
-            billingAddress: string;
-            shippingAddress?: string;
-            shippingMethod?: string;
-            isLocked?: boolean;
-            taxExempt?: boolean;
-            items?: components["schemas"]["PharmaInvoiceItem"][];
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaInvoiceItem: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            product?: components["schemas"]["PharmaProduct"];
-            description?: string;
-            quantity: number;
-            unitPrice: number;
-            discountAmount?: number;
-            taxAmount?: number;
-            extendedAmount: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
         };
         CreateContactRequest: {
             /** Format: uuid */
@@ -4110,9 +4140,9 @@ export interface components {
             paged?: boolean;
             unpaged?: boolean;
             /** Format: int32 */
-            pageNumber?: number;
-            /** Format: int32 */
             pageSize?: number;
+            /** Format: int32 */
+            pageNumber?: number;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
@@ -4911,6 +4941,54 @@ export interface operations {
             };
         };
     };
+    getById_12: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaInvoice"];
+                };
+            };
+        };
+    };
+    update_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateInvoiceRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaInvoice"];
+                };
+            };
+        };
+    };
     getContactById: {
         parameters: {
             query?: never;
@@ -5001,7 +5079,7 @@ export interface operations {
             };
         };
     };
-    update_8: {
+    update_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -5049,7 +5127,7 @@ export interface operations {
             };
         };
     };
-    update_9: {
+    update_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -5117,7 +5195,7 @@ export interface operations {
             };
         };
     };
-    update_10: {
+    update_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -5185,7 +5263,7 @@ export interface operations {
             };
         };
     };
-    update_11: {
+    update_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -6408,6 +6486,7 @@ export interface operations {
         parameters: {
             query: {
                 status?: string;
+                accountId?: string;
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;
@@ -6442,6 +6521,28 @@ export interface operations {
         responses: {
             /** @description Invoice created */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaInvoice"];
+                };
+            };
+        };
+    };
+    voidInvoice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8182,37 +8283,13 @@ export interface operations {
             };
         };
     };
-    getById_12: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaInvoice"];
-                };
-            };
-        };
-    };
-    getByAccount_4: {
+    search_8: {
         parameters: {
             query: {
-                pageable: components["schemas"]["Pageable"];
+                q: string;
             };
             header?: never;
-            path: {
-                accountId: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -8223,7 +8300,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaInvoice"];
+                    "*/*": components["schemas"]["PharmaInvoice"][];
                 };
             };
         };
@@ -8427,7 +8504,7 @@ export interface operations {
             };
         };
     };
-    search_8: {
+    search_9: {
         parameters: {
             query: {
                 q: string;
@@ -8497,7 +8574,7 @@ export interface operations {
             };
         };
     };
-    getByAccount_5: {
+    getByAccount_4: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -8543,7 +8620,7 @@ export interface operations {
             };
         };
     };
-    search_9: {
+    search_10: {
         parameters: {
             query: {
                 q: string;
