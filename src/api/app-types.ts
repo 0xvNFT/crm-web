@@ -119,6 +119,7 @@ export type UpdateLeadRequest = Omit<components['schemas']['UpdateLeadRequest'],
 // ─── Activity request types ───────────────────────────────────────────────────
 // Widen config-driven union literals to string
 export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction'> & { activityType: string; status?: string; priority?: string; direction?: string }
+export type UpdateActivityRequest = Omit<components['schemas']['UpdateActivityRequest'], 'status' | 'priority'> & { status?: string; priority?: string }
 
 // ─── Opportunity request types ────────────────────────────────────────────────
 // Widen config-driven union literals to string

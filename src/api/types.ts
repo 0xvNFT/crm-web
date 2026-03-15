@@ -187,6 +187,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/activities/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get activity by ID */
+        get: operations["getById_14"];
+        /** Update activity details */
+        put: operations["update_9"];
+        post?: never;
+        /** Delete an activity */
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/accounts/{id}": {
         parameters: {
             query?: never;
@@ -197,10 +216,10 @@ export interface paths {
         /** Get account by ID */
         get: operations["getById_15"];
         /** Update an existing account */
-        put: operations["update_9"];
+        put: operations["update_10"];
         post?: never;
         /** Delete an account */
-        delete: operations["delete_2"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         patch?: never;
@@ -216,10 +235,10 @@ export interface paths {
         /** Get approval rule by ID */
         get: operations["getById_16"];
         /** Update an existing approval rule */
-        put: operations["update_10"];
+        put: operations["update_11"];
         post?: never;
         /** Delete an approval rule */
-        delete: operations["delete_3"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         patch?: never;
@@ -811,7 +830,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all materials (paginated) */
+        /** List all materials (paginated). Optional filters: status, category */
         get: operations["getAll_8"];
         put?: never;
         /** Create a new material in draft status (ADMIN/MANAGER only) */
@@ -1610,23 +1629,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/by-region/{region}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List territories by region (paginated) */
-        get: operations["getByRegion"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/territories/by-manager/{managerId}": {
         parameters: {
             query?: never;
@@ -1812,23 +1814,6 @@ export interface paths {
         };
         /** List quotes pending manager approval (paginated) */
         get: operations["getPendingApproval"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/quotes/by-status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List quotes by status (paginated) */
-        get: operations["getByStatus"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2041,26 +2026,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/opportunities/by-stage/{stage}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List opportunities by sales stage (paginated)
-         * @description Stage values: prospecting, qualification, proposal, negotiation, closed_won, closed_lost
-         */
-        get: operations["getByStage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/opportunities/by-owner/{ownerId}": {
         parameters: {
             query?: never;
@@ -2129,43 +2094,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials/by-status/{status}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List materials by status (paginated)
-         * @description Status values: draft, pending_approval, approved, archived
-         */
-        get: operations["getByStatus_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/materials/by-category/{category}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List materials by category (paginated) */
-        get: operations["getByCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/leads/search": {
         parameters: {
             query?: never;
@@ -2200,26 +2128,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads/by-status/{status}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List leads by status (paginated)
-         * @description Status values: new, assigned, in_process, converted, recycled, dead
-         */
-        get: operations["getByStatus_2"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/invoices/{id}": {
         parameters: {
             query?: never;
@@ -2237,26 +2145,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/by-status/{status}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List invoices by status (paginated)
-         * @description Status values: draft, sent, paid, overdue, canceled
-         */
-        get: operations["getByStatus_3"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/invoices/by-account/{accountId}": {
         parameters: {
             query?: never;
@@ -2266,40 +2154,6 @@ export interface paths {
         };
         /** List invoices by account (paginated) */
         get: operations["getByAccount_4"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/contacts/type/{contactType}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List contacts by contact type */
-        get: operations["getContactsByType"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/contacts/specialty/{specialty}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List contacts by specialty */
-        get: operations["getContactsBySpecialty"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2461,23 +2315,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get activity by ID */
-        get: operations["getById_14"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/activities/search": {
         parameters: {
             query?: never;
@@ -2487,26 +2324,6 @@ export interface paths {
         };
         /** Search activities by subject */
         get: operations["search_8"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/activities/by-type/{type}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List activities by type (paginated)
-         * @description Type values: call, meeting, task, email, note
-         */
-        get: operations["getByType"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2592,40 +2409,6 @@ export interface paths {
         };
         /** Search accounts by name */
         get: operations["search_9"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/accounts/by-type/{type}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List accounts by type */
-        get: operations["getByType_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pharma/accounts/by-status/{status}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List accounts by status */
-        get: operations["getByStatus_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3406,6 +3189,64 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        UpdateContactRequest: {
+            /** Format: uuid */
+            accountId?: string;
+            /** Format: uuid */
+            ownerId?: string;
+            salutation?: string;
+            firstName?: string;
+            middleName?: string;
+            lastName?: string;
+            title?: string;
+            email?: string;
+            phone?: string;
+            mobile?: string;
+            faxNumber?: string;
+            /** @enum {string} */
+            contactType?: "prescribing_md" | "specialist" | "gp" | "pharmacist" | "nurse" | "admin" | "buyer" | "nurse_practitioner" | "physician_assistant";
+            specialty?: string;
+            prcNumber?: string;
+            /** Format: date */
+            prcExpiryDate?: string;
+            npiNumber?: string;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            prescribingAuthority?: boolean;
+            /** @enum {string} */
+            customerClass?: "A" | "B" | "C";
+            /** @enum {string} */
+            adoptionStage?: "unaware" | "aware" | "user" | "advocate" | "champion";
+            professionalSociety?: string;
+            addressStreet?: string;
+            addressBarangay?: string;
+            addressCity?: string;
+            addressProvince?: string;
+            addressPostalCode?: string;
+            /** @enum {string} */
+            status?: "active" | "inactive" | "do_not_contact";
+            doNotCall?: boolean;
+            emailOptOut?: boolean;
+            /** Format: int32 */
+            yearsOfExperience?: number;
+            /** Format: int32 */
+            patientVolumeMonthly?: number;
+            preferredContactMethod?: string;
+            preferredContactTime?: string;
+            notes?: string;
+        };
+        UpdateCoachingNoteRequest: {
+            noteTitle?: string;
+            feedbackType?: string;
+            detailedFeedback?: string;
+            summaryOfFeedback?: string;
+            reviewedModule?: string;
+            moduleProgressPct?: number;
+            followUpRequired?: boolean;
+            /** Format: date */
+            followUpDate?: string;
+            photoEvidenceUrls?: Record<string, never>;
+        };
         PharmaCoachingNote: {
             /** Format: uuid */
             tenantId?: string;
@@ -3429,6 +3270,66 @@ export interface components {
             followUpDate?: string;
             followUpCompleted?: boolean;
             aiSuggestedNextSteps?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        UpdateActivityRequest: {
+            subject?: string;
+            /** @enum {string} */
+            status?: "planned" | "held" | "completed" | "canceled" | "pending_input";
+            /** @enum {string} */
+            priority?: "high" | "normal" | "low";
+            /** Format: uuid */
+            assignedUserId?: string;
+            /** Format: uuid */
+            accountId?: string;
+            /** Format: uuid */
+            contactId?: string;
+            /** Format: uuid */
+            opportunityId?: string;
+            /** @description ISO-8601 datetime, e.g. "2026-03-10T02:15" or "2026-03-10T02:15:00Z" */
+            startDateTime?: string;
+            /** Format: date */
+            dueDate?: string;
+            /** Format: int32 */
+            durationMinutes?: number;
+            location?: string;
+            description?: string;
+            isPrivate?: boolean;
+            /** @enum {string} */
+            direction?: "inbound" | "outbound";
+            phoneNumber?: string;
+            leftVoiceMail?: boolean;
+        };
+        PharmaActivity: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            subject: string;
+            activityType: string;
+            status?: string;
+            priority?: string;
+            assignedUser: components["schemas"]["User"];
+            account?: components["schemas"]["PharmaAccount"];
+            contact?: components["schemas"]["PharmaContact"];
+            /** Format: uuid */
+            leadId?: string;
+            opportunity?: components["schemas"]["PharmaOpportunity"];
+            /** Format: date-time */
+            startDateTime?: string;
+            /** Format: date */
+            dueDate?: string;
+            /** Format: int32 */
+            durationMinutes?: number;
+            location?: string;
+            description?: string;
+            isPrivate?: boolean;
+            direction?: string;
+            phoneNumber?: string;
+            leftVoiceMail?: boolean;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -3948,6 +3849,53 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        CreateContactRequest: {
+            /** Format: uuid */
+            accountId: string;
+            /** Format: uuid */
+            ownerId?: string;
+            salutation?: string;
+            firstName: string;
+            middleName?: string;
+            lastName: string;
+            title?: string;
+            email?: string;
+            phone?: string;
+            mobile?: string;
+            faxNumber?: string;
+            /** @enum {string} */
+            contactType: "prescribing_md" | "specialist" | "gp" | "pharmacist" | "nurse" | "admin" | "buyer" | "nurse_practitioner" | "physician_assistant";
+            specialty?: string;
+            prcNumber?: string;
+            /** Format: date */
+            prcExpiryDate?: string;
+            npiNumber?: string;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            prescribingAuthority?: boolean;
+            /** @enum {string} */
+            customerClass?: "A" | "B" | "C";
+            /** @enum {string} */
+            adoptionStage?: "unaware" | "aware" | "user" | "advocate" | "champion";
+            professionalSociety?: string;
+            addressStreet?: string;
+            addressBarangay?: string;
+            addressCity?: string;
+            addressProvince?: string;
+            addressPostalCode?: string;
+            /** @enum {string} */
+            status?: "active" | "inactive" | "do_not_contact";
+            leadSource?: string;
+            doNotCall?: boolean;
+            emailOptOut?: boolean;
+            /** Format: int32 */
+            yearsOfExperience?: number;
+            /** Format: int32 */
+            patientVolumeMonthly?: number;
+            preferredContactMethod?: string;
+            preferredContactTime?: string;
+            notes?: string;
+        };
         AddAffiliationRequest: {
             /** Format: uuid */
             accountId?: string;
@@ -3986,15 +3934,26 @@ export interface components {
             updatedAt?: string;
         };
         CreateCoachingNoteRequest: {
-            note: components["schemas"]["PharmaCoachingNote"];
             /** Format: uuid */
-            coachId?: string;
+            coachId: string;
             /** Format: uuid */
-            repId?: string;
+            repId: string;
             /** Format: uuid */
             visitId?: string;
             /** Format: uuid */
             territoryId?: string;
+            noteTitle: string;
+            feedbackType: string;
+            detailedFeedback: string;
+            summaryOfFeedback?: string;
+            reviewedModule?: string;
+            moduleProgressPct?: number;
+            followUpRequired?: boolean;
+            /** Format: date */
+            followUpDate?: string;
+            /** Format: date */
+            dateProvided?: string;
+            photoEvidenceUrls?: Record<string, never>;
         };
         CreateActivityRequest: {
             subject: string;
@@ -4027,38 +3986,6 @@ export interface components {
             direction?: "inbound" | "outbound";
             phoneNumber?: string;
             leftVoiceMail?: boolean;
-        };
-        PharmaActivity: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            subject: string;
-            activityType: string;
-            status?: string;
-            priority?: string;
-            assignedUser: components["schemas"]["User"];
-            account?: components["schemas"]["PharmaAccount"];
-            contact?: components["schemas"]["PharmaContact"];
-            /** Format: uuid */
-            leadId?: string;
-            opportunity?: components["schemas"]["PharmaOpportunity"];
-            /** Format: date-time */
-            startDateTime?: string;
-            /** Format: date */
-            dueDate?: string;
-            /** Format: int32 */
-            durationMinutes?: number;
-            location?: string;
-            description?: string;
-            isPrivate?: boolean;
-            direction?: string;
-            phoneNumber?: string;
-            leftVoiceMail?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
         };
         CreatePharmaAccountRequest: {
             name: string;
@@ -5017,7 +4944,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaContact"];
+                "application/json": components["schemas"]["UpdateContactRequest"];
             };
         };
         responses: {
@@ -5085,7 +5012,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaCoachingNote"];
+                "application/json": components["schemas"]["UpdateCoachingNoteRequest"];
             };
         };
         responses: {
@@ -5097,6 +5024,74 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["PharmaCoachingNote"];
                 };
+            };
+        };
+    };
+    getById_14: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaActivity"];
+                };
+            };
+        };
+    };
+    update_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateActivityRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaActivity"];
+                };
+            };
+        };
+    };
+    delete_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -5122,7 +5117,7 @@ export interface operations {
             };
         };
     };
-    update_9: {
+    update_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -5148,7 +5143,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -5190,7 +5185,7 @@ export interface operations {
             };
         };
     };
-    update_10: {
+    update_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -5216,7 +5211,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -6246,6 +6241,8 @@ export interface operations {
     getAll_8: {
         parameters: {
             query: {
+                status?: string;
+                category?: string;
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;
@@ -6532,7 +6529,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PharmaContact"];
+                "application/json": components["schemas"]["CreateContactRequest"];
             };
         };
         responses: {
@@ -7540,30 +7537,6 @@ export interface operations {
             };
         };
     };
-    getByRegion: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                region: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaTerritory"];
-                };
-            };
-        };
-    };
     getByManager: {
         parameters: {
             query: {
@@ -7787,29 +7760,6 @@ export interface operations {
     getPendingApproval: {
         parameters: {
             query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaQuote"];
-                };
-            };
-        };
-    };
-    getByStatus: {
-        parameters: {
-            query: {
-                status: string;
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;
@@ -8094,30 +8044,6 @@ export interface operations {
             };
         };
     };
-    getByStage: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                stage: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaOpportunity"];
-                };
-            };
-        };
-    };
     getByOwner: {
         parameters: {
             query: {
@@ -8210,54 +8136,6 @@ export interface operations {
             };
         };
     };
-    getByStatus_1: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                status: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaMaterial"];
-                };
-            };
-        };
-    };
-    getByCategory: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                category: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaMaterial"];
-                };
-            };
-        };
-    };
     search_7: {
         parameters: {
             query: {
@@ -8304,30 +8182,6 @@ export interface operations {
             };
         };
     };
-    getByStatus_2: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                status: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaLead"];
-                };
-            };
-        };
-    };
     getById_12: {
         parameters: {
             query?: never;
@@ -8346,30 +8200,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaInvoice"];
-                };
-            };
-        };
-    };
-    getByStatus_3: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                status: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaInvoice"];
                 };
             };
         };
@@ -8394,50 +8224,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PagePharmaInvoice"];
-                };
-            };
-        };
-    };
-    getContactsByType: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                contactType: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaContact"][];
-                };
-            };
-        };
-    };
-    getContactsBySpecialty: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                specialty: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaContact"][];
                 };
             };
         };
@@ -8641,28 +8427,6 @@ export interface operations {
             };
         };
     };
-    getById_14: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaActivity"];
-                };
-            };
-        };
-    };
     search_8: {
         parameters: {
             query: {
@@ -8681,30 +8445,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaActivity"][];
-                };
-            };
-        };
-    };
-    getByType: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                type: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagePharmaActivity"];
                 };
             };
         };
@@ -8810,50 +8550,6 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaAccount"][];
-                };
-            };
-        };
-    };
-    getByType_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                type: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaAccount"][];
-                };
-            };
-        };
-    };
-    getByStatus_4: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                status: string;
-            };
             cookie?: never;
         };
         requestBody?: never;
