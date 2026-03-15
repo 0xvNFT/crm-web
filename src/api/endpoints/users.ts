@@ -7,7 +7,7 @@ export function useStaff(page = 0, size = 20) {
     queryKey: ['users', 'list', { page, size }],
     queryFn: () =>
       client
-        .get<PageUser>('/api/pharma/users', { params: { page, size } })
+        .get<PageUser>('/api/pharma/users', { params: { page, size, sort: 'createdAt,desc' } })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
   })

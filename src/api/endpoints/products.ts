@@ -6,7 +6,7 @@ export function useProducts(page = 0, size = 20) {
   return useQuery({
     queryKey: ['products', 'list', { page, size }],
     queryFn: () =>
-      client.get<PagePharmaProduct>('/api/pharma/products', { params: { page, size } }).then((r) => r.data),
+      client.get<PagePharmaProduct>('/api/pharma/products', { params: { page, size, sort: 'name,asc' } }).then((r) => r.data),
     placeholderData: (prev) => prev,
   })
 }

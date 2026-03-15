@@ -53,7 +53,7 @@ export function useVisitsPendingReview(page = 0, size = 20) {
     queryFn: () =>
       client
         .get<PagePharmaFieldVisit>('/api/pharma/visits/pending-review', {
-          params: { page, size },
+          params: { page, size, sort: 'scheduledStart,desc' },
         })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
