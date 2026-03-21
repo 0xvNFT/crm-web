@@ -111,7 +111,7 @@ export default function AdminPage() {
 
       <InviteDialog open={showInvite} onClose={() => setShowInvite(false)} />
 
-      <EditStaffDialog user={editUser} onClose={() => setEditUser(null)} />
+      <EditStaffDialog key={editUser?.id} user={editUser} onClose={() => setEditUser(null)} />
 
       <ConfirmDialog
         open={!!confirm}
