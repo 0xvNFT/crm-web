@@ -93,7 +93,7 @@ export default function TerritoryDetailPage() {
     reset({
       territoryCode: territory?.territoryCode ?? '',
       territoryName: territory?.territoryName ?? '',
-      region: territory?.region ?? '',
+      region: territory?.region ?? undefined,
       description: territory?.description ?? '',
       status: territory?.status ?? undefined,
       effectiveFrom: territory?.effectiveFrom ?? '',
@@ -223,7 +223,7 @@ export default function TerritoryDetailPage() {
                   name="region"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select region" />
                       </SelectTrigger>
@@ -241,7 +241,7 @@ export default function TerritoryDetailPage() {
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>

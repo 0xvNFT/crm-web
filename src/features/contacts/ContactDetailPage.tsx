@@ -113,7 +113,7 @@ export default function ContactDetailPage() {
       email: contact?.email ?? '',
       phone: contact?.phone ?? '',
       mobile: contact?.mobile ?? '',
-      contactType: contact?.contactType ?? '',
+      contactType: contact?.contactType ?? undefined,
       specialty: contact?.specialty ?? '',
       npiNumber: contact?.npiNumber ?? '',
       deaNumber: contact?.deaNumber ?? '',
