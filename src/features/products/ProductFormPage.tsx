@@ -1,70 +1,49 @@
-import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft } from 'lucide-react'
 import { useProduct, useCreateProduct, useUpdateProduct } from '@/api/endpoints/products'
+import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { productSchema, type ProductFormData } from '@/schemas/products'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import type { PharmaProduct } from '@/api/app-types'
 
-export default function ProductFormPage() {
+// Rendered only after data + config are ready — defaultValues are stable on first useForm call
+function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: boolean }) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const isEdit = !!id
-
   const statusOptions = useConfigOptions('product.status')
-
-  const { data: existing, isLoading: isLoadingProduct } = useProduct(id ?? '')
   const { mutate: createProduct, isPending: isCreating } = useCreateProduct()
   const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct(id ?? '')
   const isPending = isCreating || isUpdating
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ProductFormData>({
+  const { register, control, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      ndcNumber: '',
-      name: '',
-      genericName: '',
-      manufacturer: '',
-      strength: '',
-      dosageForm: '',
-      packageSize: '',
-      unitPrice: 0,
-      status: 'active',
-      controlledSubstance: false,
-      deaSchedule: '',
+    defaultValues: isEdit && existing ? {
+      ndcNumber:           existing.ndcNumber,
+      name:                existing.name,
+      genericName:         existing.genericName ?? '',
+      manufacturer:        existing.manufacturer ?? '',
+      strength:            existing.strength ?? '',
+      dosageForm:          existing.dosageForm ?? '',
+      packageSize:         existing.packageSize ?? '',
+      unitPrice:           existing.unitPrice,
+      status:              existing.status ?? 'active',
+      controlledSubstance: existing.controlledSubstance ?? false,
+      deaSchedule:         existing.deaSchedule ?? '',
+    } : {
+      ndcNumber: '', name: '', genericName: '', manufacturer: '',
+      strength: '', dosageForm: '', packageSize: '',
+      unitPrice: 0, status: 'active', controlledSubstance: false, deaSchedule: '',
     },
   })
-
-  useEffect(() => {
-    if (existing) {
-      reset({
-        ndcNumber: existing.ndcNumber,
-        name: existing.name,
-        genericName: existing.genericName ?? '',
-        manufacturer: existing.manufacturer ?? '',
-        strength: existing.strength ?? '',
-        dosageForm: existing.dosageForm ?? '',
-        packageSize: existing.packageSize ?? '',
-        unitPrice: existing.unitPrice,
-        status: existing.status ?? 'active',
-        controlledSubstance: existing.controlledSubstance ?? false,
-        deaSchedule: existing.deaSchedule ?? '',
-      })
-    }
-  }, [existing, reset])
 
   function onSubmit(data: ProductFormData) {
     if (isEdit) {
@@ -85,8 +64,6 @@ export default function ProductFormPage() {
       })
     }
   }
-
-  if (isEdit && isLoadingProduct) return null
 
   return (
     <div className="space-y-6">
@@ -165,7 +142,7 @@ export default function ProductFormPage() {
                 name="status"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value ?? ''} onValueChange={field.onChange}>
                     <SelectTrigger className={errors.status ? 'border-destructive' : ''}>
                       <SelectValue placeholder="Select status..." />
                     </SelectTrigger>
@@ -214,4 +191,15 @@ export default function ProductFormPage() {
       </form>
     </div>
   )
+}
+
+export default function ProductFormPage() {
+  const { id } = useParams<{ id: string }>()
+  const isEdit = !!id
+  const { data: existing, isLoading: isLoadingProduct } = useProduct(id ?? '')
+  const { isLoading: isLoadingConfig } = useConfig()
+
+  if (isLoadingConfig || (isEdit && isLoadingProduct)) return <LoadingSpinner />
+
+  return <ProductForm existing={existing} isEdit={isEdit} />
 }

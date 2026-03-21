@@ -112,7 +112,7 @@ export default function OpportunityFormPage() {
               name="salesStage"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
                   <SelectContent>
                     {salesStageOptions.map((opt) => (
@@ -128,7 +128,7 @@ export default function OpportunityFormPage() {
               name="forecastCategory"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select forecast" /></SelectTrigger>
                   <SelectContent>
                     {forecastCategoryOptions.map((opt) => (
