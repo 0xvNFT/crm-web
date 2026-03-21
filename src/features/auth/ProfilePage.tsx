@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, X, Check, Shield, User } from 'lucide-react'
+import { Pencil, X, Check, Shield, User, GraduationCap } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useUpdateProfile, useChangePassword } from '@/api/endpoints/auth'
+import { useCoachingByRep } from '@/api/endpoints/coaching'
+import { usePagination } from '@/hooks/usePagination'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { Pagination } from '@/components/shared/Pagination'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import { formatDate, formatLabel } from '@/utils/formatters'
 import {
   profileNameSchema, type ProfileNameFormData,
   changePasswordSchema, type ChangePasswordFormData,
@@ -44,6 +49,57 @@ function FormRow({ label, error, children }: { label: string; error?: string; ch
       {children}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
+  )
+}
+
+// ─── Coaching History ─────────────────────────────────────────────────────────
+function CoachingHistorySection({ userId }: { userId: string }) {
+  const navigate = useNavigate()
+  const { page, goToPage } = usePagination()
+  const { data, isLoading } = useCoachingByRep(userId, page, 10)
+  const notes = data?.content ?? []
+  const totalPages = data?.totalPages ?? 0
+
+  return (
+    <Section title="Coaching History" icon={GraduationCap}>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : notes.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No coaching notes yet.</p>
+      ) : (
+        <div className="space-y-3">
+          <div className="rounded-lg border divide-y overflow-hidden">
+            {notes.map((note) => (
+              <button
+                key={note.id}
+                onClick={() => navigate(`/coaching/${note.id}`)}
+                className="w-full flex items-start justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-medium text-foreground">{note.noteTitle ?? '—'}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {note.feedbackType ? formatLabel(note.feedbackType) : '—'}
+                    {note.coach?.fullName ? ` · ${note.coach.fullName}` : ''}
+                  </p>
+                </div>
+                <div className="text-right shrink-0 ml-4">
+                  <p className="text-xs text-muted-foreground">{formatDate(note.dateProvided)}</p>
+                  {note.followUpRequired && !note.followUpCompleted && (
+                    <span className="text-xs text-amber-600 font-medium">Follow-up pending</span>
+                  )}
+                  {note.followUpRequired && note.followUpCompleted && (
+                    <span className="text-xs text-green-600 font-medium">Follow-up done</span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          )}
+        </div>
+      )}
+    </Section>
   )
 }
 
@@ -138,6 +194,9 @@ export default function ProfilePage() {
           </form>
         )}
       </Section>
+
+      {/* Coaching History — visible to all roles */}
+      {user?.userId && <CoachingHistorySection userId={user.userId} />}
 
       {/* Change Password */}
       <Section title="Security" icon={Shield}>

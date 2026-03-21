@@ -18,6 +18,7 @@ import { formatDate, formatCurrency, formatLabel, formatNumber } from '@/utils/f
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
+import { AccountOpportunitiesSection } from './components/AccountOpportunitiesSection'
 import { AccountInvoicesSection } from './components/AccountInvoicesSection'
 import { AccountVisitsSection } from './components/AccountVisitsSection'
 import { AccountActivitiesSection } from './components/AccountActivitiesSection'
@@ -244,6 +245,7 @@ export default function AccountDetailPage() {
             </div>
           </div>
 
+          <AccountOpportunitiesSection accountId={id ?? ''} />
           <AccountInvoicesSection accountId={id ?? ''} />
           <AccountVisitsSection accountId={id ?? ''} />
           <AccountActivitiesSection accountId={id ?? ''} />

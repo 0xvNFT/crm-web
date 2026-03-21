@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Package,
   Receipt,
+  GraduationCap,
 } from 'lucide-react'
 
 interface NavItem {
@@ -46,6 +47,7 @@ const NAV_MANAGER: NavItem[] = [
   { to: '/territories', label: 'Territories', icon: MapPin, roles: ['ADMIN', 'MANAGER'] },
   { to: '/teams', label: 'Teams', icon: Users2, roles: ['ADMIN', 'MANAGER'] },
   { to: '/products', label: 'Products', icon: Package, roles: ['ADMIN', 'MANAGER'] },
+  { to: '/coaching', label: 'Coaching', icon: GraduationCap, roles: ['ADMIN', 'MANAGER'] },
   { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN', 'MANAGER'] },
 ]
 
