@@ -94,7 +94,7 @@ export default function TerritoryFormPage() {
               name="region"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select region" />
                   </SelectTrigger>
@@ -112,7 +112,7 @@ export default function TerritoryFormPage() {
               name="status"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? 'active'} onValueChange={field.onChange}>
+                <Select value={field.value || 'active'} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
