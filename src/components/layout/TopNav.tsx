@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSidebarContext } from '@/hooks/useSidebarContext'
-import { useUnreadNotifications, useMarkNotificationRead } from '@/api/endpoints/notifications'
+import { useUnreadNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/api/endpoints/notifications'
 import { Bell, Menu, LogOut, User, ChevronDown, ChevronRight, Check } from 'lucide-react'
 import {
   DropdownMenu,
@@ -28,11 +28,24 @@ const ROUTE_LABELS: Record<string, string> = {
   teams: 'Teams',
   reports: 'Reports',
   admin: 'Admin',
+  invoices: 'Invoices',
   profile: 'Profile',
   new: 'New',
 }
 
-// entityType → route prefix (for navigate-on-click)
+// notification type → route prefix (per backend contract)
+const TYPE_ROUTES: Record<string, string> = {
+  ORDER_PENDING_APPROVAL: 'orders',
+  ORDER_APPROVED:         'orders',
+  ORDER_REJECTED:         'orders',
+  QUOTE_PENDING_APPROVAL: 'quotes',
+  QUOTE_APPROVED:         'quotes',
+  QUOTE_REJECTED:         'quotes',
+  INVOICE_OVERDUE:        'invoices',
+  LEAD_ASSIGNED:          'leads',
+}
+
+// entityType fallback (for any future types not yet in TYPE_ROUTES)
 const ENTITY_ROUTES: Record<string, string> = {
   ACCOUNT: 'accounts',
   CONTACT: 'contacts',
@@ -41,6 +54,7 @@ const ENTITY_ROUTES: Record<string, string> = {
   QUOTE: 'quotes',
   ACTIVITY: 'activities',
   VISIT: 'visits',
+  INVOICE: 'invoices',
 }
 
 function isUuid(s: string) {
@@ -65,6 +79,7 @@ function NotificationBell() {
   const navigate = useNavigate()
   const { data } = useUnreadNotifications()
   const { mutate: markRead } = useMarkNotificationRead()
+  const { mutate: markAllRead, isPending: isMarkingAll } = useMarkAllNotificationsRead()
 
   const notifications = data?.content ?? []
   const unreadCount = notifications.filter((n) => !n.readAt).length
@@ -72,7 +87,8 @@ function NotificationBell() {
   function handleClick(n: Notification) {
     if (!n.id) return
     if (!n.readAt) markRead(n.id)
-    const route = n.entityType ? ENTITY_ROUTES[n.entityType] : null
+    // Prefer type-based routing (precise), fall back to entityType
+    const route = (n.type ? TYPE_ROUTES[n.type] : null) ?? (n.entityType ? ENTITY_ROUTES[n.entityType] : null)
     if (route && n.entityId) navigate(`/${route}/${n.entityId}`)
   }
 
@@ -96,9 +112,13 @@ function NotificationBell() {
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
           {unreadCount > 0 && (
-            <span className="text-xs font-normal text-muted-foreground">
-              {unreadCount} unread
-            </span>
+            <button
+              onClick={(e) => { e.stopPropagation(); markAllRead() }}
+              disabled={isMarkingAll}
+              className="text-xs font-normal text-primary hover:underline disabled:opacity-50"
+            >
+              Mark all read
+            </button>
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -114,7 +134,7 @@ function NotificationBell() {
               onClick={() => handleClick(n)}
               className="flex items-start gap-2.5 px-3 py-2.5 cursor-pointer"
             >
-              {/* Unread indicator */}
+              {/* Unread indicator dot */}
               <span
                 className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
                   n.readAt ? 'bg-transparent' : 'bg-primary'
