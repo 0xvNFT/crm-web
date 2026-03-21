@@ -37,6 +37,34 @@ export function useActivity(id: string) {
   })
 }
 
+export function useActivitiesByContact(contactId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['activities', 'by-contact', contactId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaActivity>(`/api/pharma/activities/by-contact/${contactId}`, {
+          params: { page, size, sort: 'createdAt,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!contactId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useActivitiesByAccount(accountId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['activities', 'by-account', accountId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaActivity>(`/api/pharma/activities/by-account/${accountId}`, {
+          params: { page, size, sort: 'createdAt,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!accountId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useCreateActivity() {
   const qc = useQueryClient()
   return useMutation({

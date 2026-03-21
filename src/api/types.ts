@@ -6313,6 +6313,7 @@ export interface operations {
                 salesStage?: string;
                 accountId?: string;
                 ownerId?: string;
+                contactId?: string;
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;

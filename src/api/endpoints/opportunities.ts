@@ -43,6 +43,20 @@ export function useOpportunity(id: string) {
   })
 }
 
+export function useOpportunitiesByContact(contactId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['opportunities', 'by-contact', contactId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaOpportunity>('/api/pharma/opportunities', {
+          params: { page, size, sort: 'createdAt,desc', contactId },
+        })
+        .then((r) => r.data),
+    enabled: !!contactId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useOpportunitiesByAccount(accountId: string, page = 0, size = 10) {
   return useQuery({
     queryKey: ['opportunities', 'by-account', accountId, { page, size }],
