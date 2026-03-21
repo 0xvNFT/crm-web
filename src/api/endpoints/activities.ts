@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PharmaActivity, PagePharmaActivity, UpdateActivityRequest } from '@/api/app-types'
+import type { PharmaActivity, PagePharmaActivity, CreateActivityRequest, UpdateActivityRequest } from '@/api/app-types'
 
 export function useActivities(page = 0, size = 20, filters: Record<string, string> = {}) {
   const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
@@ -34,6 +34,15 @@ export function useActivity(id: string) {
         .get<PharmaActivity>(`/api/pharma/activities/${id}`)
         .then((r) => r.data),
     enabled: !!id,
+  })
+}
+
+export function useCreateActivity() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateActivityRequest) =>
+      client.post<PharmaActivity>('/api/pharma/activities', data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['activities', 'list'] }),
   })
 }
 
