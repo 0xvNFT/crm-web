@@ -48,8 +48,8 @@ export function useOpportunitiesByAccount(accountId: string, page = 0, size = 10
     queryKey: ['opportunities', 'by-account', accountId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaOpportunity>(`/api/pharma/opportunities/by-account/${accountId}`, {
-          params: { page, size, sort: 'createdAt,desc' },
+        .get<PagePharmaOpportunity>('/api/pharma/opportunities', {
+          params: { page, size, sort: 'createdAt,desc', accountId },
         })
         .then((r) => r.data),
     enabled: !!accountId,
