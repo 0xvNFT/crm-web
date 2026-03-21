@@ -206,7 +206,7 @@ export default function OpportunityDetailPage() {
                 Advance to {formatLabel(nextStage)}
               </Button>
             )}
-            <Button variant="outline" size="sm" onClick={startEdit}>
+            <Button variant="outline" size="sm" onClick={() => navigate(`/opportunities/${id}/edit`)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
               Edit
             </Button>
