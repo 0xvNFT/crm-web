@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateOpportunity } from '@/api/endpoints/opportunities'
+import { useCreateOpportunity, useUpdateOpportunity, useOpportunity } from '@/api/endpoints/opportunities'
 import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useStaffSearch } from '@/api/endpoints/users'
+import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { opportunityFormSchema, type OpportunityFormData } from '@/schemas/opportunities'
@@ -16,8 +17,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import type { PharmaOpportunity } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -45,49 +48,84 @@ function FormRow({ label, required, error, children }: {
   )
 }
 
-export default function OpportunityFormPage() {
+// Rendered only after data + config are ready — defaultValues are stable on first useForm call
+function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportunity; isEdit: boolean }) {
   const navigate = useNavigate()
-  const { mutate: createOpportunity, isPending } = useCreateOpportunity()
+  const { id } = useParams<{ id: string }>()
+  const { mutate: createOpportunity, isPending: isCreating } = useCreateOpportunity()
+  const { mutate: updateOpportunity, isPending: isUpdating } = useUpdateOpportunity(id ?? '')
+  const isPending = isCreating || isUpdating
 
+  const [ownerQuery, setOwnerQuery] = useState('')
   const [accountQuery, setAccountQuery] = useState('')
-  const [ownerQuery, setOwnerQuery]     = useState('')
-  const debouncedAccountQuery = useDebounce(accountQuery, 300)
   const debouncedOwnerQuery   = useDebounce(ownerQuery, 300)
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
 
-  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
   const { data: ownerResults,   isLoading: isSearchingOwners   } = useStaffSearch(debouncedOwnerQuery)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
 
   const salesStageOptions       = useConfigOptions('opportunity.salesStage')
   const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
-
-  const accountOptions: ComboboxOption[] = (accountResults ?? []).map((a) => ({
-    value: a.id!,
-    label: a.name ?? '',
-  }))
 
   const ownerOptions: ComboboxOption[] = (ownerResults ?? []).map((u) => ({
     value: u.id!,
     label: (u.fullName ?? u.email ?? '') as string,
   }))
+  const accountOptions: ComboboxOption[] = (accountResults ?? []).map((a) => ({
+    value: a.id!,
+    label: a.name ?? '',
+  }))
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<OpportunityFormData>({
+  // Combobox selectedOption — provides label before search runs in edit mode
+  const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.owner
+    ? { value: opportunity.owner.id!, label: opportunity.owner.fullName ?? opportunity.owner.email ?? '' }
+    : undefined
+  // Account is read-only in edit (backend rejects accountId changes) — show as Combobox for create only
+  const selectedAccountOption: ComboboxOption | undefined = isEdit && opportunity?.account
+    ? { value: opportunity.account.id!, label: opportunity.account.name ?? '' }
+    : undefined
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm<OpportunityFormData>({
     resolver: zodResolver(opportunityFormSchema),
-    defaultValues: { budgetConfirmed: false },
+    defaultValues: isEdit && opportunity ? {
+      topic:            opportunity.topic ?? '',
+      description:      opportunity.description ?? '',
+      accountId:        opportunity.account?.id ?? '',
+      ownerId:          opportunity.owner?.id ?? '',
+      salesStage:       opportunity.salesStage ?? '',
+      forecastCategory: opportunity.forecastCategory ?? '',
+      estRevenue:       opportunity.estRevenue != null ? Number(opportunity.estRevenue) : undefined,
+      probabilityPct:   opportunity.probabilityPct != null ? Number(opportunity.probabilityPct) : undefined,
+      currency:         opportunity.currency ?? '',
+      estCloseDate:     opportunity.estCloseDate ?? '',
+      leadSource:       opportunity.leadSource ?? '',
+      type:             opportunity.type ?? '',
+      budgetConfirmed:  opportunity.budgetConfirmed ?? false,
+    } : {
+      budgetConfirmed: false,
+    },
   })
 
   function onSubmit(data: OpportunityFormData) {
-    createOpportunity(data, {
-      onSuccess: (created) => {
-        toast('Opportunity created', { variant: 'success' })
-        navigate(`/opportunities/${created.id}`)
-      },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
-    })
+    if (isEdit) {
+      // accountId is immutable after creation — omit from update payload
+      const { accountId: _accountId, salesStage: _salesStage, ...updateData } = data
+      updateOpportunity(updateData, {
+        onSuccess: () => {
+          toast('Opportunity updated', { variant: 'success' })
+          navigate(`/opportunities/${id}`)
+        },
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      })
+    } else {
+      createOpportunity(data, {
+        onSuccess: (created) => {
+          toast('Opportunity created', { variant: 'success' })
+          navigate(`/opportunities/${created.id}`)
+        },
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      })
+    }
   }
 
   return (
@@ -96,7 +134,10 @@ export default function OpportunityFormPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <PageHeader title="New Opportunity" description="Create a new sales opportunity" />
+        <PageHeader
+          title={isEdit ? 'Edit Opportunity' : 'New Opportunity'}
+          description={isEdit ? 'Update opportunity details' : 'Create a new sales opportunity'}
+        />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -112,8 +153,14 @@ export default function OpportunityFormPage() {
               name="salesStage"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
+                <Select
+                  value={field.value || undefined}
+                  onValueChange={field.onChange}
+                  disabled={isEdit}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={isEdit ? (opportunity?.salesStage ?? '—') : 'Select stage'} />
+                  </SelectTrigger>
                   <SelectContent>
                     {salesStageOptions.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
@@ -180,10 +227,12 @@ export default function OpportunityFormPage() {
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   options={accountOptions}
+                  selectedOption={selectedAccountOption}
                   placeholder="Search accounts…"
                   onSearchChange={setAccountQuery}
                   isLoading={isSearchingAccounts}
                   error={!!errors.accountId}
+                  disabled={isEdit}
                 />
               )}
             />
@@ -197,6 +246,7 @@ export default function OpportunityFormPage() {
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   options={ownerOptions}
+                  selectedOption={selectedOwnerOption}
                   placeholder="Search staff…"
                   onSearchChange={setOwnerQuery}
                   isLoading={isSearchingOwners}
@@ -217,10 +267,21 @@ export default function OpportunityFormPage() {
             Cancel
           </Button>
           <Button type="submit" disabled={isPending}>
-            {isPending ? 'Creating…' : 'Create Opportunity'}
+            {isPending ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save Changes' : 'Create Opportunity')}
           </Button>
         </div>
       </form>
     </div>
   )
+}
+
+export default function OpportunityFormPage() {
+  const { id } = useParams<{ id: string }>()
+  const isEdit = !!id
+  const { data: opportunity, isLoading: isLoadingOpportunity } = useOpportunity(id ?? '')
+  const { isLoading: isLoadingConfig } = useConfig()
+
+  if (isLoadingConfig || (isEdit && isLoadingOpportunity)) return <LoadingSpinner />
+
+  return <OpportunityForm opportunity={opportunity} isEdit={isEdit} />
 }
