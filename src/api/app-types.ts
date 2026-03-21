@@ -145,6 +145,11 @@ export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportu
 export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status'> & { status?: string }
 export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status'> & { status?: string }
 
+// ─── Coaching note request types ─────────────────────────────────────────────
+// feedbackType and reviewedModule are config-driven — widened to string
+export type CreateCoachingNoteRequest = components['schemas']['CreateCoachingNoteRequest']
+export type UpdateCoachingNoteRequest = components['schemas']['UpdateCoachingNoteRequest']
+
 // ─── Invoice request types ────────────────────────────────────────────────────
 export type CreateInvoiceRequest  = components['schemas']['CreateInvoiceRequest']
 export type UpdateInvoiceRequest  = components['schemas']['UpdateInvoiceRequest']

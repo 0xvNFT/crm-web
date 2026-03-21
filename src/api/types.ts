@@ -212,9 +212,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get coaching note by ID */
+        /** Get coaching note by ID — ADMIN/MANAGER/FIELD_REP */
         get: operations["getById_13"];
-        /** Update a coaching note */
+        /** Update a coaching note — ADMIN/MANAGER only */
         put: operations["update_10"];
         post?: never;
         delete?: never;
@@ -1058,9 +1058,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List all coaching notes (paginated) — ADMIN/MANAGER only */
+        get: operations["getAll_11"];
         put?: never;
-        /** Create a coaching note */
+        /** Create a coaching note — ADMIN/MANAGER only */
         post: operations["create_10"];
         delete?: never;
         options?: never;
@@ -1077,7 +1078,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Mark a coaching follow-up as completed */
+        /** Mark a coaching follow-up as completed — ADMIN/MANAGER only */
         post: operations["completeFollowUp"];
         delete?: never;
         options?: never;
@@ -1093,7 +1094,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all activities (paginated). Optional filters: status, activityType */
-        get: operations["getAll_11"];
+        get: operations["getAll_12"];
         put?: never;
         /** Create a new activity (call, meeting, task, email, note) */
         post: operations["create_11"];
@@ -1128,7 +1129,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all accounts (paginated). Optional filters: status, accountType */
-        get: operations["getAll_12"];
+        get: operations["getAll_13"];
         put?: never;
         /** Create a new account */
         post: operations["create_12"];
@@ -1197,7 +1198,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all approval rules (paginated) */
-        get: operations["getAll_14"];
+        get: operations["getAll_15"];
         put?: never;
         /** Create a new approval rule */
         post: operations["create_13"];
@@ -2263,6 +2264,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/coaching/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search coaching notes by title — ADMIN/MANAGER only */
+        get: operations["search_10"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/coaching/overdue-followups": {
         parameters: {
             query?: never;
@@ -2270,7 +2288,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List overdue follow-up coaching notes */
+        /** List overdue follow-up coaching notes (paginated) — ADMIN/MANAGER only */
         get: operations["getOverdueFollowUps"];
         put?: never;
         post?: never;
@@ -2287,7 +2305,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List coaching notes for a rep (paginated) */
+        /** List coaching notes for a rep (paginated) — ADMIN/MANAGER/FIELD_REP */
         get: operations["getByRep_4"];
         put?: never;
         post?: never;
@@ -2304,7 +2322,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List coaching notes for a rep within a date range */
+        /** List coaching notes for a rep within a date range — ADMIN/MANAGER/FIELD_REP */
         get: operations["getByRepAndDateRange"];
         put?: never;
         post?: never;
@@ -2321,7 +2339,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List coaching notes created by a coach (paginated) */
+        /** List coaching notes created by a coach (paginated) — ADMIN/MANAGER only */
         get: operations["getByCoach"];
         put?: never;
         post?: never;
@@ -2339,7 +2357,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search activities by subject */
-        get: operations["search_10"];
+        get: operations["search_11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2424,7 +2442,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search accounts by name */
-        get: operations["search_11"];
+        get: operations["search_12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2458,7 +2476,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get all notifications (read + unread) for the current user (paginated) */
-        get: operations["getAll_13"];
+        get: operations["getAll_14"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6760,6 +6778,28 @@ export interface operations {
             };
         };
     };
+    getAll_11: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagePharmaCoachingNote"];
+                };
+            };
+        };
+    };
     create_10: {
         parameters: {
             query?: never;
@@ -6806,7 +6846,7 @@ export interface operations {
             };
         };
     };
-    getAll_11: {
+    getAll_12: {
         parameters: {
             query: {
                 status?: string;
@@ -6876,7 +6916,7 @@ export interface operations {
             };
         };
     };
-    getAll_12: {
+    getAll_13: {
         parameters: {
             query: {
                 status?: string;
@@ -6985,7 +7025,7 @@ export interface operations {
             };
         };
     };
-    getAll_14: {
+    getAll_15: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -8448,9 +8488,11 @@ export interface operations {
             };
         };
     };
-    getOverdueFollowUps: {
+    search_10: {
         parameters: {
-            query?: never;
+            query: {
+                q: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -8464,6 +8506,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaCoachingNote"][];
+                };
+            };
+        };
+    };
+    getOverdueFollowUps: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagePharmaCoachingNote"];
                 };
             };
         };
@@ -8541,7 +8605,7 @@ export interface operations {
             };
         };
     };
-    search_10: {
+    search_11: {
         parameters: {
             query: {
                 q: string;
@@ -8657,7 +8721,7 @@ export interface operations {
             };
         };
     };
-    search_11: {
+    search_12: {
         parameters: {
             query: {
                 q: string;
@@ -8701,7 +8765,7 @@ export interface operations {
             };
         };
     };
-    getAll_13: {
+    getAll_14: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
