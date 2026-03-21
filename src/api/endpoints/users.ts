@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { User, PageUser, CreateStaffRequest, UpdateStaffRequest, TenantUserSummary } from '@/api/app-types'
+import type { User, PageUser, CreateStaffRequest, UpdateStaffRequest } from '@/api/app-types'
 
 export function useStaff(page = 0, size = 20) {
   return useQuery({
@@ -18,7 +18,7 @@ export function useStaffSearch(q: string) {
     queryKey: ['users', 'search', q],
     queryFn: () =>
       client
-        .get<TenantUserSummary[]>('/api/pharma/users/search', { params: { q } })
+        .get<User[]>('/api/pharma/users/search', { params: { q } })
         .then((r) => r.data),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
