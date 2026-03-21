@@ -18,6 +18,7 @@ import { formatDate, formatCurrency, formatLabel, formatNumber } from '@/utils/f
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
+import { AccountInvoicesSection } from './components/AccountInvoicesSection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -240,6 +241,8 @@ export default function AccountDetailPage() {
               <DetailField label="Last Updated" value={formatDate(account.updatedAt)} />
             </div>
           </div>
+
+          <AccountInvoicesSection accountId={id ?? ''} />
         </div>
       )}
 
