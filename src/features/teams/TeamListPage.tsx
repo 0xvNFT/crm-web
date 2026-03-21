@@ -68,13 +68,14 @@ export default function TeamListPage() {
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
+  const error = isSearching ? searchQuery.error : listQuery.error
   const data: PharmaTeam[] = isSearching
     ? (searchQuery.data ?? [])
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <LoadingSpinner />
-  if (isError) return <ErrorMessage />
+  if (isError) return <ErrorMessage error={error} />
 
   return (
     <div className="space-y-4">

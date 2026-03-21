@@ -7,6 +7,7 @@ interface ActivityChartProps {
   data: ActivitySummary[] | undefined
   isLoading: boolean
   isError: boolean
+  error?: unknown
 }
 
 // Aggregate by activityType (collapse status dimension for the donut)
@@ -33,7 +34,7 @@ const COLORS = [
   'hsl(231 30% 85%)',
 ]
 
-export function ActivityChart({ data, isLoading, isError }: ActivityChartProps) {
+export function ActivityChart({ data, isLoading, isError, error }: ActivityChartProps) {
   const chartData = data ? aggregateByType(data) : []
 
   return (
@@ -44,7 +45,7 @@ export function ActivityChart({ data, isLoading, isError }: ActivityChartProps) 
       </div>
 
       {isLoading && <LoadingSpinner className="py-10" />}
-      {isError && <ErrorMessage className="py-10" />}
+      {isError && <ErrorMessage className="py-10" error={error} />}
 
       {data && chartData.length === 0 && (
         <div className="flex items-center justify-center py-10">
