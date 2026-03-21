@@ -9,8 +9,9 @@ export function useUnreadNotifications() {
       client
         .get<PageNotification>('/api/notifications', { params: { page: 0, size: 20 } })
         .then((r) => r.data),
-    // Poll every 60s so the badge stays reasonably fresh without hammering the server
-    refetchInterval: 60_000,
+    // Poll every 30s + refetch on tab focus so badge stays fresh
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   })
 }
 
@@ -30,6 +31,17 @@ export function useMarkNotificationRead() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post<Notification>(`/api/notifications/${id}/read`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] })
+    },
+  })
+}
+
+export function useMarkAllNotificationsRead() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      client.post('/api/notifications/read-all').then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['notifications'] })
     },
