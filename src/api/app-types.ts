@@ -181,6 +181,10 @@ export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'
 export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority'> & { visitType?: string; priority?: string }
 export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
 
+// ─── Admin (SUPER_ADMIN only — /api/admin/**) ────────────────────────────────
+export type PlanResponse      = components['schemas']['PlanResponse']
+export type UpdatePlanRequest = components['schemas']['UpdatePlanRequest']
+
 // ─── Billing ─────────────────────────────────────────────────────────────────
 export type BillingSubscription  = components['schemas']['Subscription']
 export type CheckoutRequest      = components['schemas']['CheckoutRequest']   // { planId, successUrl, cancelUrl }
