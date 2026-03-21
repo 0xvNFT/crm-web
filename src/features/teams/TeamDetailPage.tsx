@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, UserPlus, Users2 } from 'lucide-react'
+import { ArrowLeft, Pencil, Trash2, UserPlus, Users2 } from 'lucide-react'
 import { useTeam, useTeamMembers, useDeactivateTeam, useReactivateTeam, useAddTeamMember, useRemoveTeamMember } from '@/api/endpoints/teams'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
@@ -133,6 +133,10 @@ export default function TeamDetailPage() {
 
         {isManager && (
           <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={() => navigate(`/teams/${id}/edit`)}>
+              <Pencil className="h-3.5 w-3.5 mr-1.5" />
+              Edit
+            </Button>
             {team.isActive && (
               <Button variant="outline" size="sm" onClick={() => setShowAddMember((v) => !v)}>
                 <UserPlus className="h-3.5 w-3.5 mr-1.5" />

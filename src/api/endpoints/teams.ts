@@ -5,6 +5,7 @@ import type {
   PagePharmaTeam,
   TeamMemberResponse,
   CreateTeamRequest,
+  UpdateTeamRequest,
 } from '@/api/app-types'
 
 export function useTeams(page = 0, size = 20, filters: Record<string, string> = {}) {
@@ -56,6 +57,18 @@ export function useCreateTeam() {
     mutationFn: (data: CreateTeamRequest) =>
       client.post<PharmaTeam>('/api/pharma/teams', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['teams'] }),
+  })
+}
+
+export function useUpdateTeam(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UpdateTeamRequest) =>
+      client.put<PharmaTeam>(`/api/pharma/teams/${id}`, data).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['teams', id] })
+      qc.invalidateQueries({ queryKey: ['teams', 'list'] })
+    },
   })
 }
 

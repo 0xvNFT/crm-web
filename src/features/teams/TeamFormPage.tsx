@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateTeam } from '@/api/endpoints/teams'
+import { useCreateTeam, useUpdateTeam, useTeam } from '@/api/endpoints/teams'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,9 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import { createTeamSchema, type CreateTeamFormData } from '@/schemas/teams'
+import { createTeamSchema, updateTeamSchema, type UpdateTeamFormData } from '@/schemas/teams'
+import type { PharmaTeam } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -23,12 +25,7 @@ function FormSection({ title, children }: { title: string; children: React.React
   )
 }
 
-function FormRow({
-  label,
-  required,
-  error,
-  children,
-}: {
+function FormRow({ label, required, error, children }: {
   label: string
   required?: boolean
   error?: string
@@ -46,33 +43,48 @@ function FormRow({
   )
 }
 
-export default function TeamFormPage() {
+// Rendered only after data is ready — defaultValues are stable on first useForm call
+function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
   const navigate = useNavigate()
-  const { mutate: createTeam, isPending } = useCreateTeam()
+  const { id } = useParams<{ id: string }>()
+  const { mutate: createTeam, isPending: isCreating } = useCreateTeam()
+  const { mutate: updateTeam, isPending: isUpdating } = useUpdateTeam(id ?? '')
+  const isPending = isCreating || isUpdating
   const teamTypeOptions = useConfigOptions('team.type')
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateTeamFormData>({
-    resolver: zodResolver(createTeamSchema),
+  const schema = isEdit ? updateTeamSchema : createTeamSchema
+
+  const { register, control, handleSubmit, formState: { errors } } = useForm<UpdateTeamFormData>({
+    resolver: zodResolver(schema),
+    defaultValues: isEdit && team ? {
+      name:         team.name ?? '',
+      teamType:     team.teamType ?? '',
+      description:  team.description ?? '',
+      emailAddress: team.emailAddress ?? '',
+    } : {},
   })
 
-  function onSubmit(data: CreateTeamFormData) {
-    // Convert empty emailAddress string to undefined so the backend doesn't receive an empty string
-    const payload = {
-      ...data,
-      emailAddress: data.emailAddress?.trim() || undefined,
+  function onSubmit(data: UpdateTeamFormData) {
+    // Strip empty emailAddress — backend rejects empty string
+    const payload = { ...data, emailAddress: data.emailAddress?.trim() || undefined }
+
+    if (isEdit) {
+      updateTeam(payload, {
+        onSuccess: () => {
+          toast('Team updated', { variant: 'success' })
+          navigate(`/teams/${id}`)
+        },
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      })
+    } else {
+      createTeam(payload, {
+        onSuccess: (created) => {
+          toast('Team created', { variant: 'success' })
+          navigate(`/teams/${created.id}`)
+        },
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      })
     }
-    createTeam(payload, {
-      onSuccess: (team) => {
-        toast('Team created', { variant: 'success' })
-        navigate(`/teams/${team.id}`)
-      },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
-    })
   }
 
   return (
@@ -81,17 +93,16 @@ export default function TeamFormPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <PageHeader title="New Team" description="Create a new field force team" />
+        <PageHeader
+          title={isEdit ? 'Edit Team' : 'New Team'}
+          description={isEdit ? 'Update team details' : 'Create a new field force team'}
+        />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormSection title="Team Info">
           <FormRow label="Team Name" required error={errors.name?.message}>
-            <Input
-              {...register('name')}
-              placeholder="e.g. Metro Manila Sales Team"
-              autoFocus
-            />
+            <Input {...register('name')} placeholder="e.g. Metro Manila Sales Team" autoFocus />
           </FormRow>
           <FormRow label="Team Type" error={errors.teamType?.message}>
             <Controller
@@ -112,19 +123,11 @@ export default function TeamFormPage() {
             />
           </FormRow>
           <FormRow label="Email Address" error={errors.emailAddress?.message}>
-            <Input
-              {...register('emailAddress')}
-              type="email"
-              placeholder="team@example.com"
-            />
+            <Input {...register('emailAddress')} type="email" placeholder="team@example.com" />
           </FormRow>
           <div className="sm:col-span-2">
             <FormRow label="Description" error={errors.description?.message}>
-              <Textarea
-                {...register('description')}
-                placeholder="Optional description"
-                rows={3}
-              />
+              <Textarea {...register('description')} placeholder="Optional description" rows={3} />
             </FormRow>
           </div>
         </FormSection>
@@ -135,10 +138,20 @@ export default function TeamFormPage() {
             Cancel
           </Button>
           <Button type="submit" disabled={isPending}>
-            {isPending ? 'Creating…' : 'Create Team'}
+            {isPending ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save Changes' : 'Create Team')}
           </Button>
         </div>
       </form>
     </div>
   )
+}
+
+export default function TeamFormPage() {
+  const { id } = useParams<{ id: string }>()
+  const isEdit = !!id
+  const { data: team, isLoading: isLoadingTeam } = useTeam(id ?? '')
+
+  if (isEdit && isLoadingTeam) return <LoadingSpinner />
+
+  return <TeamForm team={team} isEdit={isEdit} />
 }
