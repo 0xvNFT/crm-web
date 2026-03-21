@@ -169,6 +169,14 @@ export function AppRouter() {
             }
           />
           <Route
+            path="/teams/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><TeamFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
             path="/teams/:id"
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
