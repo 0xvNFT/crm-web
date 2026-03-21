@@ -44,6 +44,9 @@ const OrderDetailPage = lazy(() => import('@/features/orders/OrderDetailPage'))
 const OrderFormPage = lazy(() => import('@/features/orders/OrderFormPage'))
 const ActivityListPage = lazy(() => import('@/features/activities/ActivityListPage'))
 const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDetailPage'))
+const ActivityFormPage = lazy(() => import('@/features/activities/ActivityFormPage'))
+const LeadFormPage = lazy(() => import('@/features/leads/LeadFormPage'))
+const OpportunityFormPage = lazy(() => import('@/features/opportunities/OpportunityFormPage'))
 const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
 const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
 const QuoteFormPage = lazy(() => import('@/features/quotes/QuoteFormPage'))
@@ -57,8 +60,6 @@ const ProductListPage = lazy(() => import('@/features/products/ProductListPage')
 const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPage'))
 const ProductFormPage = lazy(() => import('@/features/products/ProductFormPage'))
 
-// Intern-owned pages — swap PlaceholderPage with the real component as each is built
-const PlaceholderPage = lazy(() => import('@/features/_placeholder/PlaceholderPage'))
 
 function Wrap({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
@@ -103,6 +104,8 @@ export function AppRouter() {
           <Route path="/contacts/new" element={<Wrap><ContactFormPage /></Wrap>} />
           <Route path="/contacts/:id" element={<Wrap><ContactDetailPage /></Wrap>} />
           <Route path="/leads" element={<Wrap><LeadListPage /></Wrap>} />
+          <Route path="/leads/new" element={<Wrap><LeadFormPage /></Wrap>} />
+          <Route path="/leads/:id/edit" element={<Wrap><LeadFormPage /></Wrap>} />
           <Route path="/leads/:id" element={<Wrap><LeadDetailPage /></Wrap>} />
           <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
           <Route path="/orders/new" element={<Wrap><OrderFormPage /></Wrap>} />
@@ -111,11 +114,14 @@ export function AppRouter() {
           <Route path="/quotes/new" element={<Wrap><QuoteFormPage /></Wrap>} />
           <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
+          <Route path="/activities/new" element={<Wrap><ActivityFormPage /></Wrap>} />
+          <Route path="/activities/:id/edit" element={<Wrap><ActivityFormPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
           <Route path="/invoices" element={<Wrap><InvoiceListPage /></Wrap>} />
           <Route path="/invoices/:id" element={<Wrap><InvoiceDetailPage /></Wrap>} />
           <Route path="/opportunities" element={<Wrap><OpportunityListPage /></Wrap>} />
-          <Route path="/opportunities/new" element={<Wrap><PlaceholderPage name="New Opportunity" /></Wrap>} />
+          <Route path="/opportunities/new" element={<Wrap><OpportunityFormPage /></Wrap>} />
+          <Route path="/opportunities/:id/edit" element={<Wrap><OpportunityFormPage /></Wrap>} />
           <Route path="/opportunities/:id" element={<Wrap><OpportunityDetailPage /></Wrap>} />
           <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
           <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
