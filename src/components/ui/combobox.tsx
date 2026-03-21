@@ -12,6 +12,8 @@ export interface ComboboxProps {
   value: string
   onChange: (value: string) => void
   options: ComboboxOption[]
+  /** Pre-populate the display label when options list is empty (e.g. edit mode before search) */
+  selectedOption?: ComboboxOption
   placeholder?: string
   searchPlaceholder?: string
   onSearchChange?: (q: string) => void
@@ -25,6 +27,7 @@ export function Combobox({
   value,
   onChange,
   options,
+  selectedOption,
   placeholder = 'Select...',
   searchPlaceholder = 'Search...',
   onSearchChange,
@@ -38,7 +41,8 @@ export function Combobox({
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const selected = options.find((o) => o.value === value)
+  // Fall back to selectedOption when the options list hasn't been populated yet (edit mode)
+  const selected = options.find((o) => o.value === value) ?? (value ? selectedOption : undefined)
 
   // Close on outside click
   useEffect(() => {

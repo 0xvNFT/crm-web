@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useUpdateStaff } from '@/api/endpoints/users'
@@ -22,28 +21,24 @@ interface EditStaffDialogProps {
   onClose: () => void
 }
 
+// key={user?.id} must be set at the call site to remount this component per user,
+// ensuring defaultValues are stable and not stale from a previous selection.
 export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
   const { mutate: updateStaff, isPending } = useUpdateStaff(user?.id ?? '')
   const roleOptions = useConfigOptions('user.role')
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<EditStaffFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<EditStaffFormData>({
     resolver: zodResolver(editStaffSchema),
+    defaultValues: user ? {
+      role:        (user.roles?.[0]?.name as EditStaffFormData['role']) ?? undefined,
+      firstName:   user.firstName ?? '',
+      lastName:    user.lastName ?? '',
+      jobTitle:    user.jobTitle ?? '',
+      department:  user.department ?? '',
+      phoneWork:   user.phoneWork ?? '',
+      phoneMobile: user.phoneMobile ?? '',
+    } : {},
   })
-
-  // Populate form when user changes
-  useEffect(() => {
-    if (user) {
-      reset({
-        role:        (user.roles?.[0]?.name as EditStaffFormData['role']) ?? undefined,
-        firstName:   user.firstName ?? '',
-        lastName:    user.lastName ?? '',
-        jobTitle:    user.jobTitle ?? '',
-        department:  user.department ?? '',
-        phoneWork:   user.phoneWork ?? '',
-        phoneMobile: user.phoneMobile ?? '',
-      })
-    }
-  }, [user, reset])
 
   function onSubmit(data: EditStaffFormData) {
     updateStaff(data, {
