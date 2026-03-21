@@ -58,6 +58,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pharma/teams/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get team by ID */
+        get: operations["getById_4"];
+        /** Update team details (ADMIN/MANAGER only) */
+        put: operations["update_3"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pharma/quotes/{id}": {
         parameters: {
             query?: never;
@@ -68,7 +86,7 @@ export interface paths {
         /** Get quote by ID */
         get: operations["getById_5"];
         /** Update a quote's editable fields (draft/submitted only) */
-        put: operations["update_3"];
+        put: operations["update_4"];
         post?: never;
         delete?: never;
         options?: never;
@@ -86,7 +104,7 @@ export interface paths {
         /** Get product by ID */
         get: operations["getById_6"];
         /** Update an existing product */
-        put: operations["update_4"];
+        put: operations["update_5"];
         post?: never;
         /** Delete a product */
         delete: operations["delete"];
@@ -105,7 +123,7 @@ export interface paths {
         /** Get order by ID */
         get: operations["getById_8"];
         /** Update an order's editable fields */
-        put: operations["update_5"];
+        put: operations["update_6"];
         post?: never;
         /** Delete an order */
         delete: operations["delete_1"];
@@ -124,7 +142,7 @@ export interface paths {
         /** Get opportunity by ID */
         get: operations["getById_9"];
         /** Update opportunity details */
-        put: operations["update_6"];
+        put: operations["update_7"];
         post?: never;
         delete?: never;
         options?: never;
@@ -142,7 +160,7 @@ export interface paths {
         /** Get lead by ID */
         get: operations["getById_11"];
         /** Update lead details */
-        put: operations["update_7"];
+        put: operations["update_8"];
         post?: never;
         delete?: never;
         options?: never;
@@ -160,7 +178,7 @@ export interface paths {
         /** Get invoice by ID */
         get: operations["getById_12"];
         /** Update a draft invoice — subject, dates, addresses (ADMIN/MANAGER only) */
-        put: operations["update_8"];
+        put: operations["update_9"];
         post?: never;
         delete?: never;
         options?: never;
@@ -197,7 +215,7 @@ export interface paths {
         /** Get coaching note by ID */
         get: operations["getById_13"];
         /** Update a coaching note */
-        put: operations["update_9"];
+        put: operations["update_10"];
         post?: never;
         delete?: never;
         options?: never;
@@ -215,7 +233,7 @@ export interface paths {
         /** Get activity by ID */
         get: operations["getById_14"];
         /** Update activity details */
-        put: operations["update_10"];
+        put: operations["update_11"];
         post?: never;
         /** Delete an activity */
         delete: operations["delete_2"];
@@ -234,7 +252,7 @@ export interface paths {
         /** Get account by ID */
         get: operations["getById_15"];
         /** Update an existing account */
-        put: operations["update_11"];
+        put: operations["update_12"];
         post?: never;
         /** Delete an account */
         delete: operations["delete_3"];
@@ -253,7 +271,7 @@ export interface paths {
         /** Get approval rule by ID */
         get: operations["getById_16"];
         /** Update an existing approval rule */
-        put: operations["update_12"];
+        put: operations["update_13"];
         post?: never;
         /** Delete an approval rule */
         delete: operations["delete_4"];
@@ -1695,23 +1713,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get team by ID */
-        get: operations["getById_4"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/pharma/teams/{id}/members": {
         parameters: {
             query?: never;
@@ -2912,6 +2913,34 @@ export interface components {
             /** Format: int32 */
             targetNewAccountsQuarterly?: number;
         };
+        UpdateTeamRequest: {
+            name?: string;
+            /** @enum {string} */
+            teamType?: "owner" | "access";
+            description?: string;
+            emailAddress?: string;
+            /** Format: uuid */
+            administratorId?: string;
+            /** Format: uuid */
+            businessUnitId?: string;
+        };
+        PharmaTeam: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            teamType?: string;
+            description?: string;
+            emailAddress?: string;
+            administrator?: components["schemas"]["User"];
+            businessUnit?: components["schemas"]["BusinessUnit"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
         UpdateQuoteRequest: {
             /** Format: date */
             validFrom?: string;
@@ -3105,6 +3134,10 @@ export interface components {
         };
         UpdateOpportunityRequest: {
             topic?: string;
+            /** Format: uuid */
+            ownerId?: string;
+            /** Format: uuid */
+            contactId?: string;
             description?: string;
             estRevenue?: number;
             /** Format: int32 */
@@ -3281,6 +3314,9 @@ export interface components {
             faxNumber?: string;
             /** @enum {string} */
             contactType?: "prescribing_md" | "specialist" | "gp" | "pharmacist" | "nurse" | "admin" | "buyer" | "nurse_practitioner" | "physician_assistant";
+            /** @enum {string} */
+            customerType?: "prescribing_md" | "specialist" | "gp" | "pharmacist" | "nurse" | "admin" | "buyer" | "nurse_practitioner" | "physician_assistant";
+            leadSource?: string;
             specialty?: string;
             prcNumber?: string;
             /** Format: date */
@@ -3614,23 +3650,6 @@ export interface components {
             administratorId?: string;
             /** Format: uuid */
             businessUnitId?: string;
-        };
-        PharmaTeam: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            name: string;
-            teamType?: string;
-            description?: string;
-            emailAddress?: string;
-            administrator?: components["schemas"]["User"];
-            businessUnit?: components["schemas"]["BusinessUnit"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
         };
         TeamMemberResponse: {
             /** Format: uuid */
@@ -4658,6 +4677,54 @@ export interface operations {
             };
         };
     };
+    getById_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaTeam"];
+                };
+            };
+        };
+    };
+    update_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTeamRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PharmaTeam"];
+                };
+            };
+        };
+    };
     getById_5: {
         parameters: {
             query?: never;
@@ -4680,7 +4747,7 @@ export interface operations {
             };
         };
     };
-    update_3: {
+    update_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -4728,7 +4795,7 @@ export interface operations {
             };
         };
     };
-    update_4: {
+    update_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -4796,7 +4863,7 @@ export interface operations {
             };
         };
     };
-    update_5: {
+    update_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -4864,7 +4931,7 @@ export interface operations {
             };
         };
     };
-    update_6: {
+    update_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -4912,7 +4979,7 @@ export interface operations {
             };
         };
     };
-    update_7: {
+    update_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -4960,7 +5027,7 @@ export interface operations {
             };
         };
     };
-    update_8: {
+    update_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -5076,7 +5143,7 @@ export interface operations {
             };
         };
     };
-    update_9: {
+    update_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -5124,7 +5191,7 @@ export interface operations {
             };
         };
     };
-    update_10: {
+    update_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -5192,7 +5259,7 @@ export interface operations {
             };
         };
     };
-    update_11: {
+    update_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -5260,7 +5327,7 @@ export interface operations {
             };
         };
     };
-    update_12: {
+    update_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -7675,28 +7742,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PagePharmaTerritory"];
-                };
-            };
-        };
-    };
-    getById_4: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PharmaTeam"];
                 };
             };
         };
