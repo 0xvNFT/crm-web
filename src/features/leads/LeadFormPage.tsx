@@ -2,8 +2,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { useCreateLead, useUpdateLead, useLead } from '@/api/endpoints/leads'
+import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { leadSchema, type LeadFormData } from '@/schemas/leads'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import type { PharmaLead } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -41,12 +42,10 @@ function FormRow({ label, required, error, children }: {
   )
 }
 
-export default function LeadFormPage() {
+// Rendered only after data + config are ready — defaultValues are stable on first useForm call
+function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const isEdit = !!id
-
-  const { data: lead, isLoading: isLoadingLead } = useLead(id ?? '')
   const { mutate: createLead, isPending: isCreating } = useCreateLead()
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead(id ?? '')
   const isPending = isCreating || isUpdating
@@ -54,25 +53,20 @@ export default function LeadFormPage() {
   const leadStatusOptions = useConfigOptions('lead.status')
   const ratingOptions     = useConfigOptions('lead.rating')
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<LeadFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
+    defaultValues: isEdit && lead ? {
+      lastName:    lead.lastName ?? '',
+      firstName:   lead.firstName ?? '',
+      companyName: lead.companyName ?? '',
+      email:       lead.email ?? '',
+      phone:       lead.phone ?? '',
+      leadStatus:  lead.leadStatus ?? '',
+      rating:      lead.rating ?? '',
+      leadSource:  lead.leadSource ?? '',
+      leadScore:   lead.leadScore != null ? Number(lead.leadScore) : undefined,
+    } : {},
   })
-
-  useEffect(() => {
-    if (isEdit && lead) {
-      reset({
-        lastName:    lead.lastName ?? '',
-        firstName:   lead.firstName ?? '',
-        companyName: lead.companyName ?? '',
-        email:       lead.email ?? '',
-        phone:       lead.phone ?? '',
-        leadStatus:  lead.leadStatus ?? undefined,
-        rating:      lead.rating ?? undefined,
-        leadSource:  lead.leadSource ?? '',
-        leadScore:   lead.leadScore != null ? Number(lead.leadScore) : undefined,
-      })
-    }
-  }, [isEdit, lead, reset])
 
   function onSubmit(data: LeadFormData) {
     if (isEdit) {
@@ -93,8 +87,6 @@ export default function LeadFormPage() {
       })
     }
   }
-
-  if (isEdit && isLoadingLead) return <LoadingSpinner />
 
   return (
     <div className="space-y-4">
@@ -179,4 +171,15 @@ export default function LeadFormPage() {
       </form>
     </div>
   )
+}
+
+export default function LeadFormPage() {
+  const { id } = useParams<{ id: string }>()
+  const isEdit = !!id
+  const { data: lead, isLoading: isLoadingLead } = useLead(id ?? '')
+  const { isLoading: isLoadingConfig } = useConfig()
+
+  if (isLoadingConfig || (isEdit && isLoadingLead)) return <LoadingSpinner />
+
+  return <LeadForm lead={lead} isEdit={isEdit} />
 }
