@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateActivity, useUpdateActivity, useActivity } from '@/api/endpoints/activities'
 import { useStaffSearch } from '@/api/endpoints/users'
+import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useAuth } from '@/hooks/useAuth'
 import { activitySchema, type ActivityFormData } from '@/schemas/activities'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,6 +20,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import type { PharmaActivity } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -45,12 +48,11 @@ function FormRow({ label, required, error, children }: {
   )
 }
 
-export default function ActivityFormPage() {
+// Rendered only after data + config are ready — defaultValues are stable on first useForm call
+function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit: boolean }) {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const isEdit = !!id
-
-  const { data: activity, isLoading: isLoadingActivity } = useActivity(id ?? '')
+  const { user } = useAuth()
   const { mutate: createActivity, isPending: isCreating } = useCreateActivity()
   const { mutate: updateActivity, isPending: isUpdating } = useUpdateActivity(id ?? '')
   const isPending = isCreating || isUpdating
@@ -68,24 +70,30 @@ export default function ActivityFormPage() {
     label: u.fullName ?? u.email ?? '',
   }))
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ActivityFormData>({
-    resolver: zodResolver(activitySchema),
-  })
+  // Combobox needs a label fallback since options are only fetched on search
+  const selectedOwnerOption: ComboboxOption | undefined = isEdit
+    ? (activity?.assignedUser
+        ? { value: activity.assignedUser.id!, label: activity.assignedUser.fullName ?? activity.assignedUser.email ?? '' }
+        : undefined)
+    : (user?.userId
+        ? { value: user.userId, label: user.fullName ?? user.email ?? '' }
+        : undefined)
 
-  useEffect(() => {
-    if (isEdit && activity) {
-      reset({
-        subject:         activity.subject ?? '',
-        activityType:    activity.activityType ?? '',
-        assignedUserId:  activity.assignedUser?.id ?? '',
-        status:          activity.status ?? undefined,
-        priority:        activity.priority ?? undefined,
-        dueDate:         activity.dueDate ?? '',
-        durationMinutes: activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
-        description:     activity.description ?? '',
-      })
-    }
-  }, [isEdit, activity, reset])
+  const { register, handleSubmit, control, formState: { errors } } = useForm<ActivityFormData>({
+    resolver: zodResolver(activitySchema),
+    defaultValues: isEdit && activity ? {
+      subject:         activity.subject ?? '',
+      activityType:    activity.activityType ?? '',
+      assignedUserId:  activity.assignedUser?.id ?? '',
+      status:          activity.status ?? '',
+      priority:        activity.priority ?? '',
+      dueDate:         activity.dueDate ?? '',
+      durationMinutes: activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
+      description:     activity.description ?? '',
+    } : {
+      assignedUserId: user?.userId ?? '',
+    },
+  })
 
   function onSubmit(data: ActivityFormData) {
     if (isEdit) {
@@ -106,8 +114,6 @@ export default function ActivityFormPage() {
       })
     }
   }
-
-  if (isEdit && isLoadingActivity) return <LoadingSpinner />
 
   return (
     <div className="space-y-4">
@@ -189,6 +195,7 @@ export default function ActivityFormPage() {
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   options={ownerOptions}
+                  selectedOption={selectedOwnerOption}
                   placeholder="Search staff…"
                   onSearchChange={setOwnerQuery}
                   isLoading={isSearchingOwners}
@@ -215,4 +222,15 @@ export default function ActivityFormPage() {
       </form>
     </div>
   )
+}
+
+export default function ActivityFormPage() {
+  const { id } = useParams<{ id: string }>()
+  const isEdit = !!id
+  const { data: activity, isLoading: isLoadingActivity } = useActivity(id ?? '')
+  const { isLoading: isLoadingConfig } = useConfig()
+
+  if (isLoadingConfig || (isEdit && isLoadingActivity)) return <LoadingSpinner />
+
+  return <ActivityForm activity={activity} isEdit={isEdit} />
 }
