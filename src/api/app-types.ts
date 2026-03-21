@@ -181,6 +181,11 @@ export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'
 export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority'> & { visitType?: string; priority?: string }
 export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
 
+// ─── Billing ─────────────────────────────────────────────────────────────────
+export type BillingSubscription  = components['schemas']['Subscription']
+export type CheckoutRequest      = components['schemas']['CheckoutRequest']   // { planId, successUrl, cancelUrl }
+export type PortalRequest        = components['schemas']['PortalRequest']     // { returnUrl }
+
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {
   error?: string       // HTTP status name (e.g. "Conflict") — from Spring default error body
