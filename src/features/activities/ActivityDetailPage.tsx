@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Pencil } from 'lucide-react'
 import { useActivity } from '@/api/endpoints/activities'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -65,10 +65,13 @@ export default function ActivityDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{activity.subject}</h1>
-            {/* Fix 1: Added status fallback to avoid empty badge */}
             <StatusBadge status={activity.status || 'UNKNOWN'} />
           </div>
         </div>
+        <Button variant="outline" size="sm" onClick={() => navigate(`/activities/${id}/edit`)}>
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit
+        </Button>
       </div>
 
       <div className="space-y-4">
