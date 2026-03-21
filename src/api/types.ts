@@ -1217,8 +1217,42 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Receive billing webhook event from payment provider */
+        /** Receive billing webhook event from payment provider (Stripe/PayMongo) */
         post: operations["handleWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/portal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a Stripe Customer Portal session — returns { portalUrl } for self-service billing management */
+        post: operations["createPortal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a Stripe Checkout session — returns { checkoutUrl } to redirect browser to */
+        post: operations["createCheckout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2494,6 +2528,23 @@ export interface paths {
         };
         /** List approval rules by entity type (paginated) */
         get: operations["getByEntityType"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get current subscription status for the authenticated tenant */
+        get: operations["getSubscription"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4064,6 +4115,15 @@ export interface components {
             stateLicenseNumber?: string;
             controlledSubstanceApproved?: boolean;
         };
+        PortalRequest: {
+            returnUrl: string;
+        };
+        CheckoutRequest: {
+            /** Format: uuid */
+            planId: string;
+            successUrl: string;
+            cancelUrl: string;
+        };
         ResetPasswordRequest: {
             token: string;
             newPassword: string;
@@ -4533,6 +4593,30 @@ export interface components {
             number?: number;
             sort?: components["schemas"]["SortObject"];
             empty?: boolean;
+        };
+        Subscription: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            planId?: string;
+            status?: string;
+            /** Format: date-time */
+            currentPeriodStart?: string;
+            /** Format: date-time */
+            currentPeriodEnd?: string;
+            stripeSubscriptionId?: string;
+            stripeCustomerId?: string;
+            stripePriceId?: string;
+            /** Format: date-time */
+            canceledAt?: string;
+            /** Format: date-time */
+            trialEnd?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
         };
         TenantUserSummary: {
             /** Format: uuid */
@@ -7100,6 +7184,58 @@ export interface operations {
             };
         };
     };
+    createPortal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortalRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    createCheckout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
     resetPasswordForm: {
         parameters: {
             query?: {
@@ -8807,6 +8943,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageApprovalRule"];
+                };
+            };
+        };
+    };
+    getSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Subscription"];
                 };
             };
         };
