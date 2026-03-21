@@ -98,6 +98,7 @@ export type UpdateTerritoryRequest = Omit<components['schemas']['UpdateTerritory
 // ─── Team request types ───────────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
 export type CreateTeamRequest = Omit<components['schemas']['CreateTeamRequest'], 'teamType'> & { teamType?: string }
+export type UpdateTeamRequest = Omit<components['schemas']['UpdateTeamRequest'], 'teamType'> & { teamType?: string }
 
 // ─── Team member response — manually defined (backend DTO not in spec yet) ────
 // Backend returns TeamMemberResponse DTO (flat projection, avoids lazy User entity)
@@ -120,6 +121,19 @@ export type UpdateLeadRequest = Omit<components['schemas']['UpdateLeadRequest'],
 // Widen config-driven union literals to string
 export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction'> & { activityType: string; status?: string; priority?: string; direction?: string }
 export type UpdateActivityRequest = Omit<components['schemas']['UpdateActivityRequest'], 'status' | 'priority'> & { status?: string; priority?: string }
+
+// ─── Contact request types ────────────────────────────────────────────────────
+// Widen config-driven union literals to string — values are validated by backend at runtime
+export type UpdateContactRequest = Omit<
+  components['schemas']['UpdateContactRequest'],
+  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status'
+> & {
+  contactType?: string
+  customerType?: string
+  customerClass?: string
+  adoptionStage?: string
+  status?: string
+}
 
 // ─── Opportunity request types ────────────────────────────────────────────────
 // Widen config-driven union literals to string
