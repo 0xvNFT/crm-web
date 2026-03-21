@@ -47,6 +47,34 @@ export function useVisitSearch(query: string) {
   })
 }
 
+export function useVisitsByContact(contactId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['visits', 'by-contact', contactId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaFieldVisit>(`/api/pharma/visits/by-contact/${contactId}`, {
+          params: { page, size, sort: 'scheduledStart,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!contactId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useVisitsByAccount(accountId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['visits', 'by-account', accountId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaFieldVisit>(`/api/pharma/visits/by-account/${accountId}`, {
+          params: { page, size, sort: 'scheduledStart,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!accountId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useVisitsPendingReview(page = 0, size = 20) {
   return useQuery({
     queryKey: ['visits', 'pending-review', { page, size }],

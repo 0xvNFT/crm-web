@@ -23,6 +23,10 @@ import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { contactEditSchema, type ContactEditFormData } from '@/schemas/contacts'
 
+import { ContactVisitsSection } from './components/ContactVisitsSection'
+import { ContactActivitiesSection } from './components/ContactActivitiesSection'
+import { ContactOpportunitiesSection } from './components/ContactOpportunitiesSection'
+
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -309,6 +313,10 @@ export default function ContactDetailPage() {
               <DetailField label="Last Updated" value={formatDate(contact.updatedAt)} />
             </div>
           </div>
+
+          <ContactOpportunitiesSection contactId={id ?? ''} />
+          <ContactVisitsSection contactId={id ?? ''} />
+          <ContactActivitiesSection contactId={id ?? ''} />
         </div>
       )}
 

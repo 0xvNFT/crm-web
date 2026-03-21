@@ -19,6 +19,8 @@ import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
 import { AccountInvoicesSection } from './components/AccountInvoicesSection'
+import { AccountVisitsSection } from './components/AccountVisitsSection'
+import { AccountActivitiesSection } from './components/AccountActivitiesSection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -243,6 +245,8 @@ export default function AccountDetailPage() {
           </div>
 
           <AccountInvoicesSection accountId={id ?? ''} />
+          <AccountVisitsSection accountId={id ?? ''} />
+          <AccountActivitiesSection accountId={id ?? ''} />
         </div>
       )}
 
