@@ -59,6 +59,7 @@ export default function DashboardPage() {
           data={pipeline.data}
           isLoading={pipeline.isLoading}
           isError={pipeline.isError}
+          error={pipeline.error}
         />
       )}
 
@@ -68,11 +69,13 @@ export default function DashboardPage() {
           data={leadFunnel.data}
           isLoading={leadFunnel.isLoading}
           isError={leadFunnel.isError}
+          error={leadFunnel.error}
         />
         <ActivityChart
           data={activitySummary.data}
           isLoading={activitySummary.isLoading}
           isError={activitySummary.isError}
+          error={activitySummary.error}
         />
       </div>
 

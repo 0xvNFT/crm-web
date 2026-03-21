@@ -16,6 +16,7 @@ interface LeadFunnelChartProps {
   data: LeadFunnelSummary[] | undefined
   isLoading: boolean
   isError: boolean
+  error?: unknown
 }
 
 // Ordered funnel stages with display labels
@@ -30,7 +31,7 @@ const STAGE_LABELS: Record<string, string> = {
 // Opacity steps to give a funnel feel
 const STAGE_OPACITY = [1, 0.85, 0.7, 0.55, 0.4]
 
-export function LeadFunnelChart({ data, isLoading, isError }: LeadFunnelChartProps) {
+export function LeadFunnelChart({ data, isLoading, isError, error }: LeadFunnelChartProps) {
   const sorted = data
     ? STAGE_ORDER
         .map((stage) => {
@@ -48,7 +49,7 @@ export function LeadFunnelChart({ data, isLoading, isError }: LeadFunnelChartPro
       </div>
 
       {isLoading && <LoadingSpinner className="py-10" />}
-      {isError && <ErrorMessage className="py-10" />}
+      {isError && <ErrorMessage className="py-10" error={error} />}
 
       {data && sorted.length === 0 && (
         <div className="flex items-center justify-center py-10">

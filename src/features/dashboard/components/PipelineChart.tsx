@@ -15,6 +15,7 @@ interface PipelineChartProps {
   data: PipelineSummary[] | undefined
   isLoading: boolean
   isError: boolean
+  error?: unknown
 }
 
 function formatStage(stage: string) {
@@ -27,7 +28,7 @@ function formatRevenue(value: number) {
   return `₱${value}`
 }
 
-export function PipelineChart({ data, isLoading, isError }: PipelineChartProps) {
+export function PipelineChart({ data, isLoading, isError, error }: PipelineChartProps) {
   return (
     <div className="rounded-xl border bg-background p-5">
       <div className="mb-4">
@@ -36,7 +37,7 @@ export function PipelineChart({ data, isLoading, isError }: PipelineChartProps) 
       </div>
 
       {isLoading && <LoadingSpinner className="py-12" />}
-      {isError && <ErrorMessage className="py-12" />}
+      {isError && <ErrorMessage className="py-12" error={error} />}
 
       {data && data.length === 0 && (
         <div className="flex items-center justify-center py-12">
