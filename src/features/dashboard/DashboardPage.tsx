@@ -8,6 +8,7 @@ import { ActivityChart } from './components/ActivityChart'
 import { useDashboardStats } from './hooks/useDashboardStats'
 import { usePipelineSummary, useLeadFunnelSummary, useActivitySummary } from '@/api/endpoints/reports'
 import { Building2, Target, ShoppingCart, Activity } from 'lucide-react'
+import { OverdueFollowUpsWidget } from './components/OverdueFollowUpsWidget'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -74,6 +75,8 @@ export default function DashboardPage() {
           isError={activitySummary.isError}
         />
       </div>
+
+      {isManager && <OverdueFollowUpsWidget />}
     </div>
   )
 }
