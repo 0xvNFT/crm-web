@@ -98,7 +98,7 @@ export default function TeamFormPage() {
               name="teamType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type…" />
                   </SelectTrigger>

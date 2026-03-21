@@ -7,7 +7,7 @@ export const createTerritorySchema = z.object({
   territoryName: z.string().min(2, 'Territory name must be at least 2 characters'),
   region: z.string().min(1, 'Region is required'),
   description: z.string().optional(),
-  status: z.string().optional(),
+  status: z.string().optional().transform(v => v || undefined),
   effectiveFrom: z.string().optional(),
   targetRevenueAnnual: z.coerce.number<number>().nonnegative().optional(),
   targetVisitsMonthly: z.coerce.number<number>().int().nonnegative().optional(),
