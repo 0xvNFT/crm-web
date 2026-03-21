@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users } from 'lucide-react'
+import { Users, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useLeads, useLeadSearch } from '@/api/endpoints/leads'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
+import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { usePagination } from '@/hooks/usePagination'
 import { formatDate } from '@/utils/formatters'
@@ -63,10 +64,16 @@ export default function LeadListPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="Leads"
-        description="Potential customers and prospects"
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Leads"
+          description="Potential customers and prospects"
+        />
+        <Button onClick={() => navigate('/leads/new')}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Lead
+        </Button>
+      </div>
       <SearchInput
         value={query}
         onChange={(v) => { setQuery(v); goToPage(0) }}

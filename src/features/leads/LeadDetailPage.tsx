@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, Phone } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, Pencil } from 'lucide-react'
 import { useLead, useConvertLead } from '@/api/endpoints/leads'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -66,11 +66,17 @@ export default function LeadDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground">{lead.companyName}</p>
           )}
         </div>
-        {canConvert && (
-          <Button onClick={() => setShowConvert(true)}>
-            Convert Lead
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
+            <Pencil className="h-4 w-4 mr-2" />
+            Edit
           </Button>
-        )}
+          {canConvert && (
+            <Button onClick={() => setShowConvert(true)}>
+              Convert Lead
+            </Button>
+          )}
+        </div>
       </div>
 
       {(lead.email || lead.phone) && (
