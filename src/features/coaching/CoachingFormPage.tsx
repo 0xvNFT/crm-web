@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCoachingNote, useCreateCoachingNote, useUpdateCoachingNote } from '@/api/endpoints/coaching'
 import { useStaffSearch } from '@/api/endpoints/users'
@@ -98,7 +98,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
 
   const { register, control, handleSubmit, watch, formState: { errors } } =
     useForm<CoachingNoteFormData | CoachingNoteEditFormData>({
-      resolver: zodResolver(schema),
+      resolver: zodResolver(schema) as Resolver<CoachingNoteFormData | CoachingNoteEditFormData>,
       defaultValues: isEdit && note ? {
         noteTitle:         note.noteTitle ?? '',
         feedbackType:      note.feedbackType ?? '',

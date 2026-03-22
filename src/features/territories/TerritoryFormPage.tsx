@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTerritory } from '@/api/endpoints/territories'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
@@ -58,7 +58,7 @@ export default function TerritoryFormPage() {
     control,
     formState: { errors },
   } = useForm<CreateTerritoryFormData>({
-    resolver: zodResolver(createTerritorySchema),
+    resolver: zodResolver(createTerritorySchema) as Resolver<CreateTerritoryFormData>,
     defaultValues: { status: 'active' },
   })
 

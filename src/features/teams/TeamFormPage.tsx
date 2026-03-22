@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTeam, useUpdateTeam, useTeam } from '@/api/endpoints/teams'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
@@ -55,7 +55,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
   const schema = isEdit ? updateTeamSchema : createTeamSchema
 
   const { register, control, handleSubmit, formState: { errors } } = useForm<UpdateTeamFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<UpdateTeamFormData>,
     defaultValues: isEdit && team ? {
       name:         team.name ?? '',
       teamType:     team.teamType ?? '',
