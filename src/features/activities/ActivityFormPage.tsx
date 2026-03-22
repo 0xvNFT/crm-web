@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateActivity, useUpdateActivity, useActivity } from '@/api/endpoints/activities'
 import { useStaffSearch } from '@/api/endpoints/users'
@@ -80,7 +80,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         : undefined)
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<ActivityFormData>({
-    resolver: zodResolver(activitySchema),
+    resolver: zodResolver(activitySchema) as Resolver<ActivityFormData>,
     defaultValues: isEdit && activity ? {
       subject:         activity.subject ?? '',
       activityType:    activity.activityType ?? '',

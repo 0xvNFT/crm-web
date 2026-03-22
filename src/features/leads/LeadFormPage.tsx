@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateLead, useUpdateLead, useLead } from '@/api/endpoints/leads'
 import { useConfig } from '@/api/endpoints/config'
@@ -54,7 +54,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
   const ratingOptions     = useConfigOptions('lead.rating')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
-    resolver: zodResolver(leadSchema),
+    resolver: zodResolver(leadSchema) as Resolver<LeadFormData>,
     defaultValues: isEdit && lead ? {
       lastName:    lead.lastName ?? '',
       firstName:   lead.firstName ?? '',

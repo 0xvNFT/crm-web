@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateOpportunity, useUpdateOpportunity, useOpportunity } from '@/api/endpoints/opportunities'
 import { useAccountSearch } from '@/api/endpoints/accounts'
@@ -86,7 +86,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     : undefined
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<OpportunityFormData>({
-    resolver: zodResolver(opportunityFormSchema),
+    resolver: zodResolver(opportunityFormSchema) as Resolver<OpportunityFormData>,
     defaultValues: isEdit && opportunity ? {
       topic:            opportunity.topic ?? '',
       description:      opportunity.description ?? '',
