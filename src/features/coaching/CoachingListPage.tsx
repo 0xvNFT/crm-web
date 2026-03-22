@@ -21,14 +21,13 @@ export default function CoachingListPage() {
   const isSearching = debouncedQuery.trim().length >= 2
 
   const { page, goToPage } = usePagination()
-  const { data: listData, isLoading: isLoadingList } = useCoachingNotes(page)
-  const { data: searchResults, isLoading: isLoadingSearch } = useCoachingSearch(debouncedQuery)
+  const { data: listData } = useCoachingNotes(page)
+  const { data: searchResults } = useCoachingSearch(debouncedQuery)
 
   const notes: PharmaCoachingNote[] = isSearching
     ? (searchResults ?? [])
     : (listData?.content ?? [])
   const totalPages = isSearching ? 0 : (listData?.totalPages ?? 0)
-  const isLoading = isSearching ? isLoadingSearch : isLoadingList
 
   const columns = [
     {
