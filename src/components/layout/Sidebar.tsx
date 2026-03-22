@@ -21,6 +21,7 @@ import {
   Package,
   Receipt,
   GraduationCap,
+  CreditCard,
 } from 'lucide-react'
 
 interface NavItem {
@@ -52,7 +53,8 @@ const NAV_MANAGER: NavItem[] = [
 ]
 
 const NAV_ADMIN: NavItem[] = [
-  { to: '/admin', label: 'Admin', icon: Settings, roles: ['ADMIN'] },
+  { to: '/admin',   label: 'Admin',   icon: Settings,    roles: ['ADMIN'] },
+  { to: '/billing', label: 'Billing', icon: CreditCard,  roles: ['ADMIN'] },
 ]
 
 function NavGroup({

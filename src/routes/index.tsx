@@ -62,6 +62,7 @@ const CoachingFormPage = lazy(() => import('@/features/coaching/CoachingFormPage
 const ProductListPage = lazy(() => import('@/features/products/ProductListPage'))
 const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPage'))
 const ProductFormPage = lazy(() => import('@/features/products/ProductFormPage'))
+const BillingPage = lazy(() => import('@/features/billing/BillingPage'))
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -261,6 +262,14 @@ export function AppRouter() {
             element={
               <RoleRoute roles={['ADMIN']}>
                 <Wrap><AdminPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/billing"
+            element={
+              <RoleRoute roles={['ADMIN']}>
+                <Wrap><BillingPage /></Wrap>
               </RoleRoute>
             }
           />
