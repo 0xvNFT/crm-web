@@ -108,7 +108,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
 
   function onSubmit(data: OpportunityFormData) {
     if (isEdit) {
-      // accountId is immutable after creation — omit from update payload
+      // accountId and salesStage are immutable after creation — omit from update payload
       const { accountId: _accountId, salesStage: _salesStage, ...updateData } = data
       updateOpportunity(updateData, {
         onSuccess: () => {

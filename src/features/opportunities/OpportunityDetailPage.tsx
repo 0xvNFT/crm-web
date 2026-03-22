@@ -108,22 +108,6 @@ export default function OpportunityDetailPage() {
   if (isLoading) return <LoadingSpinner />
   if (isError || !opp) return <ErrorMessage message="Opportunity not found." />
 
-  function startEdit() {
-    reset({
-      topic:            opp?.topic ?? '',
-      description:      opp?.description ?? '',
-      salesStage:       opp?.salesStage ?? undefined,
-      estRevenue:       opp?.estRevenue != null ? Number(opp.estRevenue) : undefined,
-      probabilityPct:   opp?.probabilityPct != null ? Number(opp.probabilityPct) : undefined,
-      currency:         opp?.currency ?? '',
-      estCloseDate:     opp?.estCloseDate ?? '',
-      forecastCategory: opp?.forecastCategory ?? undefined,
-      leadSource:       opp?.leadSource ?? '',
-      type:             opp?.type ?? '',
-      budgetConfirmed:  opp?.budgetConfirmed ?? false,
-    })
-    setEditing(true)
-  }
 
   function cancelEdit() {
     setEditing(false)
