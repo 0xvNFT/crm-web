@@ -94,6 +94,39 @@ export default function QuoteDetailPage() {
         <DetailField label="Account Type" value={quote.account?.accountType} />
       </DetailSection>
 
+      {/* Line Items */}
+      {quote.items && quote.items.length > 0 && (
+        <div className="rounded-xl border bg-background p-5 space-y-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-2 text-left font-medium text-muted-foreground">Product</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Qty</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Unit Price</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Disc %</th>
+                  <th className="pb-2 pl-4 text-left font-medium text-muted-foreground">Notes</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quote.items.map((item, i) => (
+                  <tr key={item.id ?? i} className="border-b last:border-0">
+                    <td className="py-2">{item.product?.name ?? '—'}</td>
+                    <td className="py-2 text-right">{item.quantity ?? '—'}</td>
+                    <td className="py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
+                    <td className="py-2 text-right">{item.discountPercent != null ? `${item.discountPercent}%` : '—'}</td>
+                    <td className="py-2 pl-4 text-left text-muted-foreground">{item.notes ?? '—'}</td>
+                    <td className="py-2 text-right font-medium">{item.lineTotal != null ? formatCurrency(item.lineTotal) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       <DetailSection title="Amounts">
         <DetailField label="Subtotal" value={quote.subtotal != null ? formatCurrency(quote.subtotal) : null} />
         <DetailField label="Discount" value={quote.discountAmount != null ? formatCurrency(quote.discountAmount) : null} />

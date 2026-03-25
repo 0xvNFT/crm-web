@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Mail, Phone, Pencil } from 'lucide-react'
-import { useLead, useConvertLead } from '@/api/endpoints/leads'
+import { useLead, useConvertLead, useUpdateLead } from '@/api/endpoints/leads'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -43,13 +43,16 @@ export default function LeadDetailPage() {
   const { isManager } = useRole()
   const { data: lead, isLoading, isError } = useLead(id ?? '')
   const { mutate: convertLead, isPending: isConverting } = useConvertLead()
+  const { mutate: updateLead, isPending: isClosing } = useUpdateLead(id ?? '')
   const [showConvert, setShowConvert] = useState(false)
+  const [showClose, setShowClose] = useState(false)
 
   if (isLoading) return <LoadingSpinner />
   if (isError || !lead) return <ErrorMessage message="Lead not found." />
 
   const leadName = `${lead.firstName ?? ''} ${lead.lastName}`.trim()
   const canConvert = isManager && !lead.isConverted
+  const canClose = isManager && lead.leadStatus !== 'canceled' && !lead.isConverted
 
   return (
     <div className="space-y-4">
@@ -71,6 +74,11 @@ export default function LeadDetailPage() {
             <Pencil className="h-4 w-4 mr-2" />
             Edit
           </Button>
+          {canClose && (
+            <Button variant="outline" size="sm" onClick={() => setShowClose(true)}>
+              Close Lead
+            </Button>
+          )}
           {canConvert && (
             <Button onClick={() => setShowConvert(true)}>
               Convert Lead
@@ -123,6 +131,30 @@ export default function LeadDetailPage() {
         <DetailField label="Created" value={lead.createdAt ? formatDate(lead.createdAt) : null} />
         <DetailField label="Last Updated" value={lead.updatedAt ? formatDate(lead.updatedAt) : null} />
       </DetailSection>
+
+      <ConfirmDialog
+        open={showClose}
+        onCancel={() => setShowClose(false)}
+        onConfirm={() =>
+          updateLead(
+            { leadStatus: 'canceled' },
+            {
+              onSuccess: () => {
+                toast('Lead closed', { variant: 'success' })
+                setShowClose(false)
+              },
+              onError: (err) => {
+                toast(parseApiError(err), { variant: 'destructive' })
+                setShowClose(false)
+              },
+            }
+          )
+        }
+        title="Close Lead?"
+        description="This will mark the lead as closed. The lead history will be preserved."
+        confirmLabel="Close Lead"
+        isPending={isClosing}
+      />
 
       <ConfirmDialog
         open={showConvert}
