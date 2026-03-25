@@ -125,7 +125,7 @@ export interface paths {
         /** Update an order's editable fields */
         put: operations["update_6"];
         post?: never;
-        /** Delete an order */
+        /** Delete an order (ADMIN/MANAGER only) */
         delete: operations["delete_1"];
         options?: never;
         head?: never;
@@ -198,7 +198,7 @@ export interface paths {
         /** Update an existing contact */
         put: operations["updateContact"];
         post?: never;
-        /** Delete a contact */
+        /** Delete a contact (ADMIN/MANAGER only) */
         delete: operations["deleteContact"];
         options?: never;
         head?: never;
@@ -235,7 +235,7 @@ export interface paths {
         /** Update activity details */
         put: operations["update_11"];
         post?: never;
-        /** Delete an activity */
+        /** Delete an activity (ADMIN/MANAGER only) */
         delete: operations["delete_2"];
         options?: never;
         head?: never;
@@ -254,7 +254,7 @@ export interface paths {
         /** Update an existing account */
         put: operations["update_12"];
         post?: never;
-        /** Delete an account */
+        /** Delete an account (ADMIN/MANAGER only) */
         delete: operations["delete_3"];
         options?: never;
         head?: never;
@@ -866,7 +866,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Advance opportunity to a new sales stage (ADMIN/MANAGER only). Body: { "stage": "proposal" } */
+        /** Advance opportunity to a new sales stage. FIELD_REP can only advance their own opportunities. */
         post: operations["advanceStage"];
         delete?: never;
         options?: never;
@@ -1841,10 +1841,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Pipeline summary — open opportunities grouped by sales stage with count and estimated revenue
-         * @description Use ?ownerId= to filter to a single rep's opportunities
-         */
+        /** Pipeline summary — grouped by sales stage. FIELD_REP sees own opportunities only; ADMIN/MANAGER see all (or filter with ?ownerId=) */
         get: operations["pipeline"];
         put?: never;
         post?: never;
@@ -1861,7 +1858,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Lead funnel — lead counts grouped by status (new → assigned → in_process → converted) */
+        /** Lead funnel — grouped by status. FIELD_REP sees own leads only; ADMIN/MANAGER see all. */
         get: operations["leadFunnel"];
         put?: never;
         post?: never;
@@ -1895,10 +1892,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Activity summary — activity counts grouped by type and status
-         * @description Use ?userId= to filter to a single rep's activities
-         */
+        /** Activity summary — grouped by type and status. FIELD_REP sees own activities only; ADMIN/MANAGER see all (or filter with ?userId=) */
         get: operations["activities"];
         put?: never;
         post?: never;
@@ -4284,23 +4278,23 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
             paged?: boolean;
             unpaged?: boolean;
             /** Format: int32 */
-            pageNumber?: number;
-            /** Format: int32 */
             pageSize?: number;
+            /** Format: int32 */
+            pageNumber?: number;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
@@ -4318,14 +4312,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageUser: {
@@ -4336,14 +4330,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTerritory: {
@@ -4354,14 +4348,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritory"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTeam: {
@@ -4372,14 +4366,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeam"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PipelineSummary: {
@@ -4413,14 +4407,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuote"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaProduct: {
@@ -4431,14 +4425,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOrder: {
@@ -4449,14 +4443,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrder"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOpportunity: {
@@ -4467,14 +4461,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunity"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaMaterial: {
@@ -4485,14 +4479,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterial"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaLead: {
@@ -4503,14 +4497,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLead"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaInvoice: {
@@ -4521,14 +4515,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoice"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaContact: {
@@ -4539,14 +4533,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContact"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaCoachingNote: {
@@ -4557,14 +4551,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNote"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaActivity: {
@@ -4575,14 +4569,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivity"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PagePharmaAccount: {
@@ -4593,14 +4587,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccount"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         Notification: {
@@ -4630,14 +4624,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageApprovalRule: {
@@ -4648,14 +4642,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         Subscription: {
@@ -8124,7 +8118,7 @@ export interface operations {
     pipeline: {
         parameters: {
             query?: {
-                /** @description Optional: filter to a specific owner (UUID) */
+                /** @description Optional: filter to a specific owner (ADMIN/MANAGER only) */
                 ownerId?: string;
             };
             header?: never;
@@ -8187,7 +8181,7 @@ export interface operations {
     activities: {
         parameters: {
             query?: {
-                /** @description Optional: filter to a specific user (UUID) */
+                /** @description Optional: filter to a specific user (ADMIN/MANAGER only) */
                 userId?: string;
             };
             header?: never;
