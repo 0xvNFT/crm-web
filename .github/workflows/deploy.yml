@@ -27,6 +27,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          # VITE_* vars are baked into the bundle at build time — .env.production is gitignored.
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       - name: Ensure deploy directory is writable

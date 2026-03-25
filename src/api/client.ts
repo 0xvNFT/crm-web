@@ -1,7 +1,11 @@
 import axios from 'axios'
 
 // In dev: VITE_API_BASE_URL is empty — requests go to localhost:5173/api (Vite proxy forwards to backend)
-// In prod: VITE_API_BASE_URL is the backend URL — requests go directly
+// In prod: VITE_API_BASE_URL must be set via GitHub Secrets → injected at build time in deploy.yml
+// if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE_URL) {
+//   console.error('[client] VITE_API_BASE_URL is not set in production build. All API calls will fail.')
+// }
+
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '',
   withCredentials: true,
