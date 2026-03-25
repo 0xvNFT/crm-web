@@ -25,6 +25,8 @@
   --color-accent-foreground: hsl(224 71% 4%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(38 92% 50%);
+  --color-warning-foreground: hsl(0 0% 100%);
   --color-border: hsl(220 13% 91%);
   --color-input: hsl(220 13% 91%);
   --color-ring: hsl(231 48% 38%);
@@ -57,6 +59,8 @@
   --color-accent-foreground: hsl(210 40% 98%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(38 85% 55%);
+  --color-warning-foreground: hsl(0 0% 100%);
   --color-border: hsl(224 30% 14%);
   --color-input: hsl(224 30% 14%);
   --color-ring: hsl(231 80% 65%);

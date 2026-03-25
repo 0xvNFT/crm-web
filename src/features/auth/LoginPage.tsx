@@ -93,9 +93,9 @@ export default function LoginPage() {
           )}
 
           {unverifiedEmail && (
-            <div className="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm space-y-2 dark:bg-amber-950/30 dark:border-amber-800/50">
-              <p className="text-amber-800 dark:text-amber-300 font-medium">Email not verified</p>
-              <p className="text-amber-700 dark:text-amber-400 text-xs">
+            <div className="rounded-md border border-warning/30 bg-warning/8 px-4 py-3 text-sm space-y-1.5">
+              <p className="font-medium text-foreground">Email not verified</p>
+              <p className="text-xs text-muted-foreground">
                 Check your inbox for the verification link.
               </p>
               {resendSent ? (
