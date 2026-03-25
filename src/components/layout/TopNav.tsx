@@ -226,7 +226,7 @@ export function TopNav() {
               <p className="text-sm font-medium text-foreground">{user?.fullName}</p>
               <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                {user?.roles[0]}
+                {user?.roles?.[0]}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

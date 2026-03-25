@@ -146,7 +146,7 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-white">{user?.fullName}</p>
-            <p className="truncate text-[10px] text-white/40">{user?.roles[0]}</p>
+            <p className="truncate text-[10px] text-white/40">{user?.roles?.[0]}</p>
           </div>
           <button
             onClick={handleLogout}
