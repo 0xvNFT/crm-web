@@ -27,6 +27,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Ensure deploy directory is writable
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            sudo mkdir -p /var/www/crm-web
+            sudo chown -R $USER:$USER /var/www/crm-web
+
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.7
         with:
