@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "gen:types": "openapi-typescript http://13.212.189.78:8080/v3/api-docs -o src/api/types.ts"
+    "gen:types": "openapi-typescript http://localhost:8080/v3/api-docs -o src/api/types.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
