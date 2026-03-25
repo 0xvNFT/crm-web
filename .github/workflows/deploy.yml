@@ -12,6 +12,8 @@ jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
+    # Only deploy on branch pushes — tagging already means the code is deployed
+    if: github.ref_type == 'branch'
 
     steps:
       - name: Checkout
