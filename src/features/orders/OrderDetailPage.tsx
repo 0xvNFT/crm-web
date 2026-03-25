@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Pencil } from 'lucide-react'
 import { useOrder, useApproveOrder, useRejectOrder } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -51,6 +51,7 @@ export default function OrderDetailPage() {
 
   const isPending = order.status === 'pending' || order.status === 'submitted'
   const canAct = isManager && isPending
+  const canEdit = order.status === 'draft' || order.status === 'pending'
 
   return (
     <div className="space-y-4">
@@ -68,16 +69,24 @@ export default function OrderDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground">{order.account.name}</p>
           )}
         </div>
-        {canAct && (
-          <div className="flex gap-2 shrink-0">
-            <Button variant="outline" onClick={() => setShowApprove(true)}>
-              Approve
+        <div className="flex gap-2 shrink-0">
+          {canEdit && (
+            <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${id}/edit`)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
             </Button>
-            <Button variant="destructive" onClick={() => setShowReject(true)}>
-              Reject
-            </Button>
-          </div>
-        )}
+          )}
+          {canAct && (
+            <>
+              <Button variant="outline" onClick={() => setShowApprove(true)}>
+                Approve
+              </Button>
+              <Button variant="destructive" onClick={() => setShowReject(true)}>
+                Reject
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Order Info */}
@@ -94,6 +103,39 @@ export default function OrderDetailPage() {
         <DetailRow label="Name"         value={order.account?.name} />
         <DetailRow label="Account Type" value={order.account?.accountType} />
       </Section>
+
+      {/* Line Items */}
+      {order.items && order.items.length > 0 && (
+        <div className="rounded-xl border bg-background p-5 space-y-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-2 text-left font-medium text-muted-foreground">Product</th>
+                  <th className="pb-2 text-left font-medium text-muted-foreground pl-4">Batch</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Qty</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Unit Price</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Disc %</th>
+                  <th className="pb-2 text-right font-medium text-muted-foreground">Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map((item, i) => (
+                  <tr key={item.id ?? i} className="border-b last:border-0">
+                    <td className="py-2">{item.product?.name ?? '—'}</td>
+                    <td className="py-2 pl-4 text-muted-foreground">{item.batch?.batchNumber ?? '—'}</td>
+                    <td className="py-2 text-right">{item.quantity ?? '—'}</td>
+                    <td className="py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
+                    <td className="py-2 text-right">{item.discountPercent != null ? `${item.discountPercent}%` : '—'}</td>
+                    <td className="py-2 text-right font-medium">{item.lineTotal != null ? formatCurrency(item.lineTotal) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Amounts */}
       <Section title="Amounts">

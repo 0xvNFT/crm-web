@@ -42,6 +42,7 @@ const LeadDetailPage = lazy(() => import('@/features/leads/LeadDetailPage'))
 const OrderListPage = lazy(() => import('@/features/orders/OrderListPage'))
 const OrderDetailPage = lazy(() => import('@/features/orders/OrderDetailPage'))
 const OrderFormPage = lazy(() => import('@/features/orders/OrderFormPage'))
+const OrderEditPage = lazy(() => import('@/features/orders/OrderEditPage'))
 const ActivityListPage = lazy(() => import('@/features/activities/ActivityListPage'))
 const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDetailPage'))
 const ActivityFormPage = lazy(() => import('@/features/activities/ActivityFormPage'))
@@ -113,6 +114,7 @@ export function AppRouter() {
           <Route path="/leads/:id" element={<Wrap><LeadDetailPage /></Wrap>} />
           <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
           <Route path="/orders/new" element={<Wrap><OrderFormPage /></Wrap>} />
+          <Route path="/orders/:id/edit" element={<Wrap><OrderEditPage /></Wrap>} />
           <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
           <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
           <Route path="/quotes/new" element={<Wrap><QuoteFormPage /></Wrap>} />
