@@ -97,7 +97,11 @@ export default function AccountListPage() {
         onRowClick={(row) => navigate(`/accounts/${row.id}`)}
         empty={isSearching
           ? { icon: Building2, title: `No accounts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.', action: isManager ? <Button size="sm" onClick={() => navigate('/accounts/new')}><Plus className="h-4 w-4 mr-1.5" />New Account</Button> : undefined }
+          : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.' 
+            // , action: isManager ? 
+            // <Button size="sm" onClick={() => navigate('/accounts/new')}>
+            // <Plus className="h-4 w-4 mr-1.5" />New Account</Button> : undefined
+          }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
