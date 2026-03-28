@@ -155,7 +155,7 @@ export type UpdateContactRequest = Omit<
 // ─── Opportunity request types ────────────────────────────────────────────────
 // Widen config-driven union literals to string
 export type CreateOpportunityRequest = Omit<components['schemas']['CreateOpportunityRequest'], 'salesStage' | 'forecastCategory'> & { salesStage?: string; forecastCategory?: string }
-export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'forecastCategory'> & { forecastCategory?: string }
+export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportunityRequest'], 'salesStage' | 'forecastCategory' | 'status'> & { salesStage?: string; forecastCategory?: string; status?: string }
 
 // ─── Product request types ────────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
@@ -164,8 +164,28 @@ export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequ
 
 // ─── Coaching note request types ─────────────────────────────────────────────
 // feedbackType and reviewedModule are config-driven — widened to string
-export type CreateCoachingNoteRequest = components['schemas']['CreateCoachingNoteRequest']
-export type UpdateCoachingNoteRequest = components['schemas']['UpdateCoachingNoteRequest']
+export type CreateCoachingNoteRequest = Omit<components['schemas']['CreateCoachingNoteRequest'], 'feedbackType' | 'reviewedModule'> & { feedbackType: string; reviewedModule?: string }
+export type UpdateCoachingNoteRequest = Omit<components['schemas']['UpdateCoachingNoteRequest'], 'feedbackType' | 'reviewedModule'> & { feedbackType?: string; reviewedModule?: string }
+
+// ─── Material request types ───────────────────────────────────────────────────
+// status is config-driven — widened to string
+export type UpdateMaterialRequest = Omit<components['schemas']['UpdateMaterialRequest'], 'status'> & { status?: string }
+
+// ─── Affiliation request types ────────────────────────────────────────────────
+export type AddAffiliationRequest = components['schemas']['AddAffiliationRequest']
+
+// ─── Contact create request ───────────────────────────────────────────────────
+// Widen config-driven union literals to string
+export type CreateContactRequest = Omit<
+  components['schemas']['CreateContactRequest'],
+  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status'
+> & {
+  contactType: string
+  customerType?: string
+  customerClass?: string
+  adoptionStage?: string
+  status?: string
+}
 
 // ─── Invoice request types ────────────────────────────────────────────────────
 export type CreateInvoiceRequest  = components['schemas']['CreateInvoiceRequest']
