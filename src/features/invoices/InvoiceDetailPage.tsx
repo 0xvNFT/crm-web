@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Pencil } from 'lucide-react'
 import {
   useInvoice,
   useSendInvoice,
@@ -84,7 +84,13 @@ export default function InvoiceDetailPage() {
         {canAct && (
           <div className="flex gap-2 shrink-0 flex-wrap justify-end">
             {isDraft && (
-              <Button onClick={() => setShowSend(true)}>
+              <Button variant="outline" size="sm" onClick={() => navigate(`/invoices/${id}/edit`)}>
+                <Pencil className="h-4 w-4 mr-1.5" />
+                Edit
+              </Button>
+            )}
+            {isDraft && (
+              <Button size="sm" onClick={() => setShowSend(true)}>
                 Send Invoice
               </Button>
             )}

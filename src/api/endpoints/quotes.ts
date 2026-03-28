@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PharmaQuote, PagePharmaQuote, CreateQuoteRequest } from '@/api/app-types'
+import type { PharmaQuote, PharmaOrder, PagePharmaQuote, CreateQuoteRequest, UpdateQuoteRequest } from '@/api/app-types'
 
 export function useQuotes(page = 0, size = 20, filters: Record<string, string> = {}) {
   const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
@@ -59,5 +59,29 @@ export function useQuote(id: string) {
     queryFn: () =>
       client.get<PharmaQuote>(`/api/pharma/quotes/${id}`).then((r) => r.data),
     enabled: !!id,
+  })
+}
+
+export function useUpdateQuote(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UpdateQuoteRequest) =>
+      client.put<PharmaQuote>(`/api/pharma/quotes/${id}`, data).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['quotes', id] })
+      qc.invalidateQueries({ queryKey: ['quotes', 'list'] })
+    },
+  })
+}
+
+export function useConvertQuote(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      client.post<PharmaOrder>(`/api/pharma/quotes/${id}/convert`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['quotes', id] })
+      qc.invalidateQueries({ queryKey: ['orders'] })
+    },
   })
 }
