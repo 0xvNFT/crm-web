@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
 import { useAccounts } from '@/api/endpoints/accounts'
+import type { CreateContactRequest } from '@/api/app-types'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,22 +57,18 @@ export default function ContactFormPage() {
   })
 
   function onSubmit(data: ContactFormData) {
-    const { accountId, email, ...rest } = data
+    const { consentConfirmedStatus, consentConfirmedDate, ...rest } = data
 
-    // Build payload matching PharmaContact shape the backend expects
-    const payload = {
-      ...rest,
-      account: { id: accountId },
-      // Strip empty email so backend doesn't try to persist an empty string
-      ...(email ? { email } : {}),
-    }
+    // Map form field names → request DTO field names, strip empty strings
+    const payload = Object.fromEntries(
+      Object.entries({
+        ...rest,
+        ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus } : {}),
+        ...(consentConfirmedDate ? { consentDate: consentConfirmedDate } : {}),
+      }).filter(([, v]) => v !== '' && v !== undefined)
+    ) as unknown as CreateContactRequest
 
-    // Remove keys with empty string / undefined values
-    const clean = Object.fromEntries(
-      Object.entries(payload).filter(([, v]) => v !== '' && v !== undefined)
-    )
-
-    createContact(clean, {
+    createContact(payload, {
       onSuccess: (contact) => {
         toast('Contact created', { variant: 'success' })
         navigate(`/contacts/${contact.id}`)

@@ -33,8 +33,9 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead(id ?? '')
   const isPending = isCreating || isUpdating
 
-  const leadStatusOptions = useConfigOptions('lead.status')
-  const ratingOptions     = useConfigOptions('lead.rating')
+  const leadStatusOptions  = useConfigOptions('lead.status')
+  const ratingOptions      = useConfigOptions('lead.rating')
+  const leadSourceOptions  = useConfigOptions('lead.source')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema) as Resolver<LeadFormData>,
@@ -136,7 +137,20 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
             />
           </FormRow>
           <FormRow label="Lead Source" error={errors.leadSource?.message}>
-            <Input {...register('leadSource')} placeholder="e.g. Referral" />
+            <Controller
+              name="leadSource"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
+                  <SelectContent>
+                    {leadSourceOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Lead Score" error={errors.leadScore?.message}>
             <Input {...register('leadScore')} type="number" min={0} placeholder="0" />

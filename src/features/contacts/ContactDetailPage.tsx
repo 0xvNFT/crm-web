@@ -7,6 +7,7 @@ import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, X, Check, Trash2
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useContact, useUpdateContact, useDeleteContact } from '@/api/endpoints/contacts'
+import type { UpdateContactRequest } from '@/api/app-types'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -133,10 +134,16 @@ export default function ContactDetailPage() {
   }
 
   function onSubmit(data: ContactEditFormData) {
-    // Strip empty strings — backend patches only non-null fields
+    const { consentConfirmedStatus, consentConfirmedDate, ...rest } = data
+
+    // Strip empty strings + map consent field names to request DTO names
     const payload = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-    )
+      Object.entries({
+        ...rest,
+        ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus } : {}),
+        ...(consentConfirmedDate ? { consentDate: consentConfirmedDate } : {}),
+      }).filter(([, v]) => v !== '' && v !== undefined)
+    ) as unknown as UpdateContactRequest
     updateContact(payload, {
       onSuccess: () => {
         toast('Contact updated', { variant: 'success' })

@@ -143,13 +143,14 @@ export type UpdateActivityRequest = Omit<components['schemas']['UpdateActivityRe
 // Widen config-driven union literals to string — values are validated by backend at runtime
 export type UpdateContactRequest = Omit<
   components['schemas']['UpdateContactRequest'],
-  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status'
+  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status' | 'consentStatus'
 > & {
   contactType?: string
   customerType?: string
   customerClass?: string
   adoptionStage?: string
   status?: string
+  consentStatus?: string
 }
 
 // ─── Opportunity request types ────────────────────────────────────────────────
@@ -178,13 +179,14 @@ export type AddAffiliationRequest = components['schemas']['AddAffiliationRequest
 // Widen config-driven union literals to string
 export type CreateContactRequest = Omit<
   components['schemas']['CreateContactRequest'],
-  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status'
+  'contactType' | 'customerType' | 'customerClass' | 'adoptionStage' | 'status' | 'consentStatus'
 > & {
   contactType: string
   customerType?: string
   customerClass?: string
   adoptionStage?: string
   status?: string
+  consentStatus?: string
 }
 
 // ─── Invoice request types ────────────────────────────────────────────────────

@@ -159,7 +159,7 @@ export default function OrderDetailPage() {
       {/* Approval */}
       <Section title="Approval">
         <DetailRow label="Approval Status" value={order.approvalStatus} />
-        <DetailRow label="Approved By"     value={order.approvedBy} />
+        <DetailRow label="Approved By"     value={(order.approvedBy as { fullName?: string } | undefined)?.fullName} />
         <DetailRow label="Approved At"     value={order.approvedAt ? formatDate(order.approvedAt) : null} />
       </Section>
 

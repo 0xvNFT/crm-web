@@ -2959,8 +2959,8 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
-            fullName?: string;
             healthcareProfessional?: boolean;
+            fullName?: string;
         };
         PharmaFieldVisit: {
             /** Format: uuid */
@@ -3350,8 +3350,7 @@ export interface components {
             notes?: string;
             requiresApproval?: boolean;
             approvalStatus?: string;
-            /** Format: uuid */
-            approvedBy?: string;
+            approvedBy?: components["schemas"]["User"];
             /** Format: date-time */
             approvedAt?: string;
             rejectionReason?: string;
@@ -4567,6 +4566,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisit"][];
@@ -4576,8 +4577,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -4585,9 +4584,9 @@ export interface components {
             offset?: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            pageSize?: number;
-            /** Format: int32 */
             pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
             unpaged?: boolean;
             paged?: boolean;
         };
@@ -4601,6 +4600,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
@@ -4610,8 +4611,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageUser: {
@@ -4619,6 +4618,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
@@ -4628,8 +4629,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTerritory: {
@@ -4637,6 +4636,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritory"][];
@@ -4646,8 +4647,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTeam: {
@@ -4655,6 +4654,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeam"][];
@@ -4664,8 +4665,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PipelineSummary: {
@@ -4744,6 +4743,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RepTarget"][];
@@ -4753,8 +4754,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaQuote: {
@@ -4762,6 +4761,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuote"][];
@@ -4771,8 +4772,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaProduct: {
@@ -4780,6 +4779,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
@@ -4789,8 +4790,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOrder: {
@@ -4798,6 +4797,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrder"][];
@@ -4807,8 +4808,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOpportunity: {
@@ -4816,6 +4815,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunity"][];
@@ -4825,8 +4826,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaMaterial: {
@@ -4834,6 +4833,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterial"][];
@@ -4843,8 +4844,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaLead: {
@@ -4852,6 +4851,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLead"][];
@@ -4861,8 +4862,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaInvoice: {
@@ -4870,6 +4869,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoice"][];
@@ -4879,8 +4880,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaContact: {
@@ -4888,6 +4887,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContact"][];
@@ -4897,8 +4898,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaCoachingNote: {
@@ -4906,6 +4905,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNote"][];
@@ -4915,8 +4916,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaActivity: {
@@ -4924,6 +4923,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivity"][];
@@ -4933,8 +4934,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaAccount: {
@@ -4942,6 +4941,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccount"][];
@@ -4951,8 +4952,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Notification: {
@@ -4979,6 +4978,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
@@ -4988,8 +4989,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageApprovalRule: {
@@ -4997,6 +4996,8 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
@@ -5006,8 +5007,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Subscription: {
