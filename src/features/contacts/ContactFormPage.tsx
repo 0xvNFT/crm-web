@@ -192,6 +192,12 @@ export default function ContactFormPage() {
           <FormRow label="Phone" error={errors.phone?.message}>
             <Input {...register('phone')} type="tel" />
           </FormRow>
+          <FormRow label="Preferred Contact Method" error={errors.preferredContactMethod?.message}>
+            <Input {...register('preferredContactMethod')} placeholder="e.g. email, phone" />
+          </FormRow>
+          <FormRow label="Preferred Contact Time" error={errors.preferredContactTime?.message}>
+            <Input {...register('preferredContactTime')} placeholder="e.g. mornings, after 5pm" />
+          </FormRow>
         </FormSection>
 
         {/* Segmentation */}
@@ -242,6 +248,19 @@ export default function ContactFormPage() {
               Prescribing Authority
             </Label>
           </div>
+        </FormSection>
+
+        {/* Licensing */}
+        <FormSection title="Licensing & Credentials">
+          <FormRow label="NPI Number" error={errors.npiNumber?.message}>
+            <Input {...register('npiNumber')} />
+          </FormRow>
+          <FormRow label="DEA Number" error={errors.deaNumber?.message}>
+            <Input {...register('deaNumber')} />
+          </FormRow>
+          <FormRow label="State License Number" error={errors.stateLicenseNumber?.message}>
+            <Input {...register('stateLicenseNumber')} />
+          </FormRow>
         </FormSection>
 
         {/* Consent */}
