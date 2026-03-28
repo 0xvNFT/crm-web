@@ -162,7 +162,7 @@ export default function InvoiceDetailPage() {
               label="Quote"
               value={
                 <Link to={`/quotes/${invoice.quote.id}`} className="text-primary hover:underline">
-                  {invoice.quote.id}
+                  {invoice.quote.quoteNumber ?? invoice.quote.id}
                 </Link>
               }
             />

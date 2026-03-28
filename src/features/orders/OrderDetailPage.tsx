@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil } from 'lucide-react'
-import { useOrder, useApproveOrder, useRejectOrder } from '@/api/endpoints/orders'
+import { ArrowLeft, Pencil, FileText } from 'lucide-react'
+import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -42,9 +42,11 @@ export default function OrderDetailPage() {
   const { data: order, isLoading, isError } = useOrder(id ?? '')
   const { mutate: approveOrder, isPending: isApproving } = useApproveOrder(id ?? '')
   const { mutate: rejectOrder, isPending: isRejecting } = useRejectOrder(id ?? '')
+  const { mutate: generateInvoice, isPending: isGenerating } = useGenerateInvoice(id ?? '')
 
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
+  const [showGenerateInvoice, setShowGenerateInvoice] = useState(false)
 
   if (isLoading) return <LoadingSpinner />
   if (isError || !order) return <ErrorMessage message="Order not found." />
@@ -52,6 +54,9 @@ export default function OrderDetailPage() {
   const isPending = order.status === 'pending' || order.status === 'submitted'
   const canAct = isManager && isPending
   const canEdit = order.status === 'draft' || order.status === 'pending'
+  const canGenerateInvoice = isManager && (
+    order.status === 'processing' || order.approvalStatus === 'approved'
+  )
 
   return (
     <div className="space-y-4">
@@ -69,11 +74,17 @@ export default function OrderDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground">{order.account.name}</p>
           )}
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap justify-end">
           {canEdit && (
             <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${id}/edit`)}>
               <Pencil className="h-4 w-4 mr-2" />
               Edit
+            </Button>
+          )}
+          {canGenerateInvoice && (
+            <Button size="sm" onClick={() => setShowGenerateInvoice(true)} disabled={isGenerating}>
+              <FileText className="h-4 w-4 mr-2" />
+              Generate Invoice
             </Button>
           )}
           {canAct && (
@@ -157,6 +168,28 @@ export default function OrderDetailPage() {
         <DetailRow label="Created" value={order.createdAt ? formatDate(order.createdAt) : null} />
         <DetailRow label="Updated" value={order.updatedAt ? formatDate(order.updatedAt) : null} />
       </Section>
+
+      {/* Generate Invoice dialog */}
+      <ConfirmDialog
+        open={showGenerateInvoice}
+        onCancel={() => setShowGenerateInvoice(false)}
+        onConfirm={() =>
+          generateInvoice(undefined, {
+            onSuccess: (invoice) => {
+              toast('Invoice generated', { variant: 'success' })
+              navigate(`/invoices/${invoice.id}`)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowGenerateInvoice(false)
+            },
+          })
+        }
+        title="Generate Invoice?"
+        description="This will create an invoice pre-populated from this order's line items and account."
+        confirmLabel="Generate"
+        isPending={isGenerating}
+      />
 
       {/* Approve dialog */}
       <ConfirmDialog

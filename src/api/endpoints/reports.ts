@@ -5,6 +5,11 @@ import type {
   LeadFunnelSummary,
   InvoiceAgingSummary,
   ActivitySummary,
+  KpiCallSummaryRow,
+  KpiActivitySummaryRow,
+  KpiDoctorCoverageRow,
+  KpiTerritoryPerformanceRow,
+  KpiPeriod,
 } from '@/api/app-types'
 
 export function usePipelineSummary() {
@@ -36,5 +41,48 @@ export function useActivitySummary() {
     queryKey: ['reports', 'activities'],
     queryFn: () =>
       client.get<ActivitySummary[]>('/api/pharma/reports/activities').then((r) => r.data),
+  })
+}
+
+// ─── KPI endpoints ─────────────────────────────────────────────────────────────
+
+export function useKpiCallSummary(period: KpiPeriod) {
+  return useQuery({
+    queryKey: ['kpi', 'call-summary', period],
+    queryFn: () =>
+      client
+        .get<KpiCallSummaryRow[]>('/api/pharma/reporting/kpi/call-summary', { params: period })
+        .then((r) => r.data),
+  })
+}
+
+export function useKpiActivitySummary(period: KpiPeriod) {
+  return useQuery({
+    queryKey: ['kpi', 'activity-summary', period],
+    queryFn: () =>
+      client
+        .get<KpiActivitySummaryRow[]>('/api/pharma/reporting/kpi/activity-summary', { params: period })
+        .then((r) => r.data),
+  })
+}
+
+export function useKpiDoctorCoverage(period: KpiPeriod) {
+  return useQuery({
+    queryKey: ['kpi', 'doctor-coverage', period],
+    queryFn: () =>
+      client
+        .get<KpiDoctorCoverageRow[]>('/api/pharma/reporting/kpi/doctor-coverage', { params: period })
+        .then((r) => r.data),
+  })
+}
+
+export function useKpiTerritoryPerformance(period: Pick<KpiPeriod, 'year' | 'quarter'>) {
+  return useQuery({
+    queryKey: ['kpi', 'territory-performance', period],
+    queryFn: () =>
+      client
+        .get<KpiTerritoryPerformanceRow[]>('/api/pharma/reporting/kpi/territory-performance', { params: period })
+        .then((r) => r.data),
+    enabled: !!period.quarter,
   })
 }

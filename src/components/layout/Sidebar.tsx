@@ -50,6 +50,7 @@ const NAV_MANAGER: NavItem[] = [
   { to: '/products', label: 'Products', icon: Package, roles: ['ADMIN', 'MANAGER'] },
   { to: '/coaching', label: 'Coaching', icon: GraduationCap, roles: ['ADMIN', 'MANAGER'] },
   { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN', 'MANAGER'] },
+  { to: '/reports/kpi', label: 'KPI Reports', icon: Target, roles: ['ADMIN', 'MANAGER', 'FIELD_REP'] },
 ]
 
 const NAV_ADMIN: NavItem[] = [

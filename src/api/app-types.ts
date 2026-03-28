@@ -66,6 +66,23 @@ export type LeadFunnelSummary  = components['schemas']['LeadFunnelSummary']
 export type InvoiceAgingSummary = components['schemas']['InvoiceAgingSummary']
 export type ActivitySummary    = components['schemas']['ActivitySummary']
 
+// ─── KPI Reporting (GET /api/pharma/reporting/kpi/*) ─────────────────────────
+export type KpiCallSummaryRow          = components['schemas']['CallSummaryDto']
+export type KpiActivitySummaryRow      = components['schemas']['ActivitySummaryKpiDto']
+export type KpiDoctorCoverageRow       = components['schemas']['DoctorCoverageDto']
+export type KpiTerritoryPerformanceRow = components['schemas']['TerritoryPerformanceDto']
+export type RepTarget                  = components['schemas']['RepTarget']
+export type PageRepTarget              = components['schemas']['PageRepTarget']
+export type CreateRepTargetRequest     = components['schemas']['CreateRepTargetRequest']
+export type UpdateRepTargetRequest     = components['schemas']['UpdateRepTargetRequest']
+
+export interface KpiPeriod {
+  year: number
+  month?: number
+  quarter?: number
+  repId?: string
+}
+
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 // Manually defined — backend login returns token=null in body (it's in the httpOnly cookie)
 export interface AuthUser {

@@ -25,6 +25,8 @@ const ContactFormPage = lazy(() => import('@/features/contacts/ContactFormPage')
 
 // Lead dev pages
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'))
+const KpiReportsPage = lazy(() => import('@/features/reports/KpiReportsPage'))
+const RepTargetsPage = lazy(() => import('@/features/reports/RepTargetsPage'))
 const AdminPage = lazy(() => import('@/features/admin/AdminPage'))
 const VisitListPage = lazy(() => import('@/features/visits/VisitListPage'))
 const VisitDetailPage = lazy(() => import('@/features/visits/VisitDetailPage'))
@@ -259,6 +261,22 @@ export function AppRouter() {
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
                 <Wrap><ReportsPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/reports/kpi"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP']}>
+                <Wrap><KpiReportsPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/reports/kpi/targets"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><RepTargetsPage /></Wrap>
               </RoleRoute>
             }
           />
