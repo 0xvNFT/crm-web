@@ -3,13 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, X, Check, Globe, Phone, Mail, Building2, Trash2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useAccount, useUpdateAccount, useDeleteAccount } from '@/api/endpoints/accounts'
+import { useAccount, useUpdateAccount, useDeleteAccount, useAccountSearch } from '@/api/endpoints/accounts'
+import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -56,6 +59,10 @@ export default function AccountDetailPage() {
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [ownerQuery, setOwnerQuery] = useState('')
+  const [parentQuery, setParentQuery] = useState('')
+  const debouncedOwnerQuery = useDebounce(ownerQuery, 300)
+  const debouncedParentQuery = useDebounce(parentQuery, 300)
 
   const { data: account, isLoading, isError } = useAccount(id ?? '')
   const { mutate: updateAccount, isPending } = useUpdateAccount(id ?? '')
@@ -63,6 +70,13 @@ export default function AccountDetailPage() {
   const { isManager } = useRole()
   const accountTypeOptions = useConfigOptions('account.type')
   const accountStatusOptions = useConfigOptions('account.status')
+  const customerClassOptions = useConfigOptions('account.customerClass')
+
+  const { data: ownerResults, isLoading: isSearchingOwners } = useStaffSearch(debouncedOwnerQuery)
+  const { data: parentResults, isLoading: isSearchingParents } = useAccountSearch(debouncedParentQuery)
+
+  const ownerOptions = (ownerResults ?? []).filter((u) => u.id).map((u) => ({ value: u.id!, label: u.fullName ?? u.email ?? u.id! }))
+  const parentOptions = (parentResults ?? []).filter((a) => a.id && a.id !== id).map((a) => ({ value: a.id!, label: a.name ?? a.id! }))
 
   const {
     register,
@@ -81,12 +95,21 @@ export default function AccountDetailPage() {
     reset({
       name: account?.name ?? '',
       accountType: account?.accountType ?? undefined,
-      billingAddress: account?.billingAddress ?? '',
-      shippingAddress: account?.shippingAddress ?? '',
-      taxId: account?.taxId ?? '',
+      status: account?.status ?? undefined,
+      ownerId: account?.owner?.id ?? undefined,
+      parentAccountId: account?.parentAccount?.id ?? undefined,
+      website: account?.website ?? '',
+      phoneMain: account?.phoneMain ?? '',
+      emailGeneral: account?.emailGeneral ?? '',
+      primaryCustomerClass: account?.primaryCustomerClass ?? undefined,
+      annualRevenue: account?.annualRevenue != null ? Number(account.annualRevenue) : undefined,
+      employees: account?.employees != null ? Number(account.employees) : undefined,
+      isSupplier: account?.isSupplier ?? false,
       creditLimit: account?.creditLimit != null ? Number(account.creditLimit) : undefined,
       paymentTerms: account?.paymentTerms ?? '',
-      status: account?.status ?? undefined,
+      taxId: account?.taxId ?? '',
+      billingAddress: account?.billingAddress ?? '',
+      shippingAddress: account?.shippingAddress ?? '',
       deaNumber: account?.deaNumber ?? '',
       stateLicenseNumber: account?.stateLicenseNumber ?? '',
       controlledSubstanceApproved: account?.controlledSubstanceApproved ?? false,
@@ -301,8 +324,81 @@ export default function AccountDetailPage() {
                   )}
                 />
               </FormRow>
-              <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
-                <Input {...register('paymentTerms')} placeholder="e.g. NET30" />
+              <FormRow label="Customer Class" error={errors.primaryCustomerClass?.message}>
+                <Controller
+                  name="primaryCustomerClass"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                      <SelectContent>
+                        {customerClassOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Owner (Rep)" error={errors.ownerId?.message}>
+                <Controller
+                  name="ownerId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      options={ownerOptions}
+                      placeholder="Search rep..."
+                      searchPlaceholder="Type name..."
+                      onSearchChange={setOwnerQuery}
+                      isLoading={isSearchingOwners}
+                    />
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Parent Account" error={errors.parentAccountId?.message}>
+                <Controller
+                  name="parentAccountId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      options={parentOptions}
+                      placeholder="Search account..."
+                      searchPlaceholder="Type account name..."
+                      onSearchChange={setParentQuery}
+                      isLoading={isSearchingParents}
+                    />
+                  )}
+                />
+              </FormRow>
+              <div className="flex items-center gap-2 pt-1 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  id="isSupplier"
+                  {...register('isSupplier')}
+                  className="h-4 w-4 rounded border-border accent-primary"
+                />
+                <Label htmlFor="isSupplier" className="text-sm text-foreground cursor-pointer">
+                  Is Supplier
+                </Label>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border bg-background p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Contact Details</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormRow label="Phone" error={errors.phoneMain?.message}>
+                <Input {...register('phoneMain')} placeholder="+63 2 8XXX XXXX" />
+              </FormRow>
+              <FormRow label="Email" error={errors.emailGeneral?.message}>
+                <Input {...register('emailGeneral')} placeholder="contact@hospital.com" />
+              </FormRow>
+              <FormRow label="Website" error={errors.website?.message} className="sm:col-span-2">
+                <Input {...register('website')} placeholder="https://..." />
               </FormRow>
             </div>
           </div>
@@ -312,6 +408,15 @@ export default function AccountDetailPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Credit Limit" error={errors.creditLimit?.message}>
                 <Input {...register('creditLimit')} type="number" min={0} step={0.01} />
+              </FormRow>
+              <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
+                <Input {...register('paymentTerms')} placeholder="e.g. NET30" />
+              </FormRow>
+              <FormRow label="Annual Revenue" error={errors.annualRevenue?.message}>
+                <Input {...register('annualRevenue')} type="number" min={0} step={0.01} />
+              </FormRow>
+              <FormRow label="Employees" error={errors.employees?.message}>
+                <Input {...register('employees')} type="number" min={0} />
               </FormRow>
               <FormRow label="Tax ID" error={errors.taxId?.message}>
                 <Input {...register('taxId')} />
