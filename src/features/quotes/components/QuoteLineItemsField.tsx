@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useFieldArray, useWatch, useController } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { Trash2, Plus } from 'lucide-react'
@@ -29,7 +30,8 @@ function QuoteLineItemRow({ index, control, errors, onRemove, canRemove, account
   const [productQuery, setProductQuery] = useState('')
   const [cachedProducts, setCachedProducts] = useState<PharmaProduct[]>([])
 
-  const { data: searchResults, isLoading: isSearching } = useProductSearch(productQuery)
+  const debouncedProductQuery = useDebounce(productQuery, 300)
+  const { data: searchResults, isLoading: isSearching } = useProductSearch(debouncedProductQuery)
 
   const mergedProducts = [
     ...cachedProducts,

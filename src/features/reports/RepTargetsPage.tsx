@@ -7,6 +7,7 @@ import { repTargetSchema, type RepTargetFormData } from '@/schemas/rep-targets'
 import { useRepTargets, useCreateRepTarget } from '@/api/endpoints/rep-targets'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useTerritories } from '@/api/endpoints/territories'
+import { useDebounce } from '@/hooks/useDebounce'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
 import { Button } from '@/components/ui/button'
@@ -36,7 +37,8 @@ interface AddTargetFormProps {
 
 function AddTargetForm({ year, month }: AddTargetFormProps) {
   const [repQuery, setRepQuery] = useState('')
-  const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(repQuery)
+  const debouncedRepQuery = useDebounce(repQuery, 300)
+  const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
   const { data: territoriesData } = useTerritories(0, 100)
 
   const repOptions = (repResults ?? [])
@@ -209,7 +211,11 @@ export default function RepTargetsPage() {
               <tbody className="divide-y">
                 {targets.map((t) => (
                   <tr key={t.id} className="hover:bg-muted/20">
-                    <td className="px-4 py-3 font-medium">{t.rep?.fullName ?? t.rep?.email ?? '—'}</td>
+                    <td className="px-4 py-3 font-medium">
+                      {t.rep?.fullName
+                        ?? ([t.rep?.firstName, t.rep?.lastName].filter(Boolean).join(' ') || t.rep?.email)
+                        ?? '—'}
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground">{t.territory?.territoryName ?? '—'}</td>
                     <td className="px-4 py-3 text-right">{t.targetVisits}</td>
                     <td className="px-4 py-3 text-right">{t.targetContacts}</td>

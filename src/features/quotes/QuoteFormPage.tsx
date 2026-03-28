@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,8 +28,10 @@ export default function QuoteFormPage() {
   const [contactQuery, setContactQuery] = useState('')
   const [cachedContacts, setCachedContacts] = useState<PharmaContact[]>([])
 
-  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(accountQuery)
-  const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(contactQuery)
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const debouncedContactQuery = useDebounce(contactQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(debouncedContactQuery)
 
   const mergedAccounts = [
     ...cachedAccounts,

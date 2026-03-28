@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -36,9 +37,13 @@ function InvoiceCreateForm() {
   const [productQueries, setProductQueries] = useState<string[]>([''])
   const [cachedProducts, setCachedProducts] = useState<PharmaProduct[]>([])
 
-  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(accountQuery)
-  const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(contactQuery)
-  const { data: productResults } = useProductSearch(productQueries[productQueries.length - 1] ?? '')
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const debouncedContactQuery = useDebounce(contactQuery, 300)
+  const debouncedProductQuery = useDebounce(productQueries[productQueries.length - 1] ?? '', 300)
+
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(debouncedContactQuery)
+  const { data: productResults } = useProductSearch(debouncedProductQuery)
 
   const mergedAccounts = [
     ...cachedAccounts,
