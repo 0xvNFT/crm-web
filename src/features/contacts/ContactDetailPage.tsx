@@ -77,6 +77,7 @@ export default function ContactDetailPage() {
   const { isManager } = useRole()
   const contactTypeOptions = useConfigOptions('contact.type')
   const contactStatusOptions = useConfigOptions('contact.status')
+  const consentStatusOptions = useConfigOptions('contact.consentStatus')
 
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ContactEditFormData>({
     resolver: zodResolver(contactEditSchema),
@@ -119,6 +120,8 @@ export default function ContactDetailPage() {
       preferredContactMethod: contact?.preferredContactMethod ?? '',
       preferredContactTime: contact?.preferredContactTime ?? '',
       status: contact?.status ?? 'active',
+      consentConfirmedStatus: contact?.consentConfirmedStatus ?? undefined,
+      consentConfirmedDate: contact?.consentConfirmedDate ?? '',
       notes: contact?.notes ?? '',
     })
     setEditing(true)
@@ -359,6 +362,28 @@ export default function ContactDetailPage() {
                   </Select>
                 )}
               />
+            </FormRow>
+          </FormSection>
+
+          <FormSection title="Consent & Compliance">
+            <FormRow label="Consent Status" error={errors.consentConfirmedStatus?.message}>
+              <Controller
+                name="consentConfirmedStatus"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                    <SelectContent>
+                      {consentStatusOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormRow>
+            <FormRow label="Consent Date" error={errors.consentConfirmedDate?.message}>
+              <Input {...register('consentConfirmedDate')} type="date" />
             </FormRow>
           </FormSection>
 

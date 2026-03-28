@@ -62,21 +62,28 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         ? { value: user.userId, label: user.fullName ?? user.email ?? '' }
         : undefined)
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<ActivityFormData>({
+  const { register, handleSubmit, control, watch, formState: { errors } } = useForm<ActivityFormData>({
     resolver: zodResolver(activitySchema) as Resolver<ActivityFormData>,
     defaultValues: isEdit && activity ? {
-      subject:         activity.subject ?? '',
-      activityType:    activity.activityType ?? '',
-      assignedUserId:  activity.assignedUser?.id ?? '',
-      status:          activity.status ?? '',
-      priority:        activity.priority ?? '',
-      dueDate:         activity.dueDate ?? '',
-      durationMinutes: activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
-      description:     activity.description ?? '',
+      subject:          activity.subject ?? '',
+      activityType:     activity.activityType ?? '',
+      assignedUserId:   activity.assignedUser?.id ?? '',
+      status:           activity.status ?? '',
+      priority:         activity.priority ?? '',
+      dueDate:          activity.dueDate ?? '',
+      durationMinutes:  activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
+      outcome:          activity.outcome ?? '',
+      followUpRequired: activity.followUpRequired ?? false,
+      followUpDate:     activity.followUpDate ?? '',
+      followUpNotes:    activity.followUpNotes ?? '',
+      description:      activity.description ?? '',
     } : {
       assignedUserId: user?.userId ?? '',
     },
   })
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const followUpRequired = watch('followUpRequired')
 
   function onSubmit(data: ActivityFormData) {
     if (isEdit) {
@@ -167,7 +174,10 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
             <Input {...register('dueDate')} type="date" />
           </FormRow>
           <FormRow label="Duration (minutes)" error={errors.durationMinutes?.message}>
-            <Input {...register('durationMinutes')} type="number" min={0} placeholder="30" />
+            <Input {...register('durationMinutes')} type="number" min={0} placeholder="30" onKeyDown={(e) => { if (['e','E','+','-'].includes(e.key)) e.preventDefault() }} />
+          </FormRow>
+          <FormRow label="Outcome" error={errors.outcome?.message} className="sm:col-span-2">
+            <Input {...register('outcome')} placeholder="e.g. Scheduled follow-up, Left voicemail" />
           </FormRow>
           <FormRow label="Assigned To" required error={errors.assignedUserId?.message}>
             <Controller
@@ -188,6 +198,33 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
             />
           </FormRow>
         </FormSection>
+
+        <div className="rounded-xl border bg-background p-5 space-y-4">
+          <h2 className="text-sm font-semibold text-foreground">Follow-up</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="flex items-center gap-2 pt-1 sm:col-span-2">
+              <input
+                type="checkbox"
+                id="followUpRequired"
+                {...register('followUpRequired')}
+                className="h-4 w-4 rounded border-border accent-primary"
+              />
+              <label htmlFor="followUpRequired" className="text-sm text-foreground cursor-pointer">
+                Follow-up Required
+              </label>
+            </div>
+            {followUpRequired && (
+              <>
+                <FormRow label="Follow-up Date" error={errors.followUpDate?.message}>
+                  <Input {...register('followUpDate')} type="date" />
+                </FormRow>
+                <FormRow label="Follow-up Notes" error={errors.followUpNotes?.message} className="sm:col-span-2">
+                  <Textarea {...register('followUpNotes')} rows={2} placeholder="Notes for the follow-up…" />
+                </FormRow>
+              </>
+            )}
+          </div>
+        </div>
 
         <div className="rounded-xl border bg-background p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Description</h2>

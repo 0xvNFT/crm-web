@@ -6,20 +6,6 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime, formatLabel } from '@/utils/formatters'
-import type { PharmaActivity } from '@/api/app-types'
-
-// Fix 4: Added comment for the workaround interface
-// fields present in API response but missing from generated spec — remove when spec is updated
-interface ActivityDetail extends PharmaActivity {
-  dueDate?: string
-  completedAt?: string
-  durationMinutes?: number
-  outcome?: string
-  followUpRequired?: boolean
-  followUpDate?: string
-  followUpNotes?: string
-}
-
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border bg-background p-5 space-y-4">
@@ -53,8 +39,7 @@ export default function ActivityDetailPage() {
   if (isLoading) return <LoadingSpinner />
   if (isError || !data) return <ErrorMessage message="Activity not found." />
 
-  // Fix 3: Typed variable declaration
-  const activity: ActivityDetail = data
+  const activity = data
 
   return (
     <div className="space-y-4">
