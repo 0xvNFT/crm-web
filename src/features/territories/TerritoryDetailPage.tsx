@@ -12,9 +12,9 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { FormRow } from '@/components/shared/FormRow'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
@@ -43,16 +43,6 @@ function DetailField({ label, value }: { label: string; value?: string | number 
     <div className="space-y-0.5">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
-
-function FormRow({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }

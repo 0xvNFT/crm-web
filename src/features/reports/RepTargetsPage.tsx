@@ -8,9 +8,10 @@ import { useRepTargets, useCreateRepTarget } from '@/api/endpoints/rep-targets'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useTerritories } from '@/api/endpoints/territories'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FormRow } from '@/components/shared/FormRow'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox } from '@/components/ui/combobox'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
@@ -27,23 +28,6 @@ const MONTHS = [
 ]
 
 // ─── Form ─────────────────────────────────────────────────────────────────────
-
-function FormField({ label, required, error, children }: {
-  label: string
-  required?: boolean
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive ml-0.5">*</span>}
-      </Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  )
-}
 
 interface AddTargetFormProps {
   year: number
@@ -85,7 +69,7 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
       <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Add / Update Target</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Rep" required error={errors.repId?.message}>
+        <FormRow label="Rep" required error={errors.repId?.message}>
           <Controller
             name="repId"
             control={control}
@@ -102,9 +86,9 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
               />
             )}
           />
-        </FormField>
+        </FormRow>
 
-        <FormField label="Territory" required error={errors.territoryId?.message}>
+        <FormRow label="Territory" required error={errors.territoryId?.message}>
           <Controller
             name="territoryId"
             control={control}
@@ -119,19 +103,19 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
               />
             )}
           />
-        </FormField>
+        </FormRow>
 
-        <FormField label="Target Visits" required error={errors.targetVisits?.message}>
+        <FormRow label="Target Visits" required error={errors.targetVisits?.message}>
           <Input type="number" min={1} {...register('targetVisits')} className={errors.targetVisits ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
-        <FormField label="Target Contacts (Doctors)" required error={errors.targetContacts?.message}>
+        <FormRow label="Target Contacts (Doctors)" required error={errors.targetContacts?.message}>
           <Input type="number" min={1} {...register('targetContacts')} className={errors.targetContacts ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
-        <FormField label="Target Calls" required error={errors.targetCalls?.message}>
+        <FormRow label="Target Calls" required error={errors.targetCalls?.message}>
           <Input type="number" min={1} {...register('targetCalls')} className={errors.targetCalls ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
       </div>
 
       <Button type="submit" size="sm" disabled={isPending}>
@@ -168,28 +152,30 @@ export default function RepTargetsPage() {
       {/* Period selector */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Year</label>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-          >
-            {[CURRENT_YEAR - 1, CURRENT_YEAR].map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          <span className="text-xs font-medium text-muted-foreground">Year</span>
+          <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
+            <SelectTrigger className="h-8 w-24 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[CURRENT_YEAR - 1, CURRENT_YEAR].map((y) => (
+                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex items-center gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Month</label>
-          <select
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-          >
-            {MONTHS.map((name, i) => (
-              <option key={i + 1} value={i + 1}>{name}</option>
-            ))}
-          </select>
+          <span className="text-xs font-medium text-muted-foreground">Month</span>
+          <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
+            <SelectTrigger className="h-8 w-32 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MONTHS.map((name, i) => (
+                <SelectItem key={i + 1} value={String(i + 1)}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

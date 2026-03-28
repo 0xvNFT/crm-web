@@ -9,6 +9,7 @@ import {
 } from '@/api/endpoints/reports'
 import { useRole } from '@/hooks/useRole'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { formatLabel } from '@/utils/formatters'
@@ -279,34 +280,37 @@ function PeriodSelector({ year, month, quarter, onYearChange, onMonthChange, onQ
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Year</label>
-        <select
-          value={year}
-          onChange={(e) => onYearChange(Number(e.target.value))}
-          className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-        >
-          {years.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <span className="text-xs font-medium text-muted-foreground">Year</span>
+        <Select value={String(year)} onValueChange={(v) => onYearChange(Number(v))}>
+          <SelectTrigger className="h-8 w-24 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex items-center gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Month</label>
-        <select
-          value={month}
-          onChange={(e) => onMonthChange(Number(e.target.value))}
-          className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-        >
-          {MONTHS.map((name, i) => <option key={i + 1} value={i + 1}>{name}</option>)}
-        </select>
+        <span className="text-xs font-medium text-muted-foreground">Month</span>
+        <Select value={String(month)} onValueChange={(v) => onMonthChange(Number(v))}>
+          <SelectTrigger className="h-8 w-32 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MONTHS.map((name, i) => <SelectItem key={i + 1} value={String(i + 1)}>{name}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex items-center gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Quarter</label>
-        <select
-          value={quarter}
-          onChange={(e) => onQuarterChange(Number(e.target.value))}
-          className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-        >
-          {QUARTERS.map((name, i) => <option key={i + 1} value={i + 1}>{name}</option>)}
-        </select>
+        <span className="text-xs font-medium text-muted-foreground">Quarter</span>
+        <Select value={String(quarter)} onValueChange={(v) => onQuarterChange(Number(v))}>
+          <SelectTrigger className="h-8 w-28 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {QUARTERS.map((name, i) => <SelectItem key={i + 1} value={String(i + 1)}>{name}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )

@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -27,23 +28,6 @@ function FormSection({ title, children }: { title: string; children: React.React
     <div className="rounded-xl border bg-background p-5 space-y-4">
       <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function FormRow({ label, required, error, children }: {
-  label: string
-  required?: boolean
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive ml-0.5">*</span>}
-      </Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }

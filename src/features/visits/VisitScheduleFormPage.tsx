@@ -7,32 +7,14 @@ import { useAccounts } from '@/api/endpoints/accounts'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { scheduleVisitSchema, type ScheduleVisitFormData } from '@/schemas/visits'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
-
-function FormRow({ label, required, error, children }: {
-  label: string
-  required?: boolean
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label}
-        {required && <span className="ml-0.5 text-destructive">*</span>}
-      </Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  )
-}
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (

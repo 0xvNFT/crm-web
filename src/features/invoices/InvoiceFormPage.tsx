@@ -18,29 +18,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormRow } from '@/components/shared/FormRow'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { PharmaAccount, PharmaContact, PharmaProduct } from '@/api/app-types'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function FormField({ label, required, error, children }: {
-  label: string
-  required?: boolean
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive ml-0.5">*</span>}
-      </Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  )
-}
 
 // ─── Create form ──────────────────────────────────────────────────────────────
 
@@ -141,12 +123,12 @@ function InvoiceCreateForm() {
       <div className="rounded-xl border bg-background p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invoice Info</h2>
 
-        <FormField label="Subject" required error={errors.subject?.message}>
+        <FormRow label="Subject" required error={errors.subject?.message}>
           <Input {...register('subject')} placeholder="e.g. Invoice for Q1 supply" className={errors.subject ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Account" required error={errors.accountId?.message}>
+          <FormRow label="Account" required error={errors.accountId?.message}>
             <Controller
               name="accountId"
               control={control}
@@ -171,9 +153,9 @@ function InvoiceCreateForm() {
                 />
               )}
             />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Contact (optional)">
+          <FormRow label="Contact (optional)">
             <Controller
               name="contactId"
               control={control}
@@ -197,37 +179,37 @@ function InvoiceCreateForm() {
                 />
               )}
             />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Invoice Date" required error={errors.invoiceDate?.message}>
+          <FormRow label="Invoice Date" required error={errors.invoiceDate?.message}>
             <Input id="invoiceDate" type="date" {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Due Date" required error={errors.dueDate?.message}>
+          <FormRow label="Due Date" required error={errors.dueDate?.message}>
             <Input id="dueDate" type="date" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Payment Terms">
+          <FormRow label="Payment Terms">
             <Input {...register('paymentTerms')} placeholder="e.g. Net 30" />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Currency">
+          <FormRow label="Currency">
             <Input {...register('currency')} placeholder="PHP" />
-          </FormField>
+          </FormRow>
         </div>
 
-        <FormField label="Billing Address" required error={errors.billingAddress?.message}>
+        <FormRow label="Billing Address" required error={errors.billingAddress?.message}>
           <Input {...register('billingAddress')} placeholder="Street, City, Province, ZIP" className={errors.billingAddress ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Shipping Address">
+          <FormRow label="Shipping Address">
             <Input {...register('shippingAddress')} placeholder="Same as billing or different" />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Shipping Method">
+          <FormRow label="Shipping Method">
             <Input {...register('shippingMethod')} placeholder="e.g. LBC, J&T, courier" />
-          </FormField>
+          </FormRow>
         </div>
 
         <div className="flex items-center gap-2">
@@ -277,7 +259,7 @@ function InvoiceCreateForm() {
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <FormField label="Product (optional)">
+                <FormRow label="Product (optional)">
                   <Controller
                     name={`items.${index}.productId`}
                     control={control}
@@ -306,22 +288,22 @@ function InvoiceCreateForm() {
                       />
                     )}
                   />
-                </FormField>
+                </FormRow>
 
-                <FormField label="Description">
+                <FormRow label="Description">
                   <Input {...register(`items.${index}.description`)} placeholder="Optional description" />
-                </FormField>
+                </FormRow>
 
-                <FormField label="Quantity" required error={errors.items?.[index]?.quantity?.message}>
+                <FormRow label="Quantity" required error={errors.items?.[index]?.quantity?.message}>
                   <Input
                     type="number"
                     min={1}
                     {...register(`items.${index}.quantity`)}
                     className={errors.items?.[index]?.quantity ? 'border-destructive' : ''}
                   />
-                </FormField>
+                </FormRow>
 
-                <FormField label="Unit Price (₱)" required error={errors.items?.[index]?.unitPrice?.message}>
+                <FormRow label="Unit Price (₱)" required error={errors.items?.[index]?.unitPrice?.message}>
                   <Input
                     type="number"
                     min={0}
@@ -329,15 +311,15 @@ function InvoiceCreateForm() {
                     {...register(`items.${index}.unitPrice`)}
                     className={errors.items?.[index]?.unitPrice ? 'border-destructive' : ''}
                   />
-                </FormField>
+                </FormRow>
 
-                <FormField label="Discount Amount (₱)">
+                <FormRow label="Discount Amount (₱)">
                   <Input type="number" min={0} step={0.01} {...register(`items.${index}.discountAmount`)} placeholder="0.00" />
-                </FormField>
+                </FormRow>
 
-                <FormField label="Tax Amount (₱)">
+                <FormRow label="Tax Amount (₱)">
                   <Input type="number" min={0} step={0.01} {...register(`items.${index}.taxAmount`)} placeholder="0.00" />
-                </FormField>
+                </FormRow>
               </div>
             </div>
           ))}
@@ -401,40 +383,40 @@ function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormProps) {
           Account and line items cannot be changed after creation. Only header fields are editable on draft invoices.
         </p>
 
-        <FormField label="Subject" required error={errors.subject?.message}>
+        <FormRow label="Subject" required error={errors.subject?.message}>
           <Input {...register('subject')} className={errors.subject ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Invoice Date" required error={errors.invoiceDate?.message}>
+          <FormRow label="Invoice Date" required error={errors.invoiceDate?.message}>
             <Input type="date" {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Due Date" required error={errors.dueDate?.message}>
+          <FormRow label="Due Date" required error={errors.dueDate?.message}>
             <Input type="date" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Payment Terms">
+          <FormRow label="Payment Terms">
             <Input {...register('paymentTerms')} placeholder="e.g. Net 30" />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Currency">
+          <FormRow label="Currency">
             <Input {...register('currency')} placeholder="PHP" />
-          </FormField>
+          </FormRow>
         </div>
 
-        <FormField label="Billing Address" required error={errors.billingAddress?.message}>
+        <FormRow label="Billing Address" required error={errors.billingAddress?.message}>
           <Input {...register('billingAddress')} className={errors.billingAddress ? 'border-destructive' : ''} />
-        </FormField>
+        </FormRow>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Shipping Address">
+          <FormRow label="Shipping Address">
             <Input {...register('shippingAddress')} />
-          </FormField>
+          </FormRow>
 
-          <FormField label="Shipping Method">
+          <FormRow label="Shipping Method">
             <Input {...register('shippingMethod')} />
-          </FormField>
+          </FormRow>
         </div>
 
         <div className="flex items-center gap-2">

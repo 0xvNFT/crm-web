@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { FormRow } from '@/components/shared/FormRow'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
@@ -61,17 +62,6 @@ function FormSection({ title, children }: { title: string; children: React.React
     </div>
   )
 }
-
-function FormRow({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  )
-}
-
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactDetailPage() {
