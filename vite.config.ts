@@ -40,7 +40,7 @@ export default defineConfig({
       // This avoids the cross-origin cookie restriction (localhost ↔ remote IP).
       // In production, VITE_API_BASE_URL points directly to the backend — no proxy needed.
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'https://crm-server.cdts.com.ph',
         changeOrigin: true,
       },
     },
