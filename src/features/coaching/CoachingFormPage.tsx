@@ -98,6 +98,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
       },
     })
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const followUpRequired = watch('followUpRequired')
 
   function onSubmit(data: CoachingNoteFormData | CoachingNoteEditFormData) {

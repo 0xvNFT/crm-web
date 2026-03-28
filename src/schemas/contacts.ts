@@ -18,6 +18,8 @@ export const contactSchema = z.object({
   prescribingAuthority: z.boolean().optional(),
   prcNumber: z.string().optional(),
   leadSource: z.string().optional(),
+  consentConfirmedStatus: z.string().optional(),
+  consentConfirmedDate: z.string().optional(),
   addressStreet: z.string().optional(),
   addressBarangay: z.string().optional(),
   addressCity: z.string().optional(),
@@ -47,6 +49,8 @@ export const contactEditSchema = z.object({
   preferredContactMethod: z.string().optional(),
   preferredContactTime: z.string().optional(),
   status: z.string().optional(),
+  consentConfirmedStatus: z.string().optional(),
+  consentConfirmedDate: z.string().optional(),
   notes: z.string().optional(),
 })
 export type ContactEditFormData = z.infer<typeof contactEditSchema>

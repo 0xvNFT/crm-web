@@ -8,6 +8,10 @@ export const activitySchema = z.object({
   priority:         z.string().optional().transform(v => v || undefined),
   dueDate:          z.string().optional(),
   durationMinutes:  z.coerce.number<number>().int().min(0).optional(),
+  outcome:          z.string().optional(),
+  followUpRequired: z.boolean().optional(),
+  followUpDate:     z.string().optional(),
+  followUpNotes:    z.string().optional(),
   description:      z.string().optional(),
 })
 

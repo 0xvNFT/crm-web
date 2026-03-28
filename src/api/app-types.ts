@@ -104,7 +104,7 @@ export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']
 
 // ─── Account request types ───────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
-export type CreatePharmaAccountRequest = Omit<components['schemas']['CreatePharmaAccountRequest'], 'accountType'> & { accountType: string }
+export type CreatePharmaAccountRequest = Omit<components['schemas']['CreatePharmaAccountRequest'], 'accountType' | 'status' | 'paymentTerms' | 'primaryCustomerClass'> & { accountType: string; status?: string; paymentTerms?: string; primaryCustomerClass?: string }
 export type UpdatePharmaAccountRequest = Omit<components['schemas']['UpdatePharmaAccountRequest'], 'accountType' | 'status'> & { accountType?: string; status?: string }
 
 // ─── Territory request types ──────────────────────────────────────────────────
@@ -136,8 +136,8 @@ export type UpdateLeadRequest = Omit<components['schemas']['UpdateLeadRequest'],
 
 // ─── Activity request types ───────────────────────────────────────────────────
 // Widen config-driven union literals to string
-export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction'> & { activityType: string; status?: string; priority?: string; direction?: string }
-export type UpdateActivityRequest = Omit<components['schemas']['UpdateActivityRequest'], 'status' | 'priority'> & { status?: string; priority?: string }
+export type CreateActivityRequest = Omit<components['schemas']['CreateActivityRequest'], 'activityType' | 'status' | 'priority' | 'direction' | 'callResult'> & { activityType: string; status?: string; priority?: string; direction?: string; callResult?: string }
+export type UpdateActivityRequest = Omit<components['schemas']['UpdateActivityRequest'], 'status' | 'priority' | 'direction' | 'callResult'> & { status?: string; priority?: string; direction?: string; callResult?: string }
 
 // ─── Contact request types ────────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime

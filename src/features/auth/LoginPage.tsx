@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import { loginSchema, type LoginFormData } from '@/schemas/auth'
 import { useLogin, useResendVerification } from '@/api/endpoints/auth'
 import { useAuth } from '@/hooks/useAuth'
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const resendMutation = useResendVerification()
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
   const [resendSent, setResendSent] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/dashboard'
 
@@ -77,13 +79,24 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
             </div>
-            <FormField
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              error={errors.password?.message}
-              {...register('password')}
-            />
+            <div className="relative">
+              <FormField
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                error={errors.password?.message}
+                className="pr-10"
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {loginMutation.error && !unverifiedEmail && (

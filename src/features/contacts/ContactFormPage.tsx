@@ -39,6 +39,8 @@ export default function ContactFormPage() {
   const SALUTATIONS = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Prof.']
   const customerClassOptions = useConfigOptions('contact.customerClass')
   const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
+  const leadSourceOptions = useConfigOptions('contact.leadSource')
+  const consentStatusOptions = useConfigOptions('contact.consentStatus')
 
   const {
     register,
@@ -162,7 +164,20 @@ export default function ContactFormPage() {
             <Input {...register('specialty')} placeholder="e.g. Cardiology" />
           </FormRow>
           <FormRow label="Lead Source" error={errors.leadSource?.message}>
-            <Input {...register('leadSource')} placeholder="e.g. Referral, Event" />
+            <Controller
+              name="leadSource"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
+                  <SelectContent>
+                    {leadSourceOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
         </FormSection>
 
@@ -227,6 +242,29 @@ export default function ContactFormPage() {
               Prescribing Authority
             </Label>
           </div>
+        </FormSection>
+
+        {/* Consent */}
+        <FormSection title="Consent & Compliance">
+          <FormRow label="Consent Status" error={errors.consentConfirmedStatus?.message}>
+            <Controller
+              name="consentConfirmedStatus"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                  <SelectContent>
+                    {consentStatusOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormRow>
+          <FormRow label="Consent Date" error={errors.consentConfirmedDate?.message}>
+            <Input {...register('consentConfirmedDate')} type="date" />
+          </FormRow>
         </FormSection>
 
         {/* Address */}
