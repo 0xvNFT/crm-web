@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, Clock, User, CheckCircle, XCircle, LogIn, LogOut, Send, FileSignature } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { ArrowLeft, MapPin, Clock, User, CheckCircle, XCircle, LogIn, LogOut, Send, FileSignature, Pencil, X, Check } from 'lucide-react'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useVisit, useSubmitVisit, useApproveVisit, useRejectVisit, useCheckInVisit, useCheckOutVisit } from '@/api/endpoints/visits'
+import { useVisit, useSubmitVisit, useApproveVisit, useRejectVisit, useCheckInVisit, useCheckOutVisit, useUpdateVisit } from '@/api/endpoints/visits'
 import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -13,11 +14,13 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { FormRow } from '@/components/shared/FormRow'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
-import { checkOutSchema, rejectVisitSchema, type CheckOutFormData, type RejectVisitFormData } from '@/schemas/visits'
+import { checkOutSchema, rejectVisitSchema, visitEditSchema, type CheckOutFormData, type RejectVisitFormData, type VisitEditFormData } from '@/schemas/visits'
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -61,12 +64,28 @@ export default function VisitDetailPage() {
   const { mutate: rejectVisit, isPending: isRejecting } = useRejectVisit()
   const { mutate: checkIn, isPending: isCheckingIn } = useCheckInVisit()
   const { mutate: checkOut, isPending: isCheckingOut } = useCheckOutVisit()
+  const { mutate: updateVisit, isPending: isUpdating } = useUpdateVisit(id ?? '')
 
+  const visitTypeOptions = useConfigOptions('visit.type')
+  const visitPriorityOptions = useConfigOptions('visit.priority')
+  // Sentiment is a fixed 3-value enum — not in config endpoint
+  const sentimentOptions = [
+    { value: 'positive', label: 'Positive' },
+    { value: 'neutral', label: 'Neutral' },
+    { value: 'negative', label: 'Negative' },
+  ]
+
+  const [editing, setEditing] = useState(false)
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
   const [showSubmit, setShowSubmit] = useState(false)
   const [showCheckIn, setShowCheckIn] = useState(false)
   const [showCheckOut, setShowCheckOut] = useState(false)
+
+  // Edit form
+  const editForm = useForm<VisitEditFormData>({
+    resolver: zodResolver(visitEditSchema),
+  })
 
   // Check-out form
   const checkOutForm = useForm<CheckOutFormData>({
@@ -89,6 +108,38 @@ export default function VisitDetailPage() {
   const canCheckOut = isOwnVisit && !!visit.checkInTime && !visit.checkOutTime
   const canSubmit = isOwnVisit && (status === 'COMPLETED' || status === 'DRAFT') && !['PENDING_APPROVAL', 'APPROVED'].includes(status)
   const canApproveReject = isManager && status === 'PENDING_APPROVAL'
+  // Edit allowed on scheduled visits only — once checked in the data is part of the activity record
+  const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED'
+
+  function startEdit() {
+    editForm.reset({
+      subject: visit?.subject ?? '',
+      locationName: visit?.locationName ?? '',
+      visitType: visit?.visitType ?? '',
+      priority: visit?.priority ?? '',
+      sentiment: visit?.sentiment ?? '',
+      scheduledStart: visit?.scheduledStart ?? '',
+      scheduledEnd: visit?.scheduledEnd ?? '',
+      callObjectives: visit?.callObjectives ?? '',
+      notes: visit?.notes ?? '',
+    })
+    setEditing(true)
+  }
+
+  function cancelEdit() {
+    setEditing(false)
+    editForm.reset()
+  }
+
+  function onEditSubmit(data: VisitEditFormData) {
+    updateVisit(data, {
+      onSuccess: () => {
+        toast('Visit updated', { variant: 'success' })
+        setEditing(false)
+      },
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+    })
+  }
 
   const assignedRep = visit.assignedRep as { fullName?: string } | undefined
   const reviewedBy = visit.reviewedBy as { fullName?: string } | undefined
@@ -166,6 +217,12 @@ export default function VisitDetailPage() {
 
         {/* Action buttons */}
         <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+          {canEdit && !editing && (
+            <Button size="sm" variant="outline" onClick={startEdit}>
+              <Pencil className="h-4 w-4 mr-1.5" />
+              Edit
+            </Button>
+          )}
           {canCheckIn && (
             <Button size="sm" onClick={() => setShowCheckIn(true)} disabled={isCheckingIn}>
               <LogIn className="h-4 w-4 mr-1.5" />
@@ -199,15 +256,103 @@ export default function VisitDetailPage() {
         </div>
       </div>
 
+      {/* Inline edit form — scheduled visits only */}
+      {editing && (
+        <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+          <div className="rounded-xl border bg-background p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Edit Visit</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormRow label="Subject" required error={editForm.formState.errors.subject?.message} className="sm:col-span-2">
+                <Input {...editForm.register('subject')} autoFocus />
+              </FormRow>
+              <FormRow label="Visit Type" required error={editForm.formState.errors.visitType?.message}>
+                <Controller
+                  name="visitType"
+                  control={editForm.control}
+                  render={({ field }) => (
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                      <SelectContent>
+                        {visitTypeOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Priority" error={editForm.formState.errors.priority?.message}>
+                <Controller
+                  name="priority"
+                  control={editForm.control}
+                  render={({ field }) => (
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
+                      <SelectContent>
+                        {visitPriorityOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Sentiment" error={editForm.formState.errors.sentiment?.message}>
+                <Controller
+                  name="sentiment"
+                  control={editForm.control}
+                  render={({ field }) => (
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                      <SelectTrigger><SelectValue placeholder="Select sentiment" /></SelectTrigger>
+                      <SelectContent>
+                        {sentimentOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Location Name" error={editForm.formState.errors.locationName?.message}>
+                <Input {...editForm.register('locationName')} placeholder="e.g. Main Clinic" />
+              </FormRow>
+              <FormRow label="Scheduled Start" required error={editForm.formState.errors.scheduledStart?.message}>
+                <Input {...editForm.register('scheduledStart')} type="datetime-local" />
+              </FormRow>
+              <FormRow label="Scheduled End" error={editForm.formState.errors.scheduledEnd?.message}>
+                <Input {...editForm.register('scheduledEnd')} type="datetime-local" />
+              </FormRow>
+              <FormRow label="Call Objectives" error={editForm.formState.errors.callObjectives?.message} className="sm:col-span-2">
+                <Textarea {...editForm.register('callObjectives')} rows={2} />
+              </FormRow>
+              <FormRow label="Notes" error={editForm.formState.errors.notes?.message} className="sm:col-span-2">
+                <Textarea {...editForm.register('notes')} rows={2} />
+              </FormRow>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 justify-end">
+            <Button type="button" variant="outline" onClick={cancelEdit} disabled={isUpdating}>
+              <X className="h-3.5 w-3.5 mr-1.5" />
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isUpdating}>
+              <Check className="h-3.5 w-3.5 mr-1.5" />
+              {isUpdating ? 'Saving…' : 'Save Changes'}
+            </Button>
+          </div>
+        </form>
+      )}
+
       {/* Rejection reason banner */}
-      {visit.rejectionReason && (
+      {!editing && visit.rejectionReason && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
           <p className="text-xs font-semibold text-destructive uppercase tracking-wide mb-0.5">Rejected</p>
           <p className="text-sm text-foreground">{visit.rejectionReason}</p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {!editing && (
+      <><div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Visit Info */}
         <DetailSection title="Visit Details" icon={MapPin}>
           <div className="grid grid-cols-2 gap-3">
@@ -330,6 +475,8 @@ export default function VisitDetailPage() {
         <DetailSection title="Notes" icon={FileSignature}>
           <p className="text-sm text-foreground whitespace-pre-wrap">{visit.notes}</p>
         </DetailSection>
+      )}
+      </>
       )}
 
       {/* ─── Dialogs ──────────────────────────────────────────────────────────── */}

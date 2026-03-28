@@ -215,7 +215,7 @@ export type ScheduleVisitRequest  = Omit<components['schemas']['ScheduleVisitReq
 export type CheckInRequest        = components['schemas']['CheckInRequest']         // { latitude, longitude }
 // Widen config-driven union literals to string
 export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'], 'outcome'> & { outcome: string }
-export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority'> & { visitType?: string; priority?: string }
+export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority' | 'sentiment'> & { visitType?: string; priority?: string; sentiment?: string }
 export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
 
 // ─── Admin (SUPER_ADMIN only — /api/admin/**) ────────────────────────────────

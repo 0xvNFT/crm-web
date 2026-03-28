@@ -27,6 +27,7 @@ import { contactEditSchema, type ContactEditFormData } from '@/schemas/contacts'
 import { ContactVisitsSection } from './components/ContactVisitsSection'
 import { ContactActivitiesSection } from './components/ContactActivitiesSection'
 import { ContactOpportunitiesSection } from './components/ContactOpportunitiesSection'
+import { ContactAffiliationsSection } from './components/ContactAffiliationsSection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -304,6 +305,7 @@ export default function ContactDetailPage() {
             </div>
           </div>
 
+          <ContactAffiliationsSection contactId={id ?? ''} />
           <ContactOpportunitiesSection contactId={id ?? ''} />
           <ContactVisitsSection contactId={id ?? ''} />
           <ContactActivitiesSection contactId={id ?? ''} />

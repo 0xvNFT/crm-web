@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PharmaContact, PagePharmaContact, UpdateContactRequest } from '@/api/app-types'
+import type { PharmaContact, PagePharmaContact, UpdateContactRequest, PharmaContactAffiliation, AddAffiliationRequest } from '@/api/app-types'
 
 export function useContacts(page = 0, size = 20, filters: Record<string, string> = {}) {
   const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
@@ -64,5 +64,38 @@ export function useDeleteContact() {
       qc.removeQueries({ queryKey: ['contacts', id] })
       qc.invalidateQueries({ queryKey: ['contacts', 'list'] })
     },
+  })
+}
+
+// ─── Affiliations ─────────────────────────────────────────────────────────────
+
+export function useContactAffiliations(contactId: string) {
+  return useQuery({
+    queryKey: ['contacts', contactId, 'affiliations'],
+    queryFn: () =>
+      client
+        .get<PharmaContactAffiliation[]>(`/api/pharma/contacts/${contactId}/affiliations`)
+        .then((r) => r.data),
+    enabled: !!contactId,
+  })
+}
+
+export function useAddAffiliation(contactId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddAffiliationRequest) =>
+      client
+        .post<PharmaContactAffiliation>(`/api/pharma/contacts/${contactId}/affiliations`, data)
+        .then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts', contactId, 'affiliations'] }),
+  })
+}
+
+export function useRemoveAffiliation(contactId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (affiliationId: string) =>
+      client.delete(`/api/pharma/contacts/affiliations/${affiliationId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts', contactId, 'affiliations'] }),
   })
 }

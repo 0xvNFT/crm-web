@@ -50,3 +50,16 @@ export const contactEditSchema = z.object({
   notes: z.string().optional(),
 })
 export type ContactEditFormData = z.infer<typeof contactEditSchema>
+
+// Used by ContactAffiliationsSection (add affiliation dialog)
+export const affiliationSchema = z.object({
+  accountId: z.string().min(1, 'Account is required'),
+  isPrimary: z.boolean().optional(),
+  positionTitle: z.string().optional(),
+  department: z.string().optional(),
+  availableHours: z.string().optional(),
+  consultationFee: z.coerce.number<number>().nonnegative('Must be 0 or greater').optional(),
+  effectiveTo: z.string().optional(),
+  notes: z.string().optional(),
+})
+export type AffiliationFormData = z.infer<typeof affiliationSchema>
