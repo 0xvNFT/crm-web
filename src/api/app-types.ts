@@ -105,7 +105,7 @@ export type AcceptInviteRequest   = components['schemas']['AcceptInviteRequest']
 // ─── Account request types ───────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
 export type CreatePharmaAccountRequest = Omit<components['schemas']['CreatePharmaAccountRequest'], 'accountType' | 'status' | 'paymentTerms' | 'primaryCustomerClass'> & { accountType: string; status?: string; paymentTerms?: string; primaryCustomerClass?: string }
-export type UpdatePharmaAccountRequest = Omit<components['schemas']['UpdatePharmaAccountRequest'], 'accountType' | 'status'> & { accountType?: string; status?: string }
+export type UpdatePharmaAccountRequest = Omit<components['schemas']['UpdatePharmaAccountRequest'], 'accountType' | 'status' | 'primaryCustomerClass'> & { accountType?: string; status?: string; primaryCustomerClass?: string }
 
 // ─── Territory request types ──────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
@@ -160,8 +160,8 @@ export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportu
 
 // ─── Product request types ────────────────────────────────────────────────────
 // Widen config-driven union literals to string — values are validated by backend at runtime
-export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status'> & { status?: string }
-export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status'> & { status?: string }
+export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
+export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
 
 // ─── Coaching note request types ─────────────────────────────────────────────
 // feedbackType and reviewedModule are config-driven — widened to string
