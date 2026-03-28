@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PharmaOrder, PagePharmaOrder, CreateOrderRequest } from '@/api/app-types'
+import type { PharmaOrder, PharmaInvoice, PagePharmaOrder, CreateOrderRequest, UpdateOrderRequest } from '@/api/app-types'
 
 export function useOrders(page = 0, size = 20, filters: Record<string, string> = {}) {
   const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
@@ -68,8 +68,20 @@ export function useRejectOrder(id: string) {
 export function useUpdateOrder(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Partial<PharmaOrder>) =>
+    mutationFn: (data: UpdateOrderRequest) =>
       client.put<PharmaOrder>(`/api/pharma/orders/${id}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orders'] }),
+  })
+}
+
+export function useGenerateInvoice(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      client.post<PharmaInvoice>(`/api/pharma/orders/${id}/generate-invoice`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['orders', id] })
+      qc.invalidateQueries({ queryKey: ['invoices'] })
+    },
   })
 }
