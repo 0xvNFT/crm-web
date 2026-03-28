@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateOpportunity, useUpdateOpportunity, useOpportunity } from '@/api/endpoints/opportunities'
 import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useStaffSearch } from '@/api/endpoints/users'
+import { useTerritorySearch } from '@/api/endpoints/territories'
 import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -42,14 +43,18 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
 
   const [ownerQuery, setOwnerQuery] = useState('')
   const [accountQuery, setAccountQuery] = useState('')
-  const debouncedOwnerQuery   = useDebounce(ownerQuery, 300)
-  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const [territoryQuery, setTerritoryQuery] = useState('')
+  const debouncedOwnerQuery     = useDebounce(ownerQuery, 300)
+  const debouncedAccountQuery   = useDebounce(accountQuery, 300)
+  const debouncedTerritoryQuery = useDebounce(territoryQuery, 300)
 
-  const { data: ownerResults,   isLoading: isSearchingOwners   } = useStaffSearch(debouncedOwnerQuery)
-  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const { data: ownerResults,     isLoading: isSearchingOwners     } = useStaffSearch(debouncedOwnerQuery)
+  const { data: accountResults,   isLoading: isSearchingAccounts   } = useAccountSearch(debouncedAccountQuery)
+  const { data: territoryResults, isLoading: isSearchingTerritories } = useTerritorySearch(debouncedTerritoryQuery)
 
   const salesStageOptions       = useConfigOptions('opportunity.salesStage')
   const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
+  const opportunityStatusOptions = useConfigOptions('opportunity.status')
 
   const ownerOptions: ComboboxOption[] = (ownerResults ?? []).map((u) => ({
     value: u.id!,
@@ -59,6 +64,13 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     value: a.id!,
     label: a.name ?? '',
   }))
+  const territoryOptions: ComboboxOption[] = (territoryResults ?? []).filter((t) => t.id).map((t) => ({
+    value: t.id!,
+    label: t.territoryName ?? t.id!,
+  }))
+  const selectedTerritoryOption: ComboboxOption | undefined = isEdit && opportunity?.territory
+    ? { value: opportunity.territory.id!, label: opportunity.territory.territoryName ?? '' }
+    : undefined
 
   // Combobox selectedOption — provides label before search runs in edit mode
   const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.owner
@@ -76,12 +88,15 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
       description:      opportunity.description ?? '',
       accountId:        opportunity.account?.id ?? '',
       ownerId:          opportunity.owner?.id ?? '',
+      territoryId:      opportunity.territory?.id ?? '',
       salesStage:       opportunity.salesStage ?? '',
+      status:           opportunity.status ?? '',
       forecastCategory: opportunity.forecastCategory ?? '',
       estRevenue:       opportunity.estRevenue != null ? Number(opportunity.estRevenue) : undefined,
       probabilityPct:   opportunity.probabilityPct != null ? Number(opportunity.probabilityPct) : undefined,
       currency:         opportunity.currency ?? '',
       estCloseDate:     opportunity.estCloseDate ?? '',
+      actualCloseDate:  opportunity.actualCloseDate ?? '',
       leadSource:       opportunity.leadSource ?? '',
       type:             opportunity.type ?? '',
       budgetConfirmed:  opportunity.budgetConfirmed ?? false,
@@ -92,9 +107,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
 
   function onSubmit(data: OpportunityFormData) {
     if (isEdit) {
-      // accountId and salesStage are immutable after creation — omit from update payload
-      const { accountId: _accountId, salesStage: _salesStage, ...updateData } = data
-      updateOpportunity(updateData, {
+      updateOpportunity(data, {
         onSuccess: () => {
           toast('Opportunity updated', { variant: 'success' })
           navigate(`/opportunities/${id}`)
@@ -170,6 +183,22 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               )}
             />
           </FormRow>
+          <FormRow label="Status" error={errors.status?.message}>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                  <SelectContent>
+                    {opportunityStatusOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormRow>
           <FormRow label="Lead Source" error={errors.leadSource?.message}>
             <Input {...register('leadSource')} placeholder="e.g. Referral" />
           </FormRow>
@@ -199,6 +228,9 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
           <FormRow label="Est. Close Date" error={errors.estCloseDate?.message}>
             <Input {...register('estCloseDate')} type="date" />
           </FormRow>
+          <FormRow label="Actual Close Date" error={errors.actualCloseDate?.message}>
+            <Input {...register('actualCloseDate')} type="date" />
+          </FormRow>
         </FormSection>
 
         <FormSection title="Relationships">
@@ -216,7 +248,6 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
                   onSearchChange={setAccountQuery}
                   isLoading={isSearchingAccounts}
                   error={!!errors.accountId}
-                  disabled={isEdit}
                 />
               )}
             />
@@ -235,6 +266,23 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
                   onSearchChange={setOwnerQuery}
                   isLoading={isSearchingOwners}
                   error={!!errors.ownerId}
+                />
+              )}
+            />
+          </FormRow>
+          <FormRow label="Territory" error={errors.territoryId?.message}>
+            <Controller
+              name="territoryId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={territoryOptions}
+                  selectedOption={selectedTerritoryOption}
+                  placeholder="Search territory…"
+                  onSearchChange={setTerritoryQuery}
+                  isLoading={isSearchingTerritories}
                 />
               )}
             />
