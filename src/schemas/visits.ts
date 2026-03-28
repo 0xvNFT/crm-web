@@ -24,3 +24,17 @@ export const rejectVisitSchema = z.object({
   reason: z.string().min(1, 'Rejection reason is required'),
 })
 export type RejectVisitFormData = z.infer<typeof rejectVisitSchema>
+
+// Inline edit on VisitDetailPage — scheduled visits only
+export const visitEditSchema = z.object({
+  subject: z.string().min(1, 'Subject is required').max(255),
+  locationName: z.string().optional(),
+  visitType: z.string().min(1, 'Visit type is required'),
+  priority: z.string().optional(),
+  sentiment: z.string().optional(),
+  scheduledStart: z.string().min(1, 'Start date/time is required'),
+  scheduledEnd: z.string().optional(),
+  callObjectives: z.string().optional(),
+  notes: z.string().optional(),
+})
+export type VisitEditFormData = z.infer<typeof visitEditSchema>
