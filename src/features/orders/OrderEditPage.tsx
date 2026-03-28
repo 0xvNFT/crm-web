@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,7 +31,8 @@ function OrderEditForm({ order }: OrderEditFormProps) {
   const initialAccount = order.account?.id && order.account?.name ? [order.account as PharmaAccount] : []
   const [cachedAccounts, setCachedAccounts] = useState<PharmaAccount[]>(initialAccount)
 
-  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(accountQuery)
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
 
   const mergedAccounts = [
     ...cachedAccounts,
