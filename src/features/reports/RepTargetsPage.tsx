@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, Plus, Pencil, Trash2, Check, X } from 'lucide-react'
 import { repTargetSchema, type RepTargetFormData } from '@/schemas/rep-targets'
-import { useRepTargets, useCreateRepTarget } from '@/api/endpoints/rep-targets'
+import { useRepTargets, useCreateRepTarget, useUpdateRepTarget, useDeleteRepTarget } from '@/api/endpoints/rep-targets'
 import { useStaffSearch } from '@/api/endpoints/users'
-import { useTerritories } from '@/api/endpoints/territories'
+import { useTerritorySearch } from '@/api/endpoints/territories'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
@@ -14,9 +14,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox } from '@/components/ui/combobox'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import { useRole } from '@/hooks/useRole'
+import type { RepTarget } from '@/api/app-types'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -37,15 +40,17 @@ interface AddTargetFormProps {
 
 function AddTargetForm({ year, month }: AddTargetFormProps) {
   const [repQuery, setRepQuery] = useState('')
+  const [territoryQuery, setTerritoryQuery] = useState('')
   const debouncedRepQuery = useDebounce(repQuery, 300)
+  const debouncedTerritoryQuery = useDebounce(territoryQuery, 300)
   const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
-  const { data: territoriesData } = useTerritories(0, 100)
+  const { data: territoryResults, isLoading: isSearchingTerritories } = useTerritorySearch(debouncedTerritoryQuery)
 
   const repOptions = (repResults ?? [])
     .filter((u) => u.id)
     .map((u) => ({ value: u.id!, label: u.fullName ?? u.email ?? u.id! }))
 
-  const territoryOptions = (territoriesData?.content ?? [])
+  const territoryOptions = (territoryResults ?? [])
     .filter((t) => t.id)
     .map((t) => ({ value: t.id!, label: t.territoryName ?? t.id! }))
 
@@ -53,7 +58,7 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
 
   const { control, register, handleSubmit, reset, formState: { errors } } = useForm<RepTargetFormData>({
     resolver: zodResolver(repTargetSchema),
-    defaultValues: { repId: '', territoryId: '', targetVisits: 130, targetContacts: 70, targetCalls: 130 },
+    defaultValues: { repId: '', territoryId: '', targetVisits: undefined, targetContacts: undefined, targetCalls: undefined },
   })
 
   function onSubmit(data: RepTargetFormData) {
@@ -99,8 +104,10 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
                 value={field.value}
                 onChange={field.onChange}
                 options={territoryOptions}
-                placeholder="Select territory..."
+                placeholder="Search territory..."
                 searchPlaceholder="Type territory name..."
+                onSearchChange={setTerritoryQuery}
+                isLoading={isSearchingTerritories}
                 error={!!errors.territoryId}
               />
             )}
@@ -128,10 +135,123 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
   )
 }
 
+// ─── Targets table row (with inline edit) ─────────────────────────────────────
+
+interface TargetRowProps {
+  target: RepTarget
+  canEdit: boolean
+}
+
+function TargetRow({ target: t, canEdit }: TargetRowProps) {
+  const [editing, setEditing] = useState(false)
+  const [visits, setVisits] = useState(String(t.targetVisits ?? ''))
+  const [contacts, setContacts] = useState(String(t.targetContacts ?? ''))
+  const [calls, setCalls] = useState(String(t.targetCalls ?? ''))
+  const [showDelete, setShowDelete] = useState(false)
+
+  const { mutate: updateTarget, isPending: isUpdating } = useUpdateRepTarget()
+  const { mutate: deleteTarget, isPending: isDeleting } = useDeleteRepTarget()
+
+  const repName = t.rep?.fullName
+    ?? ([t.rep?.firstName, t.rep?.lastName].filter(Boolean).join(' ') || t.rep?.email)
+    ?? '—'
+
+  function saveEdit() {
+    const v = Number(visits)
+    const c = Number(contacts)
+    const k = Number(calls)
+    if (!Number.isInteger(v) || v < 1 || !Number.isInteger(c) || c < 1 || !Number.isInteger(k) || k < 1) {
+      toast('All targets must be whole numbers greater than 0', { variant: 'destructive' })
+      return
+    }
+    updateTarget(
+      { id: t.id!, data: { targetVisits: v, targetContacts: c, targetCalls: k } },
+      {
+        onSuccess: () => { toast('Target updated', { variant: 'success' }); setEditing(false) },
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      }
+    )
+  }
+
+  function cancelEdit() {
+    setVisits(String(t.targetVisits ?? ''))
+    setContacts(String(t.targetContacts ?? ''))
+    setCalls(String(t.targetCalls ?? ''))
+    setEditing(false)
+  }
+
+  return (
+    <>
+      <tr className="hover:bg-muted/20">
+        <td className="px-4 py-3 font-medium">{repName}</td>
+        <td className="px-4 py-3 text-muted-foreground">{t.territory?.territoryName ?? '—'}</td>
+
+        {editing ? (
+          <>
+            <td className="px-4 py-2 text-right">
+              <Input type="number" min={1} value={visits} onChange={(e) => setVisits(e.target.value)} className="h-7 w-20 text-right ml-auto" />
+            </td>
+            <td className="px-4 py-2 text-right">
+              <Input type="number" min={1} value={contacts} onChange={(e) => setContacts(e.target.value)} className="h-7 w-20 text-right ml-auto" />
+            </td>
+            <td className="px-4 py-2 text-right">
+              <Input type="number" min={1} value={calls} onChange={(e) => setCalls(e.target.value)} className="h-7 w-20 text-right ml-auto" />
+            </td>
+            <td className="px-4 py-2 text-right">
+              <div className="flex items-center justify-end gap-1">
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={saveEdit} disabled={isUpdating}>
+                  <Check className="h-3.5 w-3.5 text-green-600" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={cancelEdit}>
+                  <X className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </div>
+            </td>
+          </>
+        ) : (
+          <>
+            <td className="px-4 py-3 text-right">{t.targetVisits}</td>
+            <td className="px-4 py-3 text-right">{t.targetContacts}</td>
+            <td className="px-4 py-3 text-right">{t.targetCalls}</td>
+            {canEdit && (
+              <td className="px-4 py-3 text-right">
+                <div className="flex items-center justify-end gap-1">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(true)}>
+                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setShowDelete(true)}>
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                </div>
+              </td>
+            )}
+          </>
+        )}
+      </tr>
+
+      <ConfirmDialog
+        open={showDelete}
+        onCancel={() => setShowDelete(false)}
+        onConfirm={() => deleteTarget(t.id!, {
+          onSuccess: () => { toast('Target deleted', { variant: 'success' }) },
+          onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+        })}
+        title="Delete Target?"
+        description="This will remove the target for this rep and territory for the selected period."
+        confirmLabel="Delete"
+        isPending={isDeleting}
+      />
+    </>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function RepTargetsPage() {
   const navigate = useNavigate()
+  const { isAdmin, isManager } = useRole()
+  const canEdit = isAdmin || isManager
+
   const [year, setYear] = useState(CURRENT_YEAR)
   const [month, setMonth] = useState(CURRENT_MONTH)
 
@@ -181,8 +301,8 @@ export default function RepTargetsPage() {
         </div>
       </div>
 
-      {/* Add target form */}
-      <AddTargetForm year={year} month={month} />
+      {/* Add target form — MANAGER+ only */}
+      {canEdit && <AddTargetForm year={year} month={month} />}
 
       {/* Existing targets table */}
       <div className="rounded-xl border bg-background overflow-hidden">
@@ -206,21 +326,12 @@ export default function RepTargetsPage() {
                   <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Target Visits</th>
                   <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Target Contacts</th>
                   <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Target Calls</th>
+                  {canEdit && <th className="px-4 py-2.5 text-right font-medium text-muted-foreground"></th>}
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {targets.map((t) => (
-                  <tr key={t.id} className="hover:bg-muted/20">
-                    <td className="px-4 py-3 font-medium">
-                      {t.rep?.fullName
-                        ?? ([t.rep?.firstName, t.rep?.lastName].filter(Boolean).join(' ') || t.rep?.email)
-                        ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{t.territory?.territoryName ?? '—'}</td>
-                    <td className="px-4 py-3 text-right">{t.targetVisits}</td>
-                    <td className="px-4 py-3 text-right">{t.targetContacts}</td>
-                    <td className="px-4 py-3 text-right">{t.targetCalls}</td>
-                  </tr>
+                  <TargetRow key={t.id} target={t} canEdit={canEdit} />
                 ))}
               </tbody>
             </table>

@@ -46,7 +46,7 @@ interface KpiBadgeProps {
 }
 
 function KpiBadge({ value, target, noTarget }: KpiBadgeProps) {
-  if (noTarget || value === 0) {
+  if (noTarget) {
     return <span className="text-xs text-muted-foreground font-medium">No target set</span>
   }
   const pct = Math.round(value)
@@ -115,7 +115,7 @@ function CallSummaryTable({ rows }: { rows: KpiCallSummaryRow[] }) {
       </thead>
       <tbody className="divide-y">
         {rows.map((row) => {
-          const noTarget = !row.targetVisits
+          const noTarget = row.targetVisits == null
           return (
             <tr key={row.repId} className="hover:bg-muted/20">
               <td className="px-4 py-3 font-medium text-foreground">{row.repName ?? '—'}</td>
@@ -207,7 +207,7 @@ function DoctorCoverageTable({ rows }: { rows: KpiDoctorCoverageRow[] }) {
       </thead>
       <tbody className="divide-y">
         {rows.map((row) => {
-          const noTarget = !row.targetContacts
+          const noTarget = row.targetContacts == null
           return (
             <tr key={row.repId} className="hover:bg-muted/20">
               <td className="px-4 py-3 font-medium text-foreground">{row.repName ?? '—'}</td>
@@ -246,7 +246,7 @@ function TerritoryPerformanceTable({ rows }: { rows: KpiTerritoryPerformanceRow[
       </thead>
       <tbody className="divide-y">
         {rows.map((row) => {
-          const noTarget = !row.targetVisitsTotal
+          const noTarget = row.targetVisitsTotal == null
           return (
             <tr key={row.territoryId} className="hover:bg-muted/20">
               <td className="px-4 py-3 font-medium text-foreground">{row.territoryName ?? '—'}</td>
