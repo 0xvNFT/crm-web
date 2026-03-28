@@ -51,9 +51,11 @@ const OpportunityFormPage = lazy(() => import('@/features/opportunities/Opportun
 const QuoteListPage = lazy(() => import('@/features/quotes/QuoteListPage'))
 const QuoteDetailPage = lazy(() => import('@/features/quotes/QuoteDetailPage'))
 const QuoteFormPage = lazy(() => import('@/features/quotes/QuoteFormPage'))
+const QuoteEditPage = lazy(() => import('@/features/quotes/QuoteEditPage'))
 
 const InvoiceListPage = lazy(() => import('@/features/invoices/InvoiceListPage'))
 const InvoiceDetailPage = lazy(() => import('@/features/invoices/InvoiceDetailPage'))
+const InvoiceFormPage = lazy(() => import('@/features/invoices/InvoiceFormPage'))
 const OpportunityListPage = lazy(() => import('@/features/opportunities/OpportunityListPage'))
 const OpportunityDetailPage = lazy(() => import('@/features/opportunities/OpportunityDetailPage'))
 
@@ -118,12 +120,15 @@ export function AppRouter() {
           <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
           <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
           <Route path="/quotes/new" element={<Wrap><QuoteFormPage /></Wrap>} />
+          <Route path="/quotes/:id/edit" element={<Wrap><QuoteEditPage /></Wrap>} />
           <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
           <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
           <Route path="/activities/new" element={<Wrap><ActivityFormPage /></Wrap>} />
           <Route path="/activities/:id/edit" element={<Wrap><ActivityFormPage /></Wrap>} />
           <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
           <Route path="/invoices" element={<Wrap><InvoiceListPage /></Wrap>} />
+          <Route path="/invoices/new" element={<Wrap><InvoiceFormPage /></Wrap>} />
+          <Route path="/invoices/:id/edit" element={<Wrap><InvoiceFormPage /></Wrap>} />
           <Route path="/invoices/:id" element={<Wrap><InvoiceDetailPage /></Wrap>} />
           <Route path="/opportunities" element={<Wrap><OpportunityListPage /></Wrap>} />
           <Route path="/opportunities/new" element={<Wrap><OpportunityFormPage /></Wrap>} />

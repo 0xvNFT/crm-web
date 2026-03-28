@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Receipt } from 'lucide-react'
+import { Plus, Receipt } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useRole } from '@/hooks/useRole'
 import { useInvoices, useInvoiceSearch } from '@/api/endpoints/invoices'
 import { usePagination } from '@/hooks/usePagination'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -31,6 +33,7 @@ const columns: Column<PharmaInvoice>[] = [
 
 export default function InvoiceListPage() {
   const navigate = useNavigate()
+  const { isManager } = useRole()
   const { page, goToPage } = usePagination()
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -67,6 +70,12 @@ export default function InvoiceListPage() {
       <PageHeader
         title="Invoices"
         description="Track and manage customer invoices"
+        actions={isManager ? (
+          <Button size="sm" onClick={() => navigate('/invoices/new')}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            New Invoice
+          </Button>
+        ) : undefined}
       />
       <SearchInput
         value={query}

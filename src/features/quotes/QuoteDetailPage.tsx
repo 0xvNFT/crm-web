@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { useQuote, useApproveQuote, useRejectQuote } from '@/api/endpoints/quotes'
+import { ArrowLeft, Pencil, RefreshCw } from 'lucide-react'
+import { useQuote, useApproveQuote, useRejectQuote, useConvertQuote } from '@/api/endpoints/quotes'
 import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -45,15 +45,20 @@ export default function QuoteDetailPage() {
   const { data: quote, isLoading, isError } = useQuote(id ?? '')
   const { mutate: approveQuote, isPending: isApproving } = useApproveQuote(id ?? '')
   const { mutate: rejectQuote, isPending: isRejecting } = useRejectQuote(id ?? '')
+  const { mutate: convertQuote, isPending: isConverting } = useConvertQuote(id ?? '')
 
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
+  const [showConvert, setShowConvert] = useState(false)
 
   if (isLoading) return <LoadingSpinner />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
 
   const isSubmitted = quote.status === 'submitted' || quote.status === 'pending'
+  const isApproved = quote.status === 'approved'
+  const isDraft = quote.status === 'draft'
   const canAct = isManager && isSubmitted
+  const canConvert = isApproved
 
   return (
     <div className="space-y-4">
@@ -70,16 +75,30 @@ export default function QuoteDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground">{quote.account.name}</p>
           )}
         </div>
-        {canAct && (
-          <div className="flex gap-2 shrink-0">
-            <Button variant="outline" onClick={() => setShowApprove(true)}>
-              Approve
+        <div className="flex gap-2 shrink-0 flex-wrap justify-end">
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={() => navigate(`/quotes/${id}/edit`)}>
+              <Pencil className="h-4 w-4 mr-1.5" />
+              Edit
             </Button>
-            <Button variant="destructive" onClick={() => setShowReject(true)}>
-              Reject
+          )}
+          {canConvert && (
+            <Button size="sm" onClick={() => setShowConvert(true)} disabled={isConverting}>
+              <RefreshCw className="h-4 w-4 mr-1.5" />
+              Convert to Order
             </Button>
-          </div>
-        )}
+          )}
+          {canAct && (
+            <>
+              <Button variant="outline" size="sm" onClick={() => setShowApprove(true)}>
+                Approve
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => setShowReject(true)}>
+                Reject
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <DetailSection title="Quote Info">
@@ -138,6 +157,28 @@ export default function QuoteDetailPage() {
         <DetailField label="Created"      value={quote.createdAt ? formatDate(quote.createdAt) : null} />
         <DetailField label="Last Updated" value={quote.updatedAt ? formatDate(quote.updatedAt) : null} />
       </DetailSection>
+
+      {/* Convert to Order dialog */}
+      <ConfirmDialog
+        open={showConvert}
+        onCancel={() => setShowConvert(false)}
+        onConfirm={() =>
+          convertQuote(undefined, {
+            onSuccess: (order) => {
+              toast('Quote converted to order', { variant: 'success' })
+              navigate(`/orders/${order.id}`)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowConvert(false)
+            },
+          })
+        }
+        title="Convert to Order?"
+        description="This will create a new order from this quote. The quote status will be updated to converted."
+        confirmLabel="Convert"
+        isPending={isConverting}
+      />
 
       {/* Approve dialog */}
       <ConfirmDialog
