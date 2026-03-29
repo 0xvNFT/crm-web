@@ -56,6 +56,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
   const forecastCategoryOptions  = useConfigOptions('opportunity.forecastCategory')
   const opportunityStatusOptions = useConfigOptions('opportunity.status')
   const leadSourceOptions        = useConfigOptions('lead.source')
+  const opportunityTypeOptions   = useConfigOptions('opportunity.type')
 
   const ownerOptions: ComboboxOption[] = (ownerResults ?? []).map((u) => ({
     value: u.id!,
@@ -144,7 +145,20 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
             <Input {...register('topic')} placeholder="e.g. Hospital Network Expansion" />
           </FormRow>
           <FormRow label="Type" error={errors.type?.message}>
-            <Input {...register('type')} placeholder="e.g. New Business" />
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    {opportunityTypeOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Stage" error={errors.salesStage?.message}>
             <Controller
