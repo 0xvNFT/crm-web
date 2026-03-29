@@ -174,7 +174,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
             <Input {...register('dueDate')} type="date" />
           </FormRow>
           <FormRow label="Duration (minutes)" error={errors.durationMinutes?.message}>
-            <Input {...register('durationMinutes')} type="number" min={0} placeholder="30" onKeyDown={(e) => { if (['e','E','+','-'].includes(e.key)) e.preventDefault() }} />
+            <Input {...register('durationMinutes')} type="number" min={0} placeholder="30" />
           </FormRow>
           <FormRow label="Outcome" error={errors.outcome?.message} className="sm:col-span-2">
             <Input {...register('outcome')} placeholder="e.g. Scheduled follow-up, Left voicemail" />

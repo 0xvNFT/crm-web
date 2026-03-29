@@ -26,13 +26,15 @@ interface ContactAffiliationsSectionProps {
 
 function AffiliationRow({
   affiliation,
+  contactId,
   canEdit,
 }: {
   affiliation: PharmaContactAffiliation
+  contactId: string
   canEdit: boolean
 }) {
   const [showRemove, setShowRemove] = useState(false)
-  const { mutate: removeAffiliation, isPending } = useRemoveAffiliation(affiliation.contact?.id ?? '')
+  const { mutate: removeAffiliation, isPending } = useRemoveAffiliation(contactId)
 
   return (
     <div className="flex items-start justify-between gap-3 rounded-lg border bg-muted/30 px-4 py-3">
@@ -232,6 +234,7 @@ export function ContactAffiliationsSection({ contactId }: ContactAffiliationsSec
             <AffiliationRow
               key={a.id}
               affiliation={a}
+              contactId={contactId}
               canEdit={isManager}
             />
           ))}

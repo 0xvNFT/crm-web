@@ -10,6 +10,7 @@ export function parseApiError(error: unknown): string {
     if (error.response?.status === 401) return 'Your session has expired. Please sign in again.'
     if (error.response?.status === 404) return 'Resource not found.'
     if (error.response?.status === 403) return 'You do not have permission to perform this action.'
+    if (error.response?.status === 409) return 'This record already exists.'
     if (error.response?.status === 429) return 'Too many requests. Please wait and try again.'
     if (error.message) return error.message
   }

@@ -4,7 +4,7 @@ export const quoteItemSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
   quantity: z.coerce.number<number>().int().min(1, 'Quantity must be at least 1'),
   discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 
 export const quoteSchema = z.object({
@@ -15,7 +15,7 @@ export const quoteSchema = z.object({
   items: z.array(quoteItemSchema).min(1, 'At least one item is required'),
   discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
   taxAmount: z.coerce.number<number>().min(0).optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 
 export type QuoteFormData = z.infer<typeof quoteSchema>

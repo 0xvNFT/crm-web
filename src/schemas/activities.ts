@@ -11,8 +11,8 @@ export const activitySchema = z.object({
   outcome:          z.string().optional(),
   followUpRequired: z.boolean().optional(),
   followUpDate:     z.string().optional(),
-  followUpNotes:    z.string().optional(),
-  description:      z.string().optional(),
+  followUpNotes:    z.string().max(2000).optional(),
+  description:      z.string().max(2000).optional(),
 })
 
 export type ActivityFormData = z.infer<typeof activitySchema>

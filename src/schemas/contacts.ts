@@ -30,7 +30,7 @@ export const contactSchema = z.object({
   addressCity: z.string().optional(),
   addressProvince: z.string().optional(),
   addressPostalCode: z.string().optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 export type ContactFormData = z.infer<typeof contactSchema>
 
@@ -45,10 +45,18 @@ export const contactEditSchema = z.object({
   mobile: z.string().optional(),
   contactType: z.string().min(1, 'Contact type is required'),
   specialty: z.string().optional(),
+  customerClass: z.string().optional(),
+  adoptionStage: z.string().optional(),
+  leadSource: z.string().optional(),
+  professionalSociety: z.string().optional(),
   npiNumber: z.string().optional(),
   deaNumber: z.string().optional(),
   stateLicenseNumber: z.string().optional(),
+  prcNumber: z.string().optional(),
+  prcExpiryDate: z.string().optional(),
   prescribingAuthority: z.boolean().optional(),
+  doNotCall: z.boolean().optional(),
+  emailOptOut: z.boolean().optional(),
   yearsOfExperience: z.coerce.number<number>().int().nonnegative().optional(),
   patientVolumeMonthly: z.coerce.number<number>().int().nonnegative().optional(),
   preferredContactMethod: z.string().optional(),
@@ -56,7 +64,7 @@ export const contactEditSchema = z.object({
   status: z.string().optional(),
   consentConfirmedStatus: z.string().optional(),
   consentConfirmedDate: z.string().optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 export type ContactEditFormData = z.infer<typeof contactEditSchema>
 
@@ -69,6 +77,6 @@ export const affiliationSchema = z.object({
   availableHours: z.string().optional(),
   consultationFee: z.coerce.number<number>().nonnegative('Must be 0 or greater').optional(),
   effectiveTo: z.string().optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 export type AffiliationFormData = z.infer<typeof affiliationSchema>

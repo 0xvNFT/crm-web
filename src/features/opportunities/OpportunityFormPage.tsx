@@ -52,9 +52,10 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
   const { data: accountResults,   isLoading: isSearchingAccounts   } = useAccountSearch(debouncedAccountQuery)
   const { data: territoryResults, isLoading: isSearchingTerritories } = useTerritorySearch(debouncedTerritoryQuery)
 
-  const salesStageOptions       = useConfigOptions('opportunity.salesStage')
-  const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
+  const salesStageOptions        = useConfigOptions('opportunity.salesStage')
+  const forecastCategoryOptions  = useConfigOptions('opportunity.forecastCategory')
   const opportunityStatusOptions = useConfigOptions('opportunity.status')
+  const leadSourceOptions        = useConfigOptions('lead.source')
 
   const ownerOptions: ComboboxOption[] = (ownerResults ?? []).map((u) => ({
     value: u.id!,
@@ -200,7 +201,20 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
             />
           </FormRow>
           <FormRow label="Lead Source" error={errors.leadSource?.message}>
-            <Input {...register('leadSource')} placeholder="e.g. Referral" />
+            <Controller
+              name="leadSource"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select lead source" /></SelectTrigger>
+                  <SelectContent>
+                    {leadSourceOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <div className="flex items-center gap-2 pt-1">
             <input

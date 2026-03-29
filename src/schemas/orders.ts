@@ -13,7 +13,7 @@ export const orderSchema = z.object({
   discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
   taxAmount: z.coerce.number<number>().min(0).optional(),
   deliveryDate: z.string().optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(2000).optional(),
 })
 
 export type OrderFormData = z.infer<typeof orderSchema>

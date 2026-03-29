@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTerritory } from '@/api/endpoints/territories'
+import { useStaffSearch } from '@/api/endpoints/users'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { FormRow } from '@/components/shared/FormRow'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
@@ -28,6 +32,22 @@ export default function TerritoryFormPage() {
   const { mutate: createTerritory, isPending } = useCreateTerritory()
   const regionOptions = useConfigOptions('territory.region')
   const territoryStatusOptions = useConfigOptions('territory.status')
+
+  const [repQuery, setRepQuery] = useState('')
+  const [managerQuery, setManagerQuery] = useState('')
+  const debouncedRepQuery = useDebounce(repQuery, 300)
+  const debouncedManagerQuery = useDebounce(managerQuery, 300)
+  const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
+  const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
+
+  const repOptions: ComboboxOption[] = (repResults ?? []).map((u) => ({
+    value: u.id!,
+    label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+  }))
+  const managerOptions: ComboboxOption[] = (managerResults ?? []).map((u) => ({
+    value: u.id!,
+    label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+  }))
 
   const {
     register,
@@ -110,6 +130,41 @@ export default function TerritoryFormPage() {
               <Textarea {...register('description')} placeholder="Optional description" rows={3} />
             </FormRow>
           </div>
+        </FormSection>
+
+        <FormSection title="Assignments">
+          <FormRow label="Primary Rep" error={errors.primaryRepId?.message}>
+            <Controller
+              name="primaryRepId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={repOptions}
+                  placeholder="Search staff…"
+                  onSearchChange={setRepQuery}
+                  isLoading={isSearchingReps}
+                />
+              )}
+            />
+          </FormRow>
+          <FormRow label="Manager" error={errors.managerId?.message}>
+            <Controller
+              name="managerId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={managerOptions}
+                  placeholder="Search staff…"
+                  onSearchChange={setManagerQuery}
+                  isLoading={isSearchingManagers}
+                />
+              )}
+            />
+          </FormRow>
         </FormSection>
 
         <FormSection title="Targets">
