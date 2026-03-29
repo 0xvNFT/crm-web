@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSidebarContext } from '@/hooks/useSidebarContext'
-import { useUnreadNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/api/endpoints/notifications'
+import { useAllNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/api/endpoints/notifications'
 import { Bell, Menu, LogOut, User, ChevronDown, ChevronRight, Check } from 'lucide-react'
 import {
   DropdownMenu,
@@ -77,7 +77,7 @@ function useBreadcrumbs() {
 // ─── Notification bell + dropdown ──────────────────────────────────────────────
 function NotificationBell() {
   const navigate = useNavigate()
-  const { data } = useUnreadNotifications()
+  const { data } = useAllNotifications(0)
   const { mutate: markRead } = useMarkNotificationRead()
   const { mutate: markAllRead, isPending: isMarkingAll } = useMarkAllNotificationsRead()
 

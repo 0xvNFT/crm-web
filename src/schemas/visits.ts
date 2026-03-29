@@ -8,15 +8,15 @@ export const scheduleVisitSchema = z.object({
   visitType: z.string().min(1, 'Visit type is required'),
   scheduledStart: z.string().min(1, 'Start date/time is required'),
   scheduledEnd: z.string().optional(),
-  callObjectives: z.string().optional(),
-  notes: z.string().optional(),
+  callObjectives: z.string().max(2000).optional(),
+  notes: z.string().max(2000).optional(),
 })
 export type ScheduleVisitFormData = z.infer<typeof scheduleVisitSchema>
 
 export const checkOutSchema = z.object({
   outcome: z.string().min(1, 'Outcome is required'),
-  keyDiscussionPoints: z.string().optional(),
-  customerFeedback: z.string().optional(),
+  keyDiscussionPoints: z.string().max(2000).optional(),
+  customerFeedback: z.string().max(2000).optional(),
 })
 export type CheckOutFormData = z.infer<typeof checkOutSchema>
 
@@ -34,7 +34,7 @@ export const visitEditSchema = z.object({
   sentiment: z.string().optional(),
   scheduledStart: z.string().min(1, 'Start date/time is required'),
   scheduledEnd: z.string().optional(),
-  callObjectives: z.string().optional(),
-  notes: z.string().optional(),
+  callObjectives: z.string().max(2000).optional(),
+  notes: z.string().max(2000).optional(),
 })
 export type VisitEditFormData = z.infer<typeof visitEditSchema>

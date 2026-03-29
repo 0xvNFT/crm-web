@@ -4,6 +4,7 @@ import { ArrowLeft, FileText, CheckCircle, Archive, Pencil, X, Check } from 'luc
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMaterial, useUpdateMaterial, useApproveMaterial, useArchiveMaterial } from '@/api/endpoints/materials'
+import type { UpdateMaterialRequest } from '@/api/app-types'
 import { useRole } from '@/hooks/useRole'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -91,9 +92,10 @@ export default function MaterialDetailPage() {
   }
 
   function onSubmit(data: MaterialEditFormData) {
+    // Object.fromEntries loses static type info — cast required
     const payload = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-    ) as MaterialEditFormData
+    ) as unknown as UpdateMaterialRequest
     updateMaterial(payload, {
       onSuccess: () => {
         toast('Material updated', { variant: 'success' })

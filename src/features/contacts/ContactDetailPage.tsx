@@ -79,6 +79,9 @@ export default function ContactDetailPage() {
   const contactTypeOptions = useConfigOptions('contact.type')
   const contactStatusOptions = useConfigOptions('contact.status')
   const consentStatusOptions = useConfigOptions('contact.consentStatus')
+  const customerClassOptions = useConfigOptions('contact.customerClass')
+  const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
+  const leadSourceOptions = useConfigOptions('contact.leadSource')
 
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ContactEditFormData>({
     resolver: zodResolver(contactEditSchema),
@@ -112,10 +115,18 @@ export default function ContactDetailPage() {
       mobile: contact?.mobile ?? '',
       contactType: contact?.contactType ?? undefined,
       specialty: contact?.specialty ?? '',
+      customerClass: contact?.customerClass ?? undefined,
+      adoptionStage: contact?.adoptionStage ?? undefined,
+      leadSource: contact?.leadSource ?? undefined,
+      professionalSociety: contact?.professionalSociety ?? '',
       npiNumber: contact?.npiNumber ?? '',
       deaNumber: contact?.deaNumber ?? '',
       stateLicenseNumber: contact?.stateLicenseNumber ?? '',
+      prcNumber: contact?.prcNumber ?? '',
+      prcExpiryDate: contact?.prcExpiryDate ?? '',
       prescribingAuthority: contact?.prescribingAuthority ?? false,
+      doNotCall: contact?.doNotCall ?? false,
+      emailOptOut: contact?.emailOptOut ?? false,
       yearsOfExperience: contact?.yearsOfExperience ?? undefined,
       patientVolumeMonthly: contact?.patientVolumeMonthly ?? undefined,
       preferredContactMethod: contact?.preferredContactMethod ?? '',
@@ -372,6 +383,60 @@ export default function ContactDetailPage() {
             </FormRow>
           </FormSection>
 
+          <FormSection title="Segmentation">
+            <FormRow label="Customer Class" error={errors.customerClass?.message}>
+              <Controller
+                name="customerClass"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                    <SelectContent>
+                      {customerClassOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormRow>
+            <FormRow label="Adoption Stage" error={errors.adoptionStage?.message}>
+              <Controller
+                name="adoptionStage"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
+                    <SelectContent>
+                      {adoptionStageOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormRow>
+            <FormRow label="Lead Source" error={errors.leadSource?.message}>
+              <Controller
+                name="leadSource"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
+                    <SelectContent>
+                      {leadSourceOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormRow>
+            <FormRow label="Professional Society" error={errors.professionalSociety?.message}>
+              <Input {...register('professionalSociety')} placeholder="e.g. PMA, PPS" />
+            </FormRow>
+          </FormSection>
+
           <FormSection title="Consent & Compliance">
             <FormRow label="Consent Status" error={errors.consentConfirmedStatus?.message}>
               <Controller
@@ -413,6 +478,12 @@ export default function ContactDetailPage() {
           </FormSection>
 
           <FormSection title="Licensing & Credentials">
+            <FormRow label="PRC Number" error={errors.prcNumber?.message}>
+              <Input {...register('prcNumber')} />
+            </FormRow>
+            <FormRow label="PRC Expiry Date" error={errors.prcExpiryDate?.message}>
+              <Input {...register('prcExpiryDate')} type="date" />
+            </FormRow>
             <FormRow label="NPI Number" error={errors.npiNumber?.message}>
               <Input {...register('npiNumber')} />
             </FormRow>
@@ -428,16 +499,40 @@ export default function ContactDetailPage() {
             <FormRow label="Monthly Patient Volume" error={errors.patientVolumeMonthly?.message}>
               <Input {...register('patientVolumeMonthly')} type="number" min={0} />
             </FormRow>
-            <div className="flex items-center gap-2 pt-1 sm:col-span-2">
-              <input
-                type="checkbox"
-                id="prescribingAuthority"
-                {...register('prescribingAuthority')}
-                className="h-4 w-4 rounded border-border accent-primary"
-              />
-              <Label htmlFor="prescribingAuthority" className="text-sm text-foreground cursor-pointer">
-                Prescribing Authority
-              </Label>
+            <div className="flex flex-col gap-2 pt-1 sm:col-span-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="prescribingAuthority"
+                  {...register('prescribingAuthority')}
+                  className="h-4 w-4 rounded border-border accent-primary"
+                />
+                <Label htmlFor="prescribingAuthority" className="text-sm text-foreground cursor-pointer">
+                  Prescribing Authority
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="doNotCall"
+                  {...register('doNotCall')}
+                  className="h-4 w-4 rounded border-border accent-primary"
+                />
+                <Label htmlFor="doNotCall" className="text-sm text-foreground cursor-pointer">
+                  Do Not Call
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="emailOptOut"
+                  {...register('emailOptOut')}
+                  className="h-4 w-4 rounded border-border accent-primary"
+                />
+                <Label htmlFor="emailOptOut" className="text-sm text-foreground cursor-pointer">
+                  Email Opt-Out
+                </Label>
+              </div>
             </div>
           </FormSection>
 

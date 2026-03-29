@@ -19,9 +19,6 @@ import { parseApiError } from '@/utils/errors'
 import { accountSchema, type AccountFormData } from '@/schemas/accounts'
 import type { CreatePharmaAccountRequest } from '@/api/app-types'
 
-const NO_EXPONENTIAL = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault()
-}
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -191,13 +188,13 @@ export default function AccountFormPage() {
 
         <FormSection title="Financials">
           <FormRow label="Annual Revenue" error={errors.annualRevenue?.message}>
-            <Input {...register('annualRevenue')} type="number" min={0} step={0.01} placeholder="0.00" onKeyDown={NO_EXPONENTIAL} />
+            <Input {...register('annualRevenue')} type="number" min={0} step={0.01} placeholder="0.00" />
           </FormRow>
           <FormRow label="Employees" error={errors.employees?.message}>
-            <Input {...register('employees')} type="number" min={0} step={1} placeholder="0" onKeyDown={NO_EXPONENTIAL} />
+            <Input {...register('employees')} type="number" min={0} step={1} placeholder="0" />
           </FormRow>
           <FormRow label="Credit Limit" error={errors.creditLimit?.message}>
-            <Input {...register('creditLimit')} type="number" min={0} step={0.01} placeholder="0.00" onKeyDown={NO_EXPONENTIAL} />
+            <Input {...register('creditLimit')} type="number" min={0} step={0.01} placeholder="0.00" />
           </FormRow>
           <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
             <Controller

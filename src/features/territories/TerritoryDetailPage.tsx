@@ -4,8 +4,11 @@ import { ArrowLeft, Pencil, X, Check, Building2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTerritory, useUpdateTerritory, useTerritoryAccounts } from '@/api/endpoints/territories'
+import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -60,11 +63,27 @@ export default function TerritoryDetailPage() {
   const [editing, setEditing] = useState(false)
   const { isManager } = useRole()
 
+  const [repQuery, setRepQuery] = useState('')
+  const [managerQuery, setManagerQuery] = useState('')
+  const debouncedRepQuery = useDebounce(repQuery, 300)
+  const debouncedManagerQuery = useDebounce(managerQuery, 300)
+
   const { data: territory, isLoading, isError } = useTerritory(id ?? '')
   const { mutate: updateTerritory, isPending } = useUpdateTerritory(id ?? '')
   const { data: accounts, isLoading: isLoadingAccounts } = useTerritoryAccounts(id ?? '')
+  const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
+  const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
   const regionOptions = useConfigOptions('territory.region')
   const territoryStatusOptions = useConfigOptions('territory.status')
+
+  const repOptions: ComboboxOption[] = (repResults ?? []).map((u) => ({
+    value: u.id!,
+    label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+  }))
+  const managerOptions: ComboboxOption[] = (managerResults ?? []).map((u) => ({
+    value: u.id!,
+    label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+  }))
 
   const {
     register,
@@ -87,6 +106,8 @@ export default function TerritoryDetailPage() {
       description: territory?.description ?? '',
       status: territory?.status ?? undefined,
       effectiveFrom: territory?.effectiveFrom ?? '',
+      primaryRepId: (territory?.primaryRep as { id?: string } | undefined)?.id ?? undefined,
+      managerId: (territory?.manager as { id?: string } | undefined)?.id ?? undefined,
       targetRevenueAnnual: territory?.targetRevenueAnnual != null ? Number(territory.targetRevenueAnnual) : undefined,
       targetVisitsMonthly: territory?.targetVisitsMonthly ?? undefined,
       targetNewAccountsQuarterly: territory?.targetNewAccountsQuarterly ?? undefined,
@@ -261,6 +282,44 @@ export default function TerritoryDetailPage() {
                   <Textarea {...register('description')} rows={3} />
                 </FormRow>
               </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border bg-background p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Assignments</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormRow label="Primary Rep" error={errors.primaryRepId?.message}>
+                <Controller
+                  name="primaryRepId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      options={repOptions}
+                      placeholder="Search staff…"
+                      onSearchChange={setRepQuery}
+                      isLoading={isSearchingReps}
+                    />
+                  )}
+                />
+              </FormRow>
+              <FormRow label="Manager" error={errors.managerId?.message}>
+                <Controller
+                  name="managerId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      options={managerOptions}
+                      placeholder="Search staff…"
+                      onSearchChange={setManagerQuery}
+                      isLoading={isSearchingManagers}
+                    />
+                  )}
+                />
+              </FormRow>
             </div>
           </div>
 

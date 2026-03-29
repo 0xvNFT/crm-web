@@ -13,7 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { PharmaProduct } from '@/api/app-types'
+import type { CreateProductRequest, UpdateProductRequest, PharmaProduct } from '@/api/app-types'
+
+// DEA Schedules I–V are codified in US federal law — fixed regulatory constant, not business config
+const DEA_SCHEDULES = ['I', 'II', 'III', 'IV', 'V']
 
 // Rendered only after data + config are ready — defaultValues are stable on first useForm call
 function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: boolean }) {
@@ -46,8 +49,13 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
   })
 
   function onSubmit(data: ProductFormData) {
+    // Strip empty strings and undefined — backend @Pattern/@Enum rejects "" on optional fields
+    const payload = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    ) as unknown as CreateProductRequest | UpdateProductRequest
+
     if (isEdit) {
-      updateProduct(data, {
+      updateProduct(payload as UpdateProductRequest, {
         onSuccess: () => {
           toast('Product updated', { variant: 'success' })
           navigate(`/products/${id}`)
@@ -55,7 +63,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createProduct(data, {
+      createProduct(payload as CreateProductRequest, {
         onSuccess: (product) => {
           toast('Product created', { variant: 'success' })
           navigate(`/products/${product.id}`)
@@ -174,8 +182,23 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="deaSchedule">DEA Schedule</Label>
-              <Input id="deaSchedule" placeholder="e.g. Schedule II" {...register('deaSchedule')} />
+              <Label>DEA Schedule</Label>
+              <Controller
+                name="deaSchedule"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select schedule…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DEA_SCHEDULES.map((s) => (
+                        <SelectItem key={s} value={s}>Schedule {s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
         </div>
