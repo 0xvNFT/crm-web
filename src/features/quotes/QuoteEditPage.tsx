@@ -263,30 +263,23 @@ export default function QuoteEditPage() {
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
 
   const defaultValues: QuoteFormData = {
-    accountId: (quote.account as { id?: string } | undefined)?.id ?? '',
-    contactId: (quote.contact as { id?: string } | undefined)?.id ?? '',
+    accountId: quote.accountId ?? '',
+    contactId: quote.contactId ?? '',
     validFrom: quote.validFrom ?? '',
     validUntil: quote.validUntil ?? '',
     discountPercent: quote.discountPercent ?? undefined,
     taxAmount: quote.taxAmount ?? undefined,
     notes: quote.notes ?? '',
     items: (quote.items ?? []).map((item) => ({
-      productId: (item.product as { id?: string } | undefined)?.id ?? '',
+      productId: item.productId ?? '',
       quantity: item.quantity ?? 1,
       discountPercent: item.discountPercent ?? 0,
       notes: item.notes ?? '',
     })),
   }
 
-  const initialAccountName = (quote.account as { name?: string } | undefined)?.name ?? ''
-  const initialContactName = quote.contact
-    ? [
-        (quote.contact as { firstName?: string }).firstName,
-        (quote.contact as { lastName?: string }).lastName,
-      ]
-        .filter(Boolean)
-        .join(' ')
-    : ''
+  const initialAccountName = quote.accountName ?? ''
+  const initialContactName = quote.contactName ?? ''
 
   return (
     <div className="space-y-6">

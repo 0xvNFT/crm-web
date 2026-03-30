@@ -38,7 +38,7 @@ function ActiveBadge({ isActive }: { isActive?: boolean }) {
 const columns: Column<PharmaTeam>[] = [
   { header: 'Name', accessor: 'name', sortable: true },
   { header: 'Type', accessor: (row) => row.teamType ?? '—' },
-  { header: 'Administrator', accessor: (row) => row.administrator?.fullName ?? '—' },
+  { header: 'Administrator', accessor: (row) => row.administratorName ?? '—' },
   { header: 'Email', accessor: (row) => row.emailAddress ?? '—' },
   { header: 'Status', accessor: (row) => <ActiveBadge isActive={row.isActive} /> },
 ]

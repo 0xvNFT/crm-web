@@ -119,7 +119,7 @@ export default function LeadDetailPage() {
       </DetailSection>
 
       <DetailSection title="Assignment">
-        <DetailField label="Owner" value={lead.assignedUser?.fullName} />
+        <DetailField label="Owner" value={lead.assignedUserName} />
       </DetailSection>
 
       <DetailSection title="Qualification">

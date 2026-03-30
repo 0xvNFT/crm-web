@@ -70,8 +70,8 @@ export default function OrderDetailPage() {
             <h1 className="text-2xl font-semibold">{order.orderNumber}</h1>
             {order.status && <StatusBadge status={order.status} />}
           </div>
-          {order.account?.name && (
-            <p className="mt-1 text-sm text-muted-foreground">{order.account.name}</p>
+          {order.accountName && (
+            <p className="mt-1 text-sm text-muted-foreground">{order.accountName}</p>
           )}
         </div>
         <div className="flex gap-2 shrink-0 flex-wrap justify-end">
@@ -111,8 +111,7 @@ export default function OrderDetailPage() {
 
       {/* Account */}
       <Section title="Account">
-        <DetailRow label="Name"         value={order.account?.name} />
-        <DetailRow label="Account Type" value={order.account?.accountType} />
+        <DetailRow label="Name"         value={order.accountName} />
       </Section>
 
       {/* Line Items */}
@@ -134,8 +133,8 @@ export default function OrderDetailPage() {
               <tbody>
                 {order.items.map((item, i) => (
                   <tr key={item.id ?? i} className="border-b last:border-0">
-                    <td className="py-2">{item.product?.name ?? '—'}</td>
-                    <td className="py-2 pl-4 text-muted-foreground">{item.batch?.batchNumber ?? '—'}</td>
+                    <td className="py-2">{item.productName ?? '—'}</td>
+                    <td className="py-2 pl-4 text-muted-foreground">{item.batchNumber ?? '—'}</td>
                     <td className="py-2 text-right">{item.quantity ?? '—'}</td>
                     <td className="py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
                     <td className="py-2 text-right">{item.discountPercent != null ? `${item.discountPercent}%` : '—'}</td>
@@ -159,7 +158,7 @@ export default function OrderDetailPage() {
       {/* Approval */}
       <Section title="Approval">
         <DetailRow label="Approval Status" value={order.approvalStatus} />
-        <DetailRow label="Approved By"     value={(order.approvedBy as { fullName?: string } | undefined)?.fullName} />
+        <DetailRow label="Approved By"     value={order.approvedByName} />
         <DetailRow label="Approved At"     value={order.approvedAt ? formatDate(order.approvedAt) : null} />
       </Section>
 

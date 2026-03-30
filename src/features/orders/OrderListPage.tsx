@@ -22,10 +22,10 @@ const ORDER_FILTERS: FilterDef[] = [
 
 const columns: Column<PharmaOrder>[] = [
   { header: 'Order #',  accessor: 'orderNumber',  sortable: true, cell: (row) => row.orderNumber ?? '—' },
-  { header: 'Account',  accessor: 'account',                      cell: (row) => row.account?.name ?? '—' },
+  { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
   { header: 'Status',   accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
   { header: 'Total',    accessor: (row) => formatCurrency(row.totalAmount ?? 0) },
-  { header: 'Owner',    accessor: 'createdBy',                    cell: (row) => row.createdBy?.fullName ?? '—' },
+  { header: 'Owner',    accessor: (row) => row.createdByName ?? '—' },
   { header: 'Created',  accessor: (row) => formatDate(row.createdAt) },
 ]
 

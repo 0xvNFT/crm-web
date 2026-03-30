@@ -57,9 +57,8 @@ export function useConvertLead() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: ConvertLeadRequest }) =>
       client.post<LeadConversionResult>(`/api/pharma/leads/${id}/convert`, data).then((r) => r.data),
-    onSuccess: (_data, { id }) => {
-      qc.invalidateQueries({ queryKey: ['leads', id] })
-      qc.invalidateQueries({ queryKey: ['leads', 'list'] })
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['leads'] })
     },
   })
 }

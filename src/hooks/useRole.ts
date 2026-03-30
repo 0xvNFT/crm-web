@@ -15,7 +15,7 @@ export function useRole() {
 
   const isAdmin = roles.includes('ADMIN')
   const isManager = roles.includes('MANAGER') || isAdmin
-  const isRep = !isManager
+  const isRep = !!user && roles.includes('FIELD_REP')
 
   return { isAdmin, isManager, isRep }
 }

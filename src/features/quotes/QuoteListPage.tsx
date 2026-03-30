@@ -22,7 +22,7 @@ const QUOTE_FILTERS: FilterDef[] = [
 
 const columns: Column<PharmaQuote>[] = [
   { header: 'Quote #', accessor: (row) => row.quoteNumber ?? '—' },
-  { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   {
     header: 'Status',
     accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—',

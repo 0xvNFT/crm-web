@@ -150,18 +150,18 @@ export default function OpportunityDetailPage() {
             {opp.status && <StatusBadge status={opp.status.toUpperCase()} />}
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {opp.account?.name && (
+            {opp.accountName && (
               <button
-                onClick={() => navigate(`/accounts/${opp.account?.id}`)}
+                onClick={() => navigate(`/accounts/${opp.accountId}`)}
                 className="hover:text-foreground transition-colors hover:underline"
               >
-                {opp.account.name}
+                {opp.accountName}
               </button>
             )}
-            {opp.owner?.fullName && (
+            {opp.ownerName && (
               <>
                 <span>·</span>
-                <span>{opp.owner.fullName}</span>
+                <span>{opp.ownerName}</span>
               </>
             )}
             {opp.estRevenue != null && (
@@ -214,10 +214,10 @@ export default function OpportunityDetailPage() {
           </DetailSection>
 
           <DetailSection title="Relationships">
-            <DetailField label="Account"   value={opp.account?.name} />
-            <DetailField label="Contact"   value={opp.contact ? `${opp.contact.firstName ?? ''} ${opp.contact.lastName ?? ''}`.trim() : undefined} />
-            <DetailField label="Owner"     value={opp.owner?.fullName} />
-            <DetailField label="Territory" value={opp.territory?.territoryName} />
+            <DetailField label="Account"   value={opp.accountName} />
+            <DetailField label="Contact"   value={opp.contactName} />
+            <DetailField label="Owner"     value={opp.ownerName} />
+            <DetailField label="Territory" value={opp.territoryName} />
           </DetailSection>
 
           {opp.description && (

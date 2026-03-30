@@ -38,7 +38,7 @@ export function OverdueFollowUpsWidget() {
             >
               <div>
                 <p className="text-sm font-medium text-foreground">{note.noteTitle ?? '—'}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{note.salesRep?.fullName ?? '—'}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{note.salesRepName ?? '—'}</p>
               </div>
               <span className="text-xs text-destructive font-medium shrink-0 ml-4">
                 {note.followUpDate ? formatDate(note.followUpDate) : 'No date'}

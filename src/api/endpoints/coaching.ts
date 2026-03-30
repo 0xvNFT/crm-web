@@ -97,7 +97,7 @@ export function useUpdateCoachingNote(id: string) {
     mutationFn: (data: UpdateCoachingNoteRequest) =>
       client.put<PharmaCoachingNote>(`/api/pharma/coaching/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['coaching', id] })
+      qc.invalidateQueries({ queryKey: ['coaching'] })
       qc.invalidateQueries({ queryKey: ['coaching', 'list'] })
     },
   })
@@ -109,7 +109,7 @@ export function useCompleteFollowUp(id: string) {
     mutationFn: () =>
       client.post<PharmaCoachingNote>(`/api/pharma/coaching/${id}/complete-followup`).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['coaching', id] })
+      qc.invalidateQueries({ queryKey: ['coaching'] })
       qc.invalidateQueries({ queryKey: ['coaching', 'list'] })
       qc.invalidateQueries({ queryKey: ['coaching', 'overdue'] })
     },

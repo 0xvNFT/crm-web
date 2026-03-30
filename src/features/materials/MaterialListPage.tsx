@@ -21,7 +21,7 @@ const columns: Column<PharmaMaterial>[] = [
   { header: 'Title', accessor: 'title', sortable: true },
   { header: 'Category', accessor: (row) => row.category ?? '—' },
   { header: 'Version', accessor: (row) => row.versionNumber ?? '—' },
-  { header: 'Owner', accessor: (row) => (row.owner as { fullName?: string } | undefined)?.fullName ?? '—' },
+  { header: 'Owner', accessor: (row) => row.ownerName ?? '—' },
   { header: 'Publish Date', accessor: (row) => row.publishDate ? formatDate(row.publishDate) : '—' },
   { header: 'Current', accessor: (row) => row.isCurrent ? 'Yes' : 'No' },
   {

@@ -40,7 +40,7 @@ export function useApproveQuote(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () => client.post<PharmaQuote>(`/api/pharma/quotes/${id}/approve`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes', id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes'] }),
   })
 }
 
@@ -49,7 +49,7 @@ export function useRejectQuote(id: string) {
   return useMutation({
     mutationFn: (reason: string) =>
       client.post<PharmaQuote>(`/api/pharma/quotes/${id}/reject`, { reason }).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes', id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes'] }),
   })
 }
 
@@ -68,7 +68,7 @@ export function useUpdateQuote(id: string) {
     mutationFn: (data: UpdateQuoteRequest) =>
       client.put<PharmaQuote>(`/api/pharma/quotes/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['quotes', id] })
+      qc.invalidateQueries({ queryKey: ['quotes'] })
       qc.invalidateQueries({ queryKey: ['quotes', 'list'] })
     },
   })
@@ -80,7 +80,7 @@ export function useConvertQuote(id: string) {
     mutationFn: () =>
       client.post<PharmaOrder>(`/api/pharma/quotes/${id}/convert`).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['quotes', id] })
+      qc.invalidateQueries({ queryKey: ['quotes'] })
       qc.invalidateQueries({ queryKey: ['orders'] })
     },
   })

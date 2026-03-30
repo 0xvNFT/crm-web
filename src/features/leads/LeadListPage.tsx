@@ -26,7 +26,7 @@ const columns: Column<PharmaLead>[] = [
   { header: 'Company', accessor: (row) => row.companyName },
   { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'UNKNOWN'} /> },
   { header: 'Rating', accessor: (row) => row.rating ?? '—' },
-  { header: 'Owner', accessor: (row) => row.assignedUser?.fullName },
+  { header: 'Owner', accessor: (row) => row.assignedUserName ?? '—' },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 

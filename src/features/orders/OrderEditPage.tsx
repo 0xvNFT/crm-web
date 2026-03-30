@@ -28,7 +28,9 @@ interface OrderEditFormProps {
 function OrderEditForm({ order }: OrderEditFormProps) {
   const navigate = useNavigate()
   const [accountQuery, setAccountQuery] = useState('')
-  const initialAccount = order.account?.id && order.account?.name ? [order.account as PharmaAccount] : []
+  const initialAccount = order.accountId && order.accountName
+    ? [{ id: order.accountId, name: order.accountName } as PharmaAccount]
+    : []
   const [cachedAccounts, setCachedAccounts] = useState<PharmaAccount[]>(initialAccount)
 
   const debouncedAccountQuery = useDebounce(accountQuery, 300)
@@ -50,8 +52,8 @@ function OrderEditForm({ order }: OrderEditFormProps) {
   const { mutate: updateOrder, isPending } = useUpdateOrder(order.id ?? '')
 
   const defaultItems = (order.items ?? []).map((item) => ({
-    productId: item.product?.id ?? '',
-    batchId: item.batch?.id ?? undefined,
+    productId: item.productId ?? '',
+    batchId: item.batchId ?? undefined,
     quantity: item.quantity ?? 1,
     discountPercent: item.discountPercent ?? 0,
   }))
@@ -64,7 +66,7 @@ function OrderEditForm({ order }: OrderEditFormProps) {
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
-      accountId: order.account?.id ?? '',
+      accountId: order.accountId ?? '',
       items: defaultItems.length > 0
         ? defaultItems
         : [{ productId: '', batchId: undefined, quantity: 1, discountPercent: 0 }],

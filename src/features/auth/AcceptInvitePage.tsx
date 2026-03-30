@@ -1,34 +1,30 @@
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import client from '@/api/client'
+import { useAcceptInvite } from '@/api/endpoints/auth'
 import { AuthLayout } from './components/AuthLayout'
 import { FormField } from './components/FormField'
 import { Button } from '@/components/ui/button'
 import { parseApiError } from '@/utils/errors'
 import { acceptInviteSchema, type AcceptInviteFormData } from '@/schemas/auth'
-import type { AcceptInviteRequest } from '@/api/app-types'
 
 export default function AcceptInvitePage() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const token = params.get('token') ?? ''
 
-  const { mutate, isPending, isSuccess, error } = useMutation({
-    mutationFn: (payload: AcceptInviteRequest) =>
-      client.post('/api/auth/accept-invite', payload).then((r) => r.data),
-    onSuccess: () => {
-      setTimeout(() => navigate('/login'), 2000)
-    },
-  })
+  const { mutate, isPending, isSuccess, error } = useAcceptInvite()
 
   const { register, handleSubmit, formState: { errors } } = useForm<AcceptInviteFormData>({
     resolver: zodResolver(acceptInviteSchema),
   })
 
   function onSubmit(data: AcceptInviteFormData) {
-    mutate({ token, newPassword: data.password })
+    mutate({ token, newPassword: data.password }, {
+      onSuccess: () => {
+        setTimeout(() => navigate('/login'), 2000)
+      },
+    })
   }
 
   // Missing or invalid token — caught by the backend, but show early if token is absent

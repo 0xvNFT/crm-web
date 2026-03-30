@@ -37,11 +37,11 @@ export default function CoachingListPage() {
     },
     {
       header: 'Rep',
-      accessor: (row: PharmaCoachingNote) => row.salesRep?.fullName ?? '—',
+      accessor: (row: PharmaCoachingNote) => row.salesRepName ?? '—',
     },
     {
       header: 'Coach',
-      accessor: (row: PharmaCoachingNote) => row.coach?.fullName ?? '—',
+      accessor: (row: PharmaCoachingNote) => row.coachName ?? '—',
     },
     {
       header: 'Feedback Type',

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
 import type {
   AuthUser,
@@ -64,5 +64,22 @@ export function useResendVerification() {
   return useMutation({
     mutationFn: (payload: EmailOnlyRequest) =>
       client.post('/api/auth/resend-verification', payload).then((r) => r.data),
+  })
+}
+
+export function useVerifyEmail(token: string) {
+  return useQuery({
+    queryKey: ['verify-email', token],
+    queryFn: () => client.get('/api/auth/verify', { params: { token } }).then((r) => r.data),
+    enabled: !!token,
+    retry: false,
+    staleTime: Infinity,
+  })
+}
+
+export function useAcceptInvite() {
+  return useMutation({
+    mutationFn: (payload: { token: string; newPassword: string }) =>
+      client.post('/api/auth/accept-invite', payload).then((r) => r.data),
   })
 }

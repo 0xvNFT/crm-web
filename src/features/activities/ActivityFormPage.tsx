@@ -55,8 +55,8 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
 
   // Combobox needs a label fallback since options are only fetched on search
   const selectedOwnerOption: ComboboxOption | undefined = isEdit
-    ? (activity?.assignedUser
-        ? { value: activity.assignedUser.id!, label: activity.assignedUser.fullName ?? activity.assignedUser.email ?? '' }
+    ? (activity?.assignedUserId
+        ? { value: activity.assignedUserId, label: activity.assignedUserName ?? '' }
         : undefined)
     : (user?.userId
         ? { value: user.userId, label: user.fullName ?? user.email ?? '' }
@@ -67,7 +67,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
     defaultValues: isEdit && activity ? {
       subject:          activity.subject ?? '',
       activityType:     activity.activityType ?? '',
-      assignedUserId:   activity.assignedUser?.id ?? '',
+      assignedUserId:   activity.assignedUserId ?? '',
       status:           activity.status ?? '',
       priority:         activity.priority ?? '',
       dueDate:          activity.dueDate ?? '',

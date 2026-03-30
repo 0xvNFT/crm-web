@@ -6,8 +6,8 @@ export const leadSchema = z.object({
   companyName: z.string().optional(),
   email:       z.string().email('Invalid email').optional().or(z.literal('')),
   phone:       z.string().optional(),
-  leadStatus:  z.string().optional().transform(v => v || undefined),
-  rating:      z.string().optional().transform(v => v || undefined),
+  leadStatus:  z.string().optional(),
+  rating:      z.string().optional(),
   leadSource:  z.string().optional(),
   leadScore:   z.coerce.number<number>().int().min(0).optional(),
 })

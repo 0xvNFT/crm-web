@@ -86,7 +86,7 @@ export function useUpdateOpportunity(id: string) {
     mutationFn: (data: UpdateOpportunityRequest) =>
       client.put<PharmaOpportunity>(`/api/pharma/opportunities/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities', id] })
+      qc.invalidateQueries({ queryKey: ['opportunities'] })
       qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
     },
   })
@@ -100,7 +100,7 @@ export function useAdvanceOpportunityStage(id: string) {
         .post<PharmaOpportunity>(`/api/pharma/opportunities/${id}/stage`, data)
         .then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities', id] })
+      qc.invalidateQueries({ queryKey: ['opportunities'] })
       qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
     },
   })

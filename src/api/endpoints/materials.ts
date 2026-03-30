@@ -31,7 +31,7 @@ export function useUpdateMaterial(id: string) {
     mutationFn: (data: UpdateMaterialRequest) =>
       client.put<PharmaMaterial>(`/api/pharma/materials/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['materials', id] })
+      qc.invalidateQueries({ queryKey: ['materials'] })
       qc.invalidateQueries({ queryKey: ['materials', 'list'] })
     },
   })
@@ -42,10 +42,7 @@ export function useApproveMaterial() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post<PharmaMaterial>(`/api/pharma/materials/${id}/approve`).then((r) => r.data),
-    onSuccess: (_data, id) => {
-      qc.invalidateQueries({ queryKey: ['materials', id] })
-      qc.invalidateQueries({ queryKey: ['materials', 'list'] })
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['materials'] }),
   })
 }
 
@@ -54,9 +51,6 @@ export function useArchiveMaterial() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post<PharmaMaterial>(`/api/pharma/materials/${id}/archive`).then((r) => r.data),
-    onSuccess: (_data, id) => {
-      qc.invalidateQueries({ queryKey: ['materials', id] })
-      qc.invalidateQueries({ queryKey: ['materials', 'list'] })
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['materials'] }),
   })
 }
