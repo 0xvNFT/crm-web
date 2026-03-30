@@ -47,7 +47,7 @@ jobs:
             sudo chown -R $USER:$USER /var/www/crm-web
 
       - name: Deploy to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
