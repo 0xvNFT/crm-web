@@ -17,10 +17,10 @@ export function parseApiError(error: unknown): string {
   return 'An unexpected error occurred. Please try again.'
 }
 
-export function parseValidationErrors(error: unknown): Record<string, string> {
+export function parseValidationErrors(error: unknown): Record<string, string> | null {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as ApiError | undefined
     if (data?.validationErrors) return data.validationErrors
   }
-  return {}
+  return null
 }

@@ -69,7 +69,7 @@ export function useUpdateInvoice(id: string) {
     mutationFn: (data: UpdateInvoiceRequest) =>
       client.put<PharmaInvoice>(`/api/pharma/invoices/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['invoices', id] })
+      qc.invalidateQueries({ queryKey: ['invoices'] })
       qc.invalidateQueries({ queryKey: ['invoices', 'list'] })
     },
   })
@@ -79,7 +79,7 @@ export function useSendInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/send`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices', id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }
 
@@ -87,7 +87,7 @@ export function usePayInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/pay`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices', id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }
 
@@ -95,6 +95,6 @@ export function useVoidInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/void`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices', id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }

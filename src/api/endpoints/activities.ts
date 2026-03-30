@@ -80,7 +80,7 @@ export function useUpdateActivity(id: string) {
     mutationFn: (data: UpdateActivityRequest) =>
       client.put<PharmaActivity>(`/api/pharma/activities/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['activities', id] })
+      qc.invalidateQueries({ queryKey: ['activities'] })
       qc.invalidateQueries({ queryKey: ['activities', 'list'] })
     },
   })

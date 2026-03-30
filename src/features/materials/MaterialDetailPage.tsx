@@ -92,10 +92,22 @@ export default function MaterialDetailPage() {
   }
 
   function onSubmit(data: MaterialEditFormData) {
-    // Object.fromEntries loses static type info — cast required
-    const payload = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-    ) as unknown as UpdateMaterialRequest
+    // Build typed payload — strip empty strings
+    const payload: UpdateMaterialRequest = {
+      ...(data.title          ? { title:          data.title }          : {}),
+      ...(data.description    ? { description:    data.description }    : {}),
+      ...(data.fileName       ? { fileName:       data.fileName }       : {}),
+      ...(data.fileType       ? { fileType:       data.fileType }       : {}),
+      ...(data.category       ? { category:       data.category }       : {}),
+      ...(data.subCategory    ? { subCategory:    data.subCategory }    : {}),
+      ...(data.versionNumber  ? { versionNumber:  data.versionNumber }  : {}),
+      ...(data.keywords       ? { keywords:       data.keywords }       : {}),
+      ...(data.languageCode   ? { languageCode:   data.languageCode }   : {}),
+      ...(data.storageUrl     ? { storageUrl:     data.storageUrl }     : {}),
+      ...(data.publishDate    ? { publishDate:    data.publishDate }    : {}),
+      ...(data.expirationDate ? { expirationDate: data.expirationDate } : {}),
+      ...(data.status         ? { status:         data.status }         : {}),
+    }
     updateMaterial(payload, {
       onSuccess: () => {
         toast('Material updated', { variant: 'success' })
@@ -263,7 +275,7 @@ export default function MaterialDetailPage() {
           <DetailSection title="Availability">
             <DetailField label="Publish Date" value={formatDate(material.publishDate)} />
             <DetailField label="Expiration Date" value={formatDate(material.expirationDate)} />
-            <DetailField label="Owner" value={(material.owner as { fullName?: string } | undefined)?.fullName} />
+            <DetailField label="Owner" value={material.ownerName} />
           </DetailSection>
 
           {material.storageUrl && (

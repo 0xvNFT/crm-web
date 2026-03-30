@@ -24,7 +24,7 @@ const INVOICE_FILTERS: FilterDef[] = [
 const columns: Column<PharmaInvoice>[] = [
   { header: 'Invoice #',  accessor: 'invoiceNumber', sortable: true },
   { header: 'Subject',    accessor: 'subject',       sortable: true },
-  { header: 'Account',    accessor: 'account',       cell: (row) => row.account?.name ?? '—' },
+  { header: 'Account',    accessor: (row) => row.accountName ?? '—' },
   { header: 'Status',     accessor: (row) => <StatusBadge status={row.status ?? 'draft'} /> },
   { header: 'Invoice Date', accessor: (row) => formatDate(row.invoiceDate) },
   { header: 'Due Date',   accessor: (row) => formatDate(row.dueDate) },

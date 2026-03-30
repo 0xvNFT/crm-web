@@ -33,7 +33,7 @@ const columns: Column<PharmaTerritory>[] = [
   },
   {
     header: 'Primary Rep',
-    accessor: (row) => row.primaryRep?.fullName ?? '—',
+    accessor: (row) => row.primaryRepName ?? '—',
   },
   {
     header: 'Accounts',

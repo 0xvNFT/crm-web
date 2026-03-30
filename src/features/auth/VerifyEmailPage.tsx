@@ -1,43 +1,39 @@
-import { useEffect, useRef, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import client from '@/api/client'
+import { useVerifyEmail } from '@/api/endpoints/auth'
 import { parseApiError } from '@/utils/errors'
 import { AuthLayout } from './components/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
-type Status = 'loading' | 'success' | 'error'
-
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') ?? ''
-  const [status, setStatus] = useState<Status>(() =>
-    token ? 'loading' : 'error'
-  )
-  const [errorMessage, setErrorMessage] = useState(() =>
-    token ? '' : 'Invalid verification link — no token found.'
-  )
-  const called = useRef(false)
 
-  useEffect(() => {
-    if (called.current) return
-    called.current = true
+  const { isLoading, isSuccess, isError, error } = useVerifyEmail(token)
 
-    if (!token) return
-
-    client
-      .get('/api/auth/verify', { params: { token } })
-      .then(() => setStatus('success'))
-      .catch((err: unknown) => {
-        setStatus('error')
-        setErrorMessage(parseApiError(err))
-      })
-  }, [token])
+  if (!token) {
+    return (
+      <AuthLayout>
+        <div className="space-y-4 text-center">
+          <div className="flex justify-center">
+            <XCircle className="h-12 w-12 text-destructive" strokeWidth={1.5} />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold tracking-tight">Verification failed</h2>
+            <p className="text-sm text-destructive">Invalid verification link — no token found.</p>
+          </div>
+          <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
+            Back to sign in
+          </Link>
+        </div>
+      </AuthLayout>
+    )
+  }
 
   return (
     <AuthLayout>
       <div className="space-y-4 text-center">
-        {status === 'loading' && (
+        {isLoading && (
           <>
             <div className="flex justify-center">
               <Loader2 className="h-12 w-12 text-primary animate-spin" strokeWidth={1.5} />
@@ -49,7 +45,7 @@ export default function VerifyEmailPage() {
           </>
         )}
 
-        {status === 'success' && (
+        {isSuccess && (
           <>
             <div className="flex justify-center">
               <CheckCircle className="h-12 w-12 text-primary" strokeWidth={1.5} />
@@ -66,14 +62,14 @@ export default function VerifyEmailPage() {
           </>
         )}
 
-        {status === 'error' && (
+        {isError && (
           <>
             <div className="flex justify-center">
               <XCircle className="h-12 w-12 text-destructive" strokeWidth={1.5} />
             </div>
             <div className="space-y-1">
               <h2 className="text-xl font-bold tracking-tight">Verification failed</h2>
-              <p className="text-sm text-destructive">{errorMessage}</p>
+              <p className="text-sm text-destructive">{parseApiError(error)}</p>
             </div>
             <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
               Back to sign in

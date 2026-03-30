@@ -35,7 +35,7 @@ const columns: Column<PharmaContact>[] = [
   },
   { header: 'Type', accessor: 'contactType', sortable: true, cell: (row) => formatLabel(row.contactType) },
   { header: 'Specialty', accessor: 'specialty', sortable: true, cell: (row) => row.specialty ?? '—' },
-  { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   { header: 'Mobile', accessor: (row) => row.mobile ?? row.phone ?? '—' },
   {
     header: 'Status',

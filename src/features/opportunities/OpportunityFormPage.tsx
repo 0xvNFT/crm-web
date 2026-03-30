@@ -70,17 +70,17 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     value: t.id!,
     label: t.territoryName ?? t.id!,
   }))
-  const selectedTerritoryOption: ComboboxOption | undefined = isEdit && opportunity?.territory
-    ? { value: opportunity.territory.id!, label: opportunity.territory.territoryName ?? '' }
+  const selectedTerritoryOption: ComboboxOption | undefined = isEdit && opportunity?.territoryId
+    ? { value: opportunity.territoryId, label: opportunity.territoryName ?? '' }
     : undefined
 
   // Combobox selectedOption — provides label before search runs in edit mode
-  const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.owner
-    ? { value: opportunity.owner.id!, label: opportunity.owner.fullName ?? opportunity.owner.email ?? '' }
+  const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.ownerId
+    ? { value: opportunity.ownerId, label: opportunity.ownerName ?? '' }
     : undefined
   // Account is read-only in edit (backend rejects accountId changes) — show as Combobox for create only
-  const selectedAccountOption: ComboboxOption | undefined = isEdit && opportunity?.account
-    ? { value: opportunity.account.id!, label: opportunity.account.name ?? '' }
+  const selectedAccountOption: ComboboxOption | undefined = isEdit && opportunity?.accountId
+    ? { value: opportunity.accountId, label: opportunity.accountName ?? '' }
     : undefined
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<OpportunityFormData>({
@@ -88,9 +88,9 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     defaultValues: isEdit && opportunity ? {
       topic:            opportunity.topic ?? '',
       description:      opportunity.description ?? '',
-      accountId:        opportunity.account?.id ?? '',
-      ownerId:          opportunity.owner?.id ?? '',
-      territoryId:      opportunity.territory?.id ?? '',
+      accountId:        opportunity.accountId ?? '',
+      ownerId:          opportunity.ownerId ?? '',
+      territoryId:      opportunity.territoryId ?? '',
       salesStage:       opportunity.salesStage ?? '',
       status:           opportunity.status ?? '',
       forecastCategory: opportunity.forecastCategory ?? '',

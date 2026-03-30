@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
-import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
+import { formatDate, formatCurrency } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { updateTerritorySchema, type UpdateTerritoryFormData } from '@/schemas/territories'
@@ -51,9 +51,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 }
 
 const accountColumns: Column<PharmaAccountTerritory>[] = [
-  { header: 'Name', accessor: (row) => row.account?.name ?? '—' },
-  { header: 'Type', accessor: (row) => formatLabel(row.account?.accountType) },
-  { header: 'Status', accessor: (row) => <StatusBadge status={(row.account?.status ?? 'active').toUpperCase()} /> },
+  { header: 'Name', accessor: (row) => row.accountName ?? '—' },
 ]
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
@@ -106,8 +104,8 @@ export default function TerritoryDetailPage() {
       description: territory?.description ?? '',
       status: territory?.status ?? undefined,
       effectiveFrom: territory?.effectiveFrom ?? '',
-      primaryRepId: (territory?.primaryRep as { id?: string } | undefined)?.id ?? undefined,
-      managerId: (territory?.manager as { id?: string } | undefined)?.id ?? undefined,
+      primaryRepId: territory?.primaryRepId ?? undefined,
+      managerId: territory?.managerId ?? undefined,
       targetRevenueAnnual: territory?.targetRevenueAnnual != null ? Number(territory.targetRevenueAnnual) : undefined,
       targetVisitsMonthly: territory?.targetVisitsMonthly ?? undefined,
       targetNewAccountsQuarterly: territory?.targetNewAccountsQuarterly ?? undefined,
@@ -174,8 +172,8 @@ export default function TerritoryDetailPage() {
           </DetailSection>
 
           <DetailSection title="Assignment">
-            <DetailField label="Primary Rep" value={territory.primaryRep?.fullName} />
-            <DetailField label="Manager" value={territory.manager?.fullName} />
+            <DetailField label="Primary Rep" value={territory.primaryRepName} />
+            <DetailField label="Manager" value={territory.managerName} />
           </DetailSection>
 
           <DetailSection title="Targets">
@@ -205,7 +203,7 @@ export default function TerritoryDetailPage() {
               <DataTable
                 columns={accountColumns}
                 data={accounts ?? []}
-                onRowClick={(row) => navigate(`/accounts/${row.account?.id}`)}
+                onRowClick={(row) => navigate(`/accounts/${row.accountId}`)}
                 empty={{
                   icon: Building2,
                   title: 'No accounts in this territory',

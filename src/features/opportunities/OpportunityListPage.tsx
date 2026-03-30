@@ -24,12 +24,12 @@ const OPPORTUNITY_FILTERS: FilterDef[] = [
 
 const columns: Column<PharmaOpportunity>[] = [
   { header: 'Topic',    accessor: 'topic', sortable: true },
-  { header: 'Account',  accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
   { header: 'Stage',    accessor: (row) => row.salesStage ? formatLabel(row.salesStage) : '—' },
   { header: 'Status',   accessor: (row) => row.status ? <StatusBadge status={row.status.toUpperCase()} /> : '—' },
   { header: 'Revenue',  accessor: (row) => row.estRevenue != null ? formatCurrency(row.estRevenue) : '—' },
   { header: 'Close',    accessor: (row) => formatDate(row.estCloseDate), sortable: false },
-  { header: 'Owner',    accessor: (row) => row.owner?.fullName ?? '—' },
+  { header: 'Owner',    accessor: (row) => row.ownerName ?? '—' },
 ]
 
 export default function OpportunityListPage() {

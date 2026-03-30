@@ -124,17 +124,17 @@ export default function InvoiceDetailPage() {
         <DetailRow
           label="Account"
           value={
-            invoice.account?.id
-              ? <Link to={`/accounts/${invoice.account.id}`} className="text-primary hover:underline">{invoice.account.name}</Link>
-              : invoice.account?.name
+            invoice.accountId
+              ? <Link to={`/accounts/${invoice.accountId}`} className="text-primary hover:underline">{invoice.accountName}</Link>
+              : invoice.accountName
           }
         />
-        {invoice.contact && (
+        {invoice.contactId && (
           <DetailRow
             label="Contact"
             value={
-              <Link to={`/contacts/${invoice.contact.id}`} className="text-primary hover:underline">
-                {[invoice.contact.firstName, invoice.contact.lastName].filter(Boolean).join(' ')}
+              <Link to={`/contacts/${invoice.contactId}`} className="text-primary hover:underline">
+                {invoice.contactName}
               </Link>
             }
           />
@@ -145,24 +145,24 @@ export default function InvoiceDetailPage() {
       </Section>
 
       {/* Source */}
-      {(invoice.order || invoice.quote) && (
+      {(invoice.orderId || invoice.quoteId) && (
         <Section title="Source">
-          {invoice.order && (
+          {invoice.orderId && (
             <DetailRow
               label="Order"
               value={
-                <Link to={`/orders/${invoice.order.id}`} className="text-primary hover:underline">
-                  {invoice.order.orderNumber}
+                <Link to={`/orders/${invoice.orderId}`} className="text-primary hover:underline">
+                  {invoice.orderNumber ?? invoice.orderId}
                 </Link>
               }
             />
           )}
-          {invoice.quote && (
+          {invoice.quoteId && (
             <DetailRow
               label="Quote"
               value={
-                <Link to={`/quotes/${invoice.quote.id}`} className="text-primary hover:underline">
-                  {invoice.quote.quoteNumber ?? invoice.quote.id}
+                <Link to={`/quotes/${invoice.quoteId}`} className="text-primary hover:underline">
+                  {invoice.quoteNumber ?? invoice.quoteId}
                 </Link>
               }
             />
@@ -192,14 +192,14 @@ export default function InvoiceDetailPage() {
                 {invoice.items.map((item: PharmaInvoiceItem, i) => (
                   <tr key={item.id ?? i} className="hover:bg-muted/30">
                     <td className="px-4 py-2">
-                      <p className="font-medium">{item.product?.name ?? '—'}</p>
+                      <p className="font-medium">{item.productName ?? '—'}</p>
                       {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
                     </td>
                     <td className="px-4 py-2 text-right">{item.quantity}</td>
-                    <td className="px-4 py-2 text-right">{formatCurrency(item.unitPrice)}</td>
-                    <td className="px-4 py-2 text-right">{item.discountAmount ? formatCurrency(item.discountAmount) : '—'}</td>
-                    <td className="px-4 py-2 text-right">{item.taxAmount ? formatCurrency(item.taxAmount) : '—'}</td>
-                    <td className="px-4 py-2 text-right font-medium">{formatCurrency(item.extendedAmount)}</td>
+                    <td className="px-4 py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
+                    <td className="px-4 py-2 text-right">{item.discountAmount != null ? formatCurrency(item.discountAmount) : '—'}</td>
+                    <td className="px-4 py-2 text-right">{item.taxAmount != null ? formatCurrency(item.taxAmount) : '—'}</td>
+                    <td className="px-4 py-2 text-right font-medium">{item.extendedAmount != null ? formatCurrency(item.extendedAmount) : '—'}</td>
                   </tr>
                 ))}
               </tbody>

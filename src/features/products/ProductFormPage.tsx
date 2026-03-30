@@ -49,13 +49,24 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
   })
 
   function onSubmit(data: ProductFormData) {
-    // Strip empty strings and undefined — backend @Pattern/@Enum rejects "" on optional fields
-    const payload = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-    ) as unknown as CreateProductRequest | UpdateProductRequest
+    // Build typed payloads — strip empty strings, backend @Pattern/@Enum rejects "" on optional fields
+    const commonFields = {
+      name:                data.name,
+      ndcNumber:           data.ndcNumber,
+      unitPrice:           data.unitPrice,
+      status:              data.status,
+      controlledSubstance: data.controlledSubstance,
+      ...(data.genericName   ? { genericName:   data.genericName }   : {}),
+      ...(data.manufacturer  ? { manufacturer:  data.manufacturer }  : {}),
+      ...(data.strength      ? { strength:      data.strength }      : {}),
+      ...(data.dosageForm    ? { dosageForm:    data.dosageForm }    : {}),
+      ...(data.packageSize   ? { packageSize:   data.packageSize }   : {}),
+      ...(data.deaSchedule   ? { deaSchedule:   data.deaSchedule }   : {}),
+    }
 
     if (isEdit) {
-      updateProduct(payload as UpdateProductRequest, {
+      const payload: UpdateProductRequest = commonFields
+      updateProduct(payload, {
         onSuccess: () => {
           toast('Product updated', { variant: 'success' })
           navigate(`/products/${id}`)
@@ -63,7 +74,8 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createProduct(payload as CreateProductRequest, {
+      const payload: CreateProductRequest = commonFields
+      createProduct(payload, {
         onSuccess: (product) => {
           toast('Product created', { variant: 'success' })
           navigate(`/products/${product.id}`)

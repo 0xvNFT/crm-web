@@ -59,11 +59,11 @@ export default function CoachingDetailPage() {
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{note.noteTitle ?? '—'}</h1>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {note.salesRep?.fullName && <span>{note.salesRep.fullName}</span>}
-            {note.coach?.fullName && (
+            {note.salesRepName && <span>{note.salesRepName}</span>}
+            {note.coachName && (
               <>
                 <span>·</span>
-                <span>Coached by {note.coach.fullName}</span>
+                <span>Coached by {note.coachName}</span>
               </>
             )}
             {note.feedbackType && (
@@ -113,19 +113,19 @@ export default function CoachingDetailPage() {
       )}
 
       <DetailSection title="Coaching Info">
-        <DetailField label="Rep"           value={note.salesRep?.fullName} />
-        <DetailField label="Coach"         value={note.coach?.fullName} />
+        <DetailField label="Rep"           value={note.salesRepName} />
+        <DetailField label="Coach"         value={note.coachName} />
         <DetailField label="Feedback Type" value={formatLabel(note.feedbackType)} />
         <DetailField label="Date Provided" value={formatDate(note.dateProvided)} />
-        <DetailField label="Territory"     value={note.territory?.territoryName} />
-        {note.visit && (
+        <DetailField label="Territory"     value={note.territoryName} />
+        {note.visitId && (
           <div className="space-y-0.5">
             <p className="text-xs font-medium text-muted-foreground">Linked Visit</p>
             <button
-              onClick={() => navigate(`/visits/${note.visit?.id}`)}
+              onClick={() => navigate(`/visits/${note.visitId}`)}
               className="text-sm text-primary hover:underline"
             >
-              {note.visit.subject ?? note.visit.visitNumber ?? 'View visit'}
+              {note.visitNumber ?? 'View visit'}
             </button>
           </div>
         )}

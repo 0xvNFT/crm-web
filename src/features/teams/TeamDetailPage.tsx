@@ -122,10 +122,10 @@ export default function TeamDetailPage() {
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {team.teamType && <span>{team.teamType}</span>}
-            {team.administrator?.fullName && (
+            {team.administratorName && (
               <>
                 {team.teamType && <span>·</span>}
-                <span>{team.administrator.fullName}</span>
+                <span>{team.administratorName}</span>
               </>
             )}
           </div>
@@ -211,7 +211,7 @@ export default function TeamDetailPage() {
         <DetailField label="Name" value={team.name} />
         <DetailField label="Type" value={team.teamType} />
         <DetailField label="Email" value={team.emailAddress} />
-        <DetailField label="Administrator" value={team.administrator?.fullName} />
+        <DetailField label="Administrator" value={team.administratorName} />
         <DetailField label="Created" value={formatDate(team.createdAt)} />
         <DetailField label="Last Updated" value={formatDate(team.updatedAt)} />
         <div className="space-y-0.5">

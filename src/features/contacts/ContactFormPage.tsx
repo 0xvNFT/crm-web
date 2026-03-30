@@ -59,14 +59,38 @@ export default function ContactFormPage() {
   function onSubmit(data: ContactFormData) {
     const { consentConfirmedStatus, consentConfirmedDate, ...rest } = data
 
-    // Map form field names → request DTO field names, strip empty strings
-    const payload = Object.fromEntries(
-      Object.entries({
-        ...rest,
-        ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus } : {}),
-        ...(consentConfirmedDate ? { consentDate: consentConfirmedDate } : {}),
-      }).filter(([, v]) => v !== '' && v !== undefined)
-    ) as unknown as CreateContactRequest
+    // Build typed payload — required fields set directly, optional fields conditionally spread
+    const payload: CreateContactRequest = {
+      accountId:   rest.accountId,
+      firstName:   rest.firstName,
+      lastName:    rest.lastName,
+      contactType: rest.contactType,
+      ...(rest.middleName        ? { middleName:        rest.middleName }        : {}),
+      ...(rest.salutation        ? { salutation:        rest.salutation }        : {}),
+      ...(rest.title             ? { title:             rest.title }             : {}),
+      ...(rest.specialty         ? { specialty:         rest.specialty }         : {}),
+      ...(rest.email             ? { email:             rest.email }             : {}),
+      ...(rest.phone             ? { phone:             rest.phone }             : {}),
+      ...(rest.mobile            ? { mobile:            rest.mobile }            : {}),
+      ...(rest.customerClass     ? { customerClass:     rest.customerClass }     : {}),
+      ...(rest.adoptionStage     ? { adoptionStage:     rest.adoptionStage }     : {}),
+      ...(rest.leadSource        ? { leadSource:        rest.leadSource }        : {}),
+      ...(rest.preferredContactMethod ? { preferredContactMethod: rest.preferredContactMethod } : {}),
+      ...(rest.preferredContactTime   ? { preferredContactTime:   rest.preferredContactTime }   : {}),
+      ...(rest.prcNumber         ? { prcNumber:         rest.prcNumber }         : {}),
+      ...(rest.npiNumber         ? { npiNumber:         rest.npiNumber }         : {}),
+      ...(rest.deaNumber         ? { deaNumber:         rest.deaNumber }         : {}),
+      ...(rest.stateLicenseNumber ? { stateLicenseNumber: rest.stateLicenseNumber } : {}),
+      ...(rest.addressStreet     ? { addressStreet:     rest.addressStreet }     : {}),
+      ...(rest.addressBarangay   ? { addressBarangay:   rest.addressBarangay }   : {}),
+      ...(rest.addressCity       ? { addressCity:       rest.addressCity }       : {}),
+      ...(rest.addressProvince   ? { addressProvince:   rest.addressProvince }   : {}),
+      ...(rest.addressPostalCode ? { addressPostalCode: rest.addressPostalCode } : {}),
+      ...(rest.notes             ? { notes:             rest.notes }             : {}),
+      ...(rest.prescribingAuthority !== undefined ? { prescribingAuthority: rest.prescribingAuthority } : {}),
+      ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus }     : {}),
+      ...(consentConfirmedDate   ? { consentDate:   consentConfirmedDate }       : {}),
+    }
 
     createContact(payload, {
       onSuccess: (contact) => {

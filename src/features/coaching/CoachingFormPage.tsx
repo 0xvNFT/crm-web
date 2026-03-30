@@ -102,8 +102,13 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
   const followUpRequired = watch('followUpRequired')
 
   function onSubmit(data: CoachingNoteFormData | CoachingNoteEditFormData) {
+    // Strip empty strings from optional uuid/string fields before sending to API
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '')
+    ) as typeof data
+
     if (isEdit) {
-      updateNote(data as CoachingNoteEditFormData, {
+      updateNote(cleaned as CoachingNoteEditFormData, {
         onSuccess: () => {
           toast('Coaching note updated', { variant: 'success' })
           navigate(`/coaching/${id}`)
@@ -111,7 +116,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createNote(data as CoachingNoteFormData, {
+      createNote(cleaned as CoachingNoteFormData, {
         onSuccess: (created) => {
           toast('Coaching note created', { variant: 'success' })
           navigate(`/coaching/${created.id}`)
