@@ -55,6 +55,7 @@ export default function TerritoryFormPage() {
     control,
     formState: { errors },
   } = useForm<CreateTerritoryFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(createTerritorySchema) as Resolver<CreateTerritoryFormData>,
     defaultValues: { status: 'active' },
   })

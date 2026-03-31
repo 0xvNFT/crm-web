@@ -37,6 +37,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
   const schema = isEdit ? updateTeamSchema : createTeamSchema
 
   const { register, control, handleSubmit, formState: { errors } } = useForm<UpdateTeamFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(schema) as Resolver<UpdateTeamFormData>,
     defaultValues: isEdit && team ? {
       name:         team.name ?? '',

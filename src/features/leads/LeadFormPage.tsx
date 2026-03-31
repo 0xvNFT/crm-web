@@ -39,6 +39,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
   const leadSourceOptions  = useConfigOptions('lead.source')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(leadSchema) as Resolver<LeadFormData>,
     defaultValues: isEdit && lead ? {
       lastName:    lead.lastName ?? '',
@@ -56,6 +57,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
   function onSubmit(data: LeadFormData) {
     if (isEdit) {
       // Strip empty strings — backend rejects "" for optional fields
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod leadSchema
       const payload: UpdateLeadRequest = Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
       ) as UpdateLeadRequest
@@ -67,6 +69,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
+      // Why: data matches schema shape directly; widened union fields are string in CreateLeadRequest
       createLead(data as CreateLeadRequest, {
         onSuccess: (created) => {
           toast('Lead created', { variant: 'success' })

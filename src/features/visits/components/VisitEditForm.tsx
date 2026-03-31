@@ -48,6 +48,7 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
   })
 
   function onSubmit(data: VisitEditFormData) {
+    // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod visitEditSchema
     const clean = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
     ) as UpdateVisitRequest

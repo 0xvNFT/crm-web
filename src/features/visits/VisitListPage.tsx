@@ -37,10 +37,10 @@ const columns: Column<PharmaFieldVisit>[] = [
       </div>
     ),
   },
-  { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   {
     header: 'Rep',
-    accessor: (row) => (row.assignedRep as { fullName?: string } | undefined)?.fullName ?? '—',
+    accessor: (row) => row.assignedRepName ?? '—',
   },
   {
     header: 'Status',

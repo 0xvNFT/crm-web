@@ -68,16 +68,14 @@ export default function VisitDetailPage() {
   if (isError || !visit) return <ErrorMessage />
 
   const status = visit.status?.toUpperCase() ?? ''
-  const isOwnVisit = (visit.assignedRep as { id?: string } | undefined)?.id === user?.userId
+  const isOwnVisit = visit.assignedRepId === user?.userId
+
 
   const canCheckIn = isOwnVisit && status === 'SCHEDULED' && !visit.checkInTime
   const canCheckOut = isOwnVisit && !!visit.checkInTime && !visit.checkOutTime
   const canSubmit = isOwnVisit && (status === 'COMPLETED' || status === 'DRAFT') && !['PENDING_APPROVAL', 'APPROVED'].includes(status)
   const canApproveReject = isManager && status === 'PENDING_APPROVAL'
   const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED'
-
-  const assignedRep = visit.assignedRep as { fullName?: string } | undefined
-  const reviewedBy = visit.reviewedBy as { fullName?: string } | undefined
 
   function handleCheckIn() {
     if (!id) return
@@ -197,17 +195,10 @@ export default function VisitDetailPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <DetailSection title="Visit Details" icon={MapPin}>
               <div className="grid grid-cols-2 gap-3">
-                <DetailField label="Account" value={visit.account?.name} />
-                <DetailField
-                  label="Contact"
-                  value={
-                    visit.contact
-                      ? [visit.contact.firstName, visit.contact.lastName].filter(Boolean).join(' ')
-                      : null
-                  }
-                />
-                <DetailField label="Assigned Rep" value={assignedRep?.fullName} />
-                <DetailField label="Territory" value={visit.territory?.territoryName} />
+                <DetailField label="Account" value={visit.accountName} />
+                <DetailField label="Contact" value={visit.contactName} />
+                <DetailField label="Assigned Rep" value={visit.assignedRepName} />
+                <DetailField label="Territory" value={visit.territoryName} />
                 <DetailField label="Visit Type" value={visit.visitType?.replace(/_/g, ' ')} />
                 <DetailField label="Priority" value={visit.priority} />
               </div>
@@ -293,10 +284,10 @@ export default function VisitDetailPage() {
             </DetailSection>
           )}
 
-          {(visit.reviewedBy || visit.reviewedAt) && (
+          {(visit.reviewedById || visit.reviewedAt) && (
             <DetailSection title="Review" icon={User}>
               <div className="grid grid-cols-2 gap-3">
-                <DetailField label="Reviewed By" value={reviewedBy?.fullName} />
+                <DetailField label="Reviewed By" value={visit.reviewedByName} />
                 <DetailField label="Reviewed At" value={visit.reviewedAt ? formatDateTime(visit.reviewedAt) : null} />
               </div>
             </DetailSection>
