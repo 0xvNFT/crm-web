@@ -6,6 +6,7 @@ import { useCreateLead, useUpdateLead, useLead } from '@/api/endpoints/leads'
 import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { leadSchema, type LeadFormData } from '@/schemas/leads'
+import type { CreateLeadRequest, UpdateLeadRequest } from '@/api/app-types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -45,16 +46,20 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
       companyName: lead.companyName ?? '',
       email:       lead.email ?? '',
       phone:       lead.phone ?? '',
-      leadStatus:  lead.leadStatus ?? '',
-      rating:      lead.rating ?? '',
-      leadSource:  lead.leadSource ?? '',
+      leadStatus:  lead.leadStatus ?? undefined,
+      rating:      lead.rating ?? undefined,
+      leadSource:  lead.leadSource ?? undefined,
       leadScore:   lead.leadScore != null ? Number(lead.leadScore) : undefined,
     } : {},
   })
 
   function onSubmit(data: LeadFormData) {
     if (isEdit) {
-      updateLead(data, {
+      // Strip empty strings — backend rejects "" for optional fields
+      const payload: UpdateLeadRequest = Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+      ) as UpdateLeadRequest
+      updateLead(payload, {
         onSuccess: () => {
           toast('Lead updated', { variant: 'success' })
           navigate(`/leads/${id}`)
@@ -62,7 +67,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createLead(data, {
+      createLead(data as CreateLeadRequest, {
         onSuccess: (created) => {
           toast('Lead created', { variant: 'success' })
           navigate(`/leads/${created.id}`)
@@ -109,7 +114,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
               name="leadStatus"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                   <SelectContent>
                     {leadStatusOptions.map((opt) => (
@@ -125,7 +130,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
               name="rating"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select rating" /></SelectTrigger>
                   <SelectContent>
                     {ratingOptions.map((opt) => (
@@ -141,7 +146,7 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
               name="leadSource"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
                   <SelectContent>
                     {leadSourceOptions.map((opt) => (

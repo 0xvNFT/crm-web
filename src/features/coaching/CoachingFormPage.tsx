@@ -84,10 +84,10 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
       resolver: zodResolver(schema) as Resolver<CoachingNoteFormData | CoachingNoteEditFormData>,
       defaultValues: isEdit && note ? {
         noteTitle:         note.noteTitle ?? '',
-        feedbackType:      note.feedbackType ?? '',
+        feedbackType:      note.feedbackType ?? undefined,
         detailedFeedback:  note.detailedFeedback ?? '',
         summaryOfFeedback: note.summaryOfFeedback ?? '',
-        reviewedModule:    note.reviewedModule ?? '',
+        reviewedModule:    note.reviewedModule ?? undefined,
         moduleProgressPct: note.moduleProgressPct ?? undefined,
         followUpRequired:  note.followUpRequired ?? false,
         followUpDate:      note.followUpDate ?? '',
@@ -148,7 +148,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
               name="feedbackType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type…" /></SelectTrigger>
                   <SelectContent>
                     {feedbackTypeOptions.map((opt) => (
@@ -202,7 +202,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
               name="reviewedModule"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select module…" /></SelectTrigger>
                   <SelectContent>
                     {reviewedModuleOptions.map((opt) => (

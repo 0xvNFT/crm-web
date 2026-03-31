@@ -10,7 +10,7 @@ import type { components } from './types'
 export type CrmConfig = Record<string, string[]>
 
 // ─── Core entities ────────────────────────────────────────────────────────────
-export type PharmaAccount            = components['schemas']['PharmaAccount']
+export type PharmaAccount            = components['schemas']['PharmaAccountResponse']
 export type PharmaContact            = components['schemas']['PharmaContactResponse']
 export type PharmaContactResponse    = components['schemas']['PharmaContactResponse']
 export type PharmaLead               = components['schemas']['PharmaLeadResponse']
@@ -36,7 +36,7 @@ export type PharmaMaterial           = components['schemas']['PharmaMaterialResp
 export type PharmaCoachingNote       = components['schemas']['PharmaCoachingNoteResponse']
 export type PharmaVisitAudit         = components['schemas']['PharmaVisitAudit']
 export type PharmaAccountTerritory   = components['schemas']['PharmaAccountTerritoryResponse']
-export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliation']
+export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliationResponse']
 export type LeadConversionResult     = components['schemas']['LeadConversionResult']
 export type User                     = components['schemas']['User']
 export type Notification             = components['schemas']['Notification']
@@ -46,7 +46,7 @@ export type UpdateStaffRequest       = components['schemas']['UpdateStaffRequest
 export type PageUser                 = components['schemas']['PageUser']
 
 // ─── Paginated results (Spring Page<T>) ───────────────────────────────────────
-export type PagePharmaAccount      = components['schemas']['PagePharmaAccount']
+export type PagePharmaAccount      = components['schemas']['PagePharmaAccountResponse']
 export type PagePharmaContact      = components['schemas']['PagePharmaContactResponse']
 export type PagePharmaLead         = components['schemas']['PagePharmaLeadResponse']
 export type PagePharmaOrder        = components['schemas']['PagePharmaOrderResponse']

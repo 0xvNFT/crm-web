@@ -67,7 +67,7 @@ export default function AccountDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{account.name}</h1>
-            <StatusBadge status={(account.status ?? 'active').toUpperCase()} />
+            <StatusBadge status={account.status ?? 'active'} />
             {account.isSupplier && (
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
                 <Building2 className="h-3 w-3" />
@@ -77,16 +77,16 @@ export default function AccountDetailPage() {
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {account.accountType && <span>{formatLabel(account.accountType)}</span>}
-            {account.owner?.fullName && (
+            {account.ownerName && (
               <>
                 <span>·</span>
-                <span>{account.owner.fullName}</span>
+                <span>{account.ownerName}</span>
               </>
             )}
-            {account.parentAccount?.name && (
+            {account.parentAccountName && (
               <>
                 <span>·</span>
-                <span>{account.parentAccount.name}</span>
+                <span>{account.parentAccountName}</span>
               </>
             )}
           </div>
@@ -156,8 +156,8 @@ export default function AccountDetailPage() {
             <DetailField label="Account Type" value={formatLabel(account.accountType)} />
             <DetailField label="Customer Code" value={account.customerCode} />
             <DetailField label="Primary Customer Class" value={account.primaryCustomerClass} />
-            <DetailField label="Owner" value={account.owner?.fullName} />
-            <DetailField label="Parent Account" value={account.parentAccount?.name} />
+            <DetailField label="Owner" value={account.ownerName} />
+            <DetailField label="Parent Account" value={account.parentAccountName} />
             <DetailField label="Is Supplier" value={account.isSupplier} />
           </DetailSection>
 

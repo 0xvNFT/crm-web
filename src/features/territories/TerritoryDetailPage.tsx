@@ -22,7 +22,7 @@ import { formatDate, formatCurrency } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { updateTerritorySchema, type UpdateTerritoryFormData } from '@/schemas/territories'
-import type { PharmaAccountTerritory } from '@/api/app-types'
+import type { PharmaAccountTerritory, UpdateTerritoryRequest } from '@/api/app-types'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -119,7 +119,10 @@ export default function TerritoryDetailPage() {
   }
 
   function onSubmit(data: UpdateTerritoryFormData) {
-    updateTerritory(data, {
+    const clean = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    ) as UpdateTerritoryRequest
+    updateTerritory(clean, {
       onSuccess: () => {
         toast('Territory updated', { variant: 'success' })
         setEditing(false)
@@ -138,7 +141,7 @@ export default function TerritoryDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{territory.territoryName}</h1>
-            <StatusBadge status={(territory.status ?? 'active').toUpperCase()} />
+            <StatusBadge status={territory.status ?? 'active'} />
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             <span>{territory.territoryCode}</span>
@@ -232,7 +235,7 @@ export default function TerritoryDetailPage() {
                   name="region"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select region" />
                       </SelectTrigger>
@@ -250,7 +253,7 @@ export default function TerritoryDetailPage() {
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>

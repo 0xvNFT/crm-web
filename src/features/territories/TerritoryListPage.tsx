@@ -28,7 +28,7 @@ const columns: Column<PharmaTerritory>[] = [
   {
     header: 'Status',
     accessor: (row) => (
-      <StatusBadge status={(row.status ?? 'active').toUpperCase()} />
+      <StatusBadge status={row.status ?? 'active'} />
     ),
   },
   {

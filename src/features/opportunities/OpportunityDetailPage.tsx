@@ -147,7 +147,7 @@ export default function OpportunityDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{opp.topic}</h1>
-            {opp.status && <StatusBadge status={opp.status.toUpperCase()} />}
+            {opp.status && <StatusBadge status={opp.status} />}
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {opp.accountName && (

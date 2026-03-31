@@ -42,7 +42,7 @@ const columns: Column<PharmaFieldVisit>[] = [
   },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={(row.status ?? 'UNKNOWN').toUpperCase()} />,
+    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
   },
   { header: 'Scheduled', accessor: (row) => formatDate(row.scheduledStart), sortable: false },
 ]

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, X } from 'lucide-react'
@@ -12,7 +11,7 @@ import { FormRow } from '@/components/shared/FormRow'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { visitEditSchema, type VisitEditFormData } from '@/schemas/visits'
-import type { PharmaFieldVisit } from '@/api/app-types'
+import type { PharmaFieldVisit, UpdateVisitRequest } from '@/api/app-types'
 
 interface VisitEditFormProps {
   visitId: string
@@ -33,26 +32,26 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
   const visitTypeOptions = useConfigOptions('visit.type')
   const visitPriorityOptions = useConfigOptions('visit.priority')
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<VisitEditFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<VisitEditFormData>({
     resolver: zodResolver(visitEditSchema),
-  })
-
-  useEffect(() => {
-    reset({
+    defaultValues: {
       subject:        visit.subject        ?? '',
       locationName:   visit.locationName   ?? '',
-      visitType:      visit.visitType      ?? '',
-      priority:       visit.priority       ?? '',
-      sentiment:      visit.sentiment      ?? '',
+      visitType:      visit.visitType      ?? undefined,
+      priority:       visit.priority       ?? undefined,
+      sentiment:      visit.sentiment      ?? undefined,
       scheduledStart: visit.scheduledStart ?? '',
       scheduledEnd:   visit.scheduledEnd   ?? '',
       callObjectives: visit.callObjectives ?? '',
       notes:          visit.notes          ?? '',
-    })
-  }, [visit, reset])
+    },
+  })
 
   function onSubmit(data: VisitEditFormData) {
-    updateVisit(data, {
+    const clean = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    ) as UpdateVisitRequest
+    updateVisit(clean, {
       onSuccess: () => {
         toast('Visit updated', { variant: 'success' })
         onSuccess()
@@ -74,7 +73,7 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
               name="visitType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     {visitTypeOptions.map((opt) => (
@@ -90,7 +89,7 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
               name="priority"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
                   <SelectContent>
                     {visitPriorityOptions.map((opt) => (
@@ -106,7 +105,7 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
               name="sentiment"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select sentiment" /></SelectTrigger>
                   <SelectContent>
                     {SENTIMENT_OPTIONS.map((opt) => (
