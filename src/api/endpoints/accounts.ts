@@ -8,7 +8,7 @@ export function useAccounts(page = 0, size = 20, filters: Record<string, string>
     queryKey: ['accounts', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaAccount>('/api/pharma/accounts', {
+        .get<PagePharmaAccount>('/api/v1/pharma/accounts', {
           params: { page, size, sort: 'createdAt,desc', ...cleanFilters },
         })
         .then((r) => r.data),
@@ -19,7 +19,7 @@ export function useAccounts(page = 0, size = 20, filters: Record<string, string>
 export function useAccount(id: string) {
   return useQuery({
     queryKey: ['accounts', id],
-    queryFn: () => client.get<PharmaAccount>(`/api/pharma/accounts/${id}`).then((r) => r.data),
+    queryFn: () => client.get<PharmaAccount>(`/api/v1/pharma/accounts/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -28,7 +28,7 @@ export function useCreateAccount() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreatePharmaAccountRequest) =>
-      client.post<PharmaAccount>('/api/pharma/accounts', data).then((r) => r.data),
+      client.post<PharmaAccount>('/api/v1/pharma/accounts', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })
 }
@@ -37,7 +37,7 @@ export function useUpdateAccount(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdatePharmaAccountRequest) =>
-      client.put<PharmaAccount>(`/api/pharma/accounts/${id}`, data).then((r) => r.data),
+      client.put<PharmaAccount>(`/api/v1/pharma/accounts/${id}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['accounts'] }),
   })
 }
@@ -47,8 +47,8 @@ export function useAccountSearch(q: string) {
     queryKey: ['accounts', 'search', q],
     queryFn: () =>
       client
-        .get<PharmaAccount[]>('/api/pharma/accounts/search', { params: { q } })
-        .then((r) => r.data),
+        .get<PagePharmaAccount>('/api/v1/pharma/accounts/search', { params: { q } })
+        .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
@@ -57,7 +57,7 @@ export function useAccountSearch(q: string) {
 export function useDeleteAccount() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => client.delete(`/api/pharma/accounts/${id}`),
+    mutationFn: (id: string) => client.delete(`/api/v1/pharma/accounts/${id}`),
     onSuccess: (_data, id) => {
       // Remove the detail cache entry immediately — prevents a 400 refetch after navigation
       qc.removeQueries({ queryKey: ['accounts', id] })

@@ -12,7 +12,7 @@ export function useCoachingNotes(page = 0, size = 20) {
     queryKey: ['coaching', 'list', { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaCoachingNote>('/api/pharma/coaching', {
+        .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching', {
           params: { page, size, sort: 'createdAt,desc' },
         })
         .then((r) => r.data),
@@ -25,8 +25,8 @@ export function useCoachingSearch(q: string) {
     queryKey: ['coaching', 'search', q],
     queryFn: () =>
       client
-        .get<PharmaCoachingNote[]>('/api/pharma/coaching/search', { params: { q } })
-        .then((r) => r.data),
+        .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching/search', { params: { q } })
+        .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
@@ -36,7 +36,7 @@ export function useCoachingNote(id: string) {
   return useQuery({
     queryKey: ['coaching', id],
     queryFn: () =>
-      client.get<PharmaCoachingNote>(`/api/pharma/coaching/${id}`).then((r) => r.data),
+      client.get<PharmaCoachingNote>(`/api/v1/pharma/coaching/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -46,7 +46,7 @@ export function useCoachingByRep(repId: string, page = 0, size = 20) {
     queryKey: ['coaching', 'by-rep', repId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaCoachingNote>(`/api/pharma/coaching/by-rep/${repId}`, {
+        .get<PagePharmaCoachingNote>(`/api/v1/pharma/coaching/by-rep/${repId}`, {
           params: { page, size, sort: 'createdAt,desc' },
         })
         .then((r) => r.data),
@@ -60,7 +60,7 @@ export function useCoachingByCoach(coachId: string, page = 0, size = 20) {
     queryKey: ['coaching', 'by-coach', coachId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaCoachingNote>(`/api/pharma/coaching/by-coach/${coachId}`, {
+        .get<PagePharmaCoachingNote>(`/api/v1/pharma/coaching/by-coach/${coachId}`, {
           params: { page, size, sort: 'createdAt,desc' },
         })
         .then((r) => r.data),
@@ -74,7 +74,7 @@ export function useOverdueFollowUps(page = 0, size = 20) {
     queryKey: ['coaching', 'overdue', { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaCoachingNote>('/api/pharma/coaching/overdue-followups', {
+        .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching/overdue-followups', {
           params: { page, size },
         })
         .then((r) => r.data),
@@ -86,7 +86,7 @@ export function useCreateCoachingNote() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreateCoachingNoteRequest) =>
-      client.post<PharmaCoachingNote>('/api/pharma/coaching', data).then((r) => r.data),
+      client.post<PharmaCoachingNote>('/api/v1/pharma/coaching', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['coaching', 'list'] }),
   })
 }
@@ -95,7 +95,7 @@ export function useUpdateCoachingNote(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateCoachingNoteRequest) =>
-      client.put<PharmaCoachingNote>(`/api/pharma/coaching/${id}`, data).then((r) => r.data),
+      client.put<PharmaCoachingNote>(`/api/v1/pharma/coaching/${id}`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['coaching'] })
       qc.invalidateQueries({ queryKey: ['coaching', 'list'] })
@@ -107,7 +107,7 @@ export function useCompleteFollowUp(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () =>
-      client.post<PharmaCoachingNote>(`/api/pharma/coaching/${id}/complete-followup`).then((r) => r.data),
+      client.post<PharmaCoachingNote>(`/api/v1/pharma/coaching/${id}/complete-followup`).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['coaching'] })
       qc.invalidateQueries({ queryKey: ['coaching', 'list'] })

@@ -12,34 +12,34 @@ import type {
 export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginRequest) =>
-      client.post<AuthUser>('/api/auth/login', payload).then((r) => r.data),
+      client.post<AuthUser>('/api/v1/auth/login', payload).then((r) => r.data),
   })
 }
 
 export function useLogout() {
   return useMutation({
-    mutationFn: () => client.post('/api/auth/logout').then((r) => r.data),
+    mutationFn: () => client.post('/api/v1/auth/logout').then((r) => r.data),
   })
 }
 
 export function useRegister() {
   return useMutation({
     mutationFn: (payload: RegisterRequest) =>
-      client.post<{ message: string }>('/api/auth/register', payload).then((r) => r.data),
+      client.post<{ message: string }>('/api/v1/auth/register', payload).then((r) => r.data),
   })
 }
 
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (payload: EmailOnlyRequest) =>
-      client.post('/api/auth/forgot-password', payload).then((r) => r.data),
+      client.post('/api/v1/auth/forgot-password', payload).then((r) => r.data),
   })
 }
 
 export function useResetPassword() {
   return useMutation({
     mutationFn: (payload: { token: string; newPassword: string }) =>
-      client.post('/api/auth/reset-password', payload).then((r) => r.data),
+      client.post('/api/v1/auth/reset-password', payload).then((r) => r.data),
   })
 }
 
@@ -47,7 +47,7 @@ export function useUpdateProfile() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (payload: UpdateProfileRequest) =>
-      client.put('/api/auth/profile', payload).then((r) => r.data),
+      client.put('/api/v1/auth/profile', payload).then((r) => r.data),
     // Invalidate any cached /me data so AuthContext re-fetches updated name
     onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   })
@@ -56,21 +56,21 @@ export function useUpdateProfile() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (payload: ChangePasswordRequest) =>
-      client.post('/api/auth/change-password', payload).then((r) => r.data),
+      client.post('/api/v1/auth/change-password', payload).then((r) => r.data),
   })
 }
 
 export function useResendVerification() {
   return useMutation({
     mutationFn: (payload: EmailOnlyRequest) =>
-      client.post('/api/auth/resend-verification', payload).then((r) => r.data),
+      client.post('/api/v1/auth/resend-verification', payload).then((r) => r.data),
   })
 }
 
 export function useVerifyEmail(token: string) {
   return useQuery({
     queryKey: ['verify-email', token],
-    queryFn: () => client.get('/api/auth/verify', { params: { token } }).then((r) => r.data),
+    queryFn: () => client.get('/api/v1/auth/verify', { params: { token } }).then((r) => r.data),
     enabled: !!token,
     retry: false,
     staleTime: Infinity,
@@ -80,6 +80,6 @@ export function useVerifyEmail(token: string) {
 export function useAcceptInvite() {
   return useMutation({
     mutationFn: (payload: { token: string; newPassword: string }) =>
-      client.post('/api/auth/accept-invite', payload).then((r) => r.data),
+      client.post('/api/v1/auth/accept-invite', payload).then((r) => r.data),
   })
 }

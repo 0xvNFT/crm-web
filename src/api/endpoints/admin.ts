@@ -12,7 +12,7 @@ export function usePlan(id: string) {
   return useQuery({
     queryKey: ['admin', 'plans', id],
     queryFn: () =>
-      client.get<PlanResponse>(`/api/admin/plans/${id}`).then((r) => r.data),
+      client.get<PlanResponse>(`/api/v1/admin/plans/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -21,7 +21,7 @@ export function useUpdatePlan(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: UpdatePlanRequest) =>
-      client.put<PlanResponse>(`/api/admin/plans/${id}`, body).then((r) => r.data),
+      client.put<PlanResponse>(`/api/v1/admin/plans/${id}`, body).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'plans', id] })
     },
@@ -32,7 +32,7 @@ export function useReactivateTenant(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () =>
-      client.post(`/api/admin/tenants/${id}/reactivate`).then((r) => r.data),
+      client.post(`/api/v1/admin/tenants/${id}/reactivate`).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'tenants'] })
     },

@@ -8,7 +8,7 @@ export function useContacts(page = 0, size = 20, filters: Record<string, string>
     queryKey: ['contacts', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaContact>('/api/pharma/contacts', {
+        .get<PagePharmaContact>('/api/v1/pharma/contacts', {
           params: { page, size, sort: 'lastName,asc', ...cleanFilters },
         })
         .then((r) => r.data),
@@ -21,8 +21,8 @@ export function useContactSearch(name: string) {
     queryKey: ['contacts', 'search', name],
     queryFn: () =>
       client
-        .get<PharmaContact[]>('/api/pharma/contacts/search', { params: { name } })
-        .then((r) => r.data),
+        .get<PagePharmaContact>('/api/v1/pharma/contacts/search', { params: { name } })
+        .then((r) => r.data.content ?? []),
     enabled: name.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
@@ -32,7 +32,7 @@ export function useContact(id: string) {
   return useQuery({
     queryKey: ['contacts', id],
     queryFn: () =>
-      client.get<PharmaContact>(`/api/pharma/contacts/${id}`).then((r) => r.data),
+      client.get<PharmaContact>(`/api/v1/pharma/contacts/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -41,7 +41,7 @@ export function useCreateContact() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreateContactRequest) =>
-      client.post<PharmaContact>('/api/pharma/contacts', data).then((r) => r.data),
+      client.post<PharmaContact>('/api/v1/pharma/contacts', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
   })
 }
@@ -50,7 +50,7 @@ export function useUpdateContact(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateContactRequest) =>
-      client.put<PharmaContact>(`/api/pharma/contacts/${id}`, data).then((r) => r.data),
+      client.put<PharmaContact>(`/api/v1/pharma/contacts/${id}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts'] }),
   })
 }
@@ -58,7 +58,7 @@ export function useUpdateContact(id: string) {
 export function useDeleteContact() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => client.delete(`/api/pharma/contacts/${id}`),
+    mutationFn: (id: string) => client.delete(`/api/v1/pharma/contacts/${id}`),
     onSuccess: (_data, id) => {
       // Remove the detail cache entry immediately — prevents a 400 refetch after navigation
       qc.removeQueries({ queryKey: ['contacts', id] })
@@ -74,7 +74,7 @@ export function useContactAffiliations(contactId: string) {
     queryKey: ['contacts', contactId, 'affiliations'],
     queryFn: () =>
       client
-        .get<PharmaContactAffiliation[]>(`/api/pharma/contacts/${contactId}/affiliations`)
+        .get<PharmaContactAffiliation[]>(`/api/v1/pharma/contacts/${contactId}/affiliations`)
         .then((r) => r.data),
     enabled: !!contactId,
   })
@@ -85,7 +85,7 @@ export function useAddAffiliation(contactId: string) {
   return useMutation({
     mutationFn: (data: AddAffiliationRequest) =>
       client
-        .post<PharmaContactAffiliation>(`/api/pharma/contacts/${contactId}/affiliations`, data)
+        .post<PharmaContactAffiliation>(`/api/v1/pharma/contacts/${contactId}/affiliations`, data)
         .then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts', contactId, 'affiliations'] }),
   })
@@ -95,7 +95,7 @@ export function useRemoveAffiliation(contactId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (affiliationId: string) =>
-      client.delete(`/api/pharma/contacts/affiliations/${affiliationId}`),
+      client.delete(`/api/v1/pharma/contacts/affiliations/${affiliationId}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['contacts', contactId, 'affiliations'] }),
   })
 }

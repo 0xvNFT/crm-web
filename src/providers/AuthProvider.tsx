@@ -33,7 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // /me reads the cookie server-side and returns the user info.
   useEffect(() => {
     client
-      .get<AuthUser>('/api/auth/me')
+      .get<AuthUser>('/api/v1/auth/me')
       .then((r) => setUser(r.data))
       .catch((err: unknown) => {
         // 401 = not logged in. Any other error (network, server) = don't redirect,
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     try {
-      await client.post('/api/auth/logout')
+      await client.post('/api/v1/auth/logout')
     } finally {
       setUser(null)
     }

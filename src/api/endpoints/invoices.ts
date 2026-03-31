@@ -13,7 +13,7 @@ export function useInvoices(page = 0, size = 20, filters: Record<string, string>
     queryKey: ['invoices', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaInvoice>('/api/pharma/invoices', {
+        .get<PagePharmaInvoice>('/api/v1/pharma/invoices', {
           params: { page, size, sort: 'invoiceDate,desc', ...cleanFilters },
         })
         .then((r) => r.data),
@@ -26,8 +26,8 @@ export function useInvoiceSearch(q: string) {
     queryKey: ['invoices', 'search', q],
     queryFn: () =>
       client
-        .get<PharmaInvoice[]>('/api/pharma/invoices/search', { params: { q } })
-        .then((r) => r.data),
+        .get<PagePharmaInvoice>('/api/v1/pharma/invoices/search', { params: { q } })
+        .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })
 }
@@ -35,7 +35,7 @@ export function useInvoiceSearch(q: string) {
 export function useInvoice(id: string) {
   return useQuery({
     queryKey: ['invoices', id],
-    queryFn: () => client.get<PharmaInvoice>(`/api/pharma/invoices/${id}`).then((r) => r.data),
+    queryFn: () => client.get<PharmaInvoice>(`/api/v1/pharma/invoices/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -45,7 +45,7 @@ export function useInvoicesByAccount(accountId: string, page = 0, size = 10) {
     queryKey: ['invoices', 'by-account', accountId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaInvoice>(`/api/pharma/invoices/by-account/${accountId}`, {
+        .get<PagePharmaInvoice>(`/api/v1/pharma/invoices/by-account/${accountId}`, {
           params: { page, size, sort: 'invoiceDate,desc' },
         })
         .then((r) => r.data),
@@ -58,7 +58,7 @@ export function useCreateInvoice() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreateInvoiceRequest) =>
-      client.post<PharmaInvoice>('/api/pharma/invoices', data).then((r) => r.data),
+      client.post<PharmaInvoice>('/api/v1/pharma/invoices', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices', 'list'] }),
   })
 }
@@ -67,7 +67,7 @@ export function useUpdateInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateInvoiceRequest) =>
-      client.put<PharmaInvoice>(`/api/pharma/invoices/${id}`, data).then((r) => r.data),
+      client.put<PharmaInvoice>(`/api/v1/pharma/invoices/${id}`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['invoices'] })
       qc.invalidateQueries({ queryKey: ['invoices', 'list'] })
@@ -78,7 +78,7 @@ export function useUpdateInvoice(id: string) {
 export function useSendInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/send`).then((r) => r.data),
+    mutationFn: () => client.post<PharmaInvoice>(`/api/v1/pharma/invoices/${id}/send`).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }
@@ -86,7 +86,7 @@ export function useSendInvoice(id: string) {
 export function usePayInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/pay`).then((r) => r.data),
+    mutationFn: () => client.post<PharmaInvoice>(`/api/v1/pharma/invoices/${id}/pay`).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }
@@ -94,7 +94,7 @@ export function usePayInvoice(id: string) {
 export function useVoidInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: () => client.post<PharmaInvoice>(`/api/pharma/invoices/${id}/void`).then((r) => r.data),
+    mutationFn: () => client.post<PharmaInvoice>(`/api/v1/pharma/invoices/${id}/void`).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   })
 }
