@@ -13,21 +13,12 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { accountSchema, type AccountFormData } from '@/schemas/accounts'
 import type { CreatePharmaAccountRequest } from '@/api/app-types'
-
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
 
 export default function AccountFormPage() {
   const navigate = useNavigate()
@@ -62,7 +53,7 @@ export default function AccountFormPage() {
 
   function onSubmit(data: AccountFormData) {
     // Strip empty strings so backend doesn't receive ""
-    // Cast required: Object.fromEntries loses static type info
+    // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod accountSchema
     const payload = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
     ) as CreatePharmaAccountRequest
@@ -204,19 +195,9 @@ export default function AccountFormPage() {
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select terms" /></SelectTrigger>
                   <SelectContent>
-                    {paymentTermsOptions.length > 0
-                      ? paymentTermsOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                        ))
-                      : (
-                        <>
-                          <SelectItem value="NET15">NET 15</SelectItem>
-                          <SelectItem value="NET30">NET 30</SelectItem>
-                          <SelectItem value="NET60">NET 60</SelectItem>
-                          <SelectItem value="COD">COD</SelectItem>
-                        </>
-                      )
-                    }
+                    {paymentTermsOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
