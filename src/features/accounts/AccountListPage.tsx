@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Building2 } from 'lucide-react'
 import { useAccounts, useAccountSearch } from '@/api/endpoints/accounts'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -31,13 +31,14 @@ const columns: Column<PharmaAccount>[] = [
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 
+const FILTER_KEYS = ['accountType', 'status']
+
 export default function AccountListPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -45,13 +46,11 @@ export default function AccountListPage() {
   const searchQuery = useAccountSearch(debouncedQuery)
 
   function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
+    setFilter(param, value)
   }
 
   function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
+    clearFilters()
   }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading

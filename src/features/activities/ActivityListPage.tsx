@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Calendar } from 'lucide-react'
 import { useActivities, useActivitySearch } from '@/api/endpoints/activities'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -28,6 +28,8 @@ const ACTIVITY_FILTERS: FilterDef[] = [
   { param: 'activityType', label: 'Type', configKey: 'activity.type' },
   { param: 'status', label: 'Status', configKey: 'activity.status' },
 ]
+
+const FILTER_KEYS = ['activityType', 'status']
 
 const columns: Column<ActivityRow>[] = [
   {
@@ -64,25 +66,17 @@ const columns: Column<ActivityRow>[] = [
 export default function ActivityListPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useActivities(page, 20, filters)
   const searchQuery = useActivitySearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError

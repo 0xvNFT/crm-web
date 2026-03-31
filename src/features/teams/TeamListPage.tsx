@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Users2 } from 'lucide-react'
 import { useTeams, useTeamSearch } from '@/api/endpoints/teams'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -19,6 +19,8 @@ import type { PharmaTeam } from '@/api/app-types'
 const TEAM_FILTERS: FilterDef[] = [
   { param: 'teamType', label: 'Type', configKey: 'team.type' },
 ]
+
+const FILTER_KEYS = ['teamType']
 
 function ActiveBadge({ isActive }: { isActive?: boolean }) {
   return (
@@ -46,25 +48,17 @@ const columns: Column<PharmaTeam>[] = [
 export default function TeamListPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useTeams(page, 20, filters)
   const searchQuery = useTeamSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError

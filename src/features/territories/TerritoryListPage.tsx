@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, MapPin } from 'lucide-react'
 import { useTerritories, useTerritorySearch } from '@/api/endpoints/territories'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -20,6 +20,8 @@ const TERRITORY_FILTERS: FilterDef[] = [
   { param: 'region', label: 'Region', configKey: 'territory.region' },
   { param: 'status', label: 'Status', configKey: 'territory.status' },
 ]
+
+const FILTER_KEYS = ['region', 'status']
 
 const columns: Column<PharmaTerritory>[] = [
   { header: 'Code', accessor: 'territoryCode', sortable: true },
@@ -44,25 +46,17 @@ const columns: Column<PharmaTerritory>[] = [
 export default function TerritoryListPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useTerritories(page, 20, filters)
   const searchQuery = useTerritorySearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError

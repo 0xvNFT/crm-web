@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, MapPin } from 'lucide-react'
 import { useVisits, useVisitSearch } from '@/api/endpoints/visits'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -21,6 +21,8 @@ const VISIT_FILTERS: FilterDef[] = [
   { param: 'visitType', label: 'Visit Type', configKey: 'visit.type' },
   { param: 'status', label: 'Status', configKey: 'visit.status' },
 ]
+
+const FILTER_KEYS = ['visitType', 'status']
 
 const columns: Column<PharmaFieldVisit>[] = [
   { header: 'Visit #', accessor: 'visitNumber', sortable: true },
@@ -50,25 +52,17 @@ const columns: Column<PharmaFieldVisit>[] = [
 export default function VisitListPage() {
   const navigate = useNavigate()
   const { isRep } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useVisits(page, 20, filters)
   const searchQuery = useVisitSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError

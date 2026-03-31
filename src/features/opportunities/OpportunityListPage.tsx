@@ -12,7 +12,7 @@ import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useRole } from '@/hooks/useRole'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import type { PharmaOpportunity } from '@/api/app-types'
@@ -21,6 +21,8 @@ const OPPORTUNITY_FILTERS: FilterDef[] = [
   { param: 'status',      label: 'Status',    configKey: 'opportunity.status' },
   { param: 'salesStage',  label: 'Stage',     configKey: 'opportunity.salesStage' },
 ]
+
+const FILTER_KEYS = ['status', 'salesStage']
 
 const columns: Column<PharmaOpportunity>[] = [
   { header: 'Topic',    accessor: 'topic', sortable: true },
@@ -34,10 +36,9 @@ const columns: Column<PharmaOpportunity>[] = [
 
 export default function OpportunityListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
   const { isManager } = useRole()
 
   const isSearching = debouncedQuery.trim().length >= 2
@@ -52,15 +53,8 @@ export default function OpportunityListPage() {
     ? (searchQuery.data ?? [])
     : (listQuery.data?.content ?? [])
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   if (isLoading && !isSearching) return <LoadingSpinner />
   if (isError) return <ErrorMessage error={error} />

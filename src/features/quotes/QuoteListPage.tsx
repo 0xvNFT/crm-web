@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { useQuotes, useQuoteSearch } from '@/api/endpoints/quotes'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -19,6 +19,8 @@ import type { PharmaQuote } from '@/api/app-types'
 const QUOTE_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'quote.status' },
 ]
+
+const FILTER_KEYS = ['status']
 
 const columns: Column<PharmaQuote>[] = [
   { header: 'Quote #', accessor: (row) => row.quoteNumber ?? '—' },
@@ -37,25 +39,17 @@ const columns: Column<PharmaQuote>[] = [
 
 export default function QuoteListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useQuotes(page, 20, filters)
   const searchQuery = useQuoteSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
