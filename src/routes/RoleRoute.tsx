@@ -1,9 +1,10 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { type ReactNode } from 'react'
+import type { Role } from '@/api/app-types'
 
 interface RoleRouteProps {
-  roles: string[]
+  roles: Role[]
   children: ReactNode
 }
 

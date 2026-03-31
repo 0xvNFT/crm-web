@@ -9,6 +9,18 @@ import type {
   EmailOnlyRequest,
 } from '@/api/app-types'
 
+// Session restore — called once on mount to rehydrate auth from httpOnly cookie.
+// staleTime: Infinity so it never auto-refetches, but invalidateQueries(['me']) forces refresh after profile updates.
+// retry: false so a 401 immediately resolves to null user (not logged in), not retried 3x.
+export function useMe() {
+  return useQuery({
+    queryKey: ['me'],
+    queryFn: () => client.get<AuthUser>('/api/v1/auth/me').then((r) => r.data),
+    retry: false,
+    staleTime: Infinity,
+  })
+}
+
 export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginRequest) =>
