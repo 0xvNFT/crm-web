@@ -10,6 +10,7 @@ export const ToastViewport = ({ className, ...props }: React.ComponentProps<type
       'fixed bottom-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:max-w-[380px]',
       className
     )}
+    aria-label="Notifications"
     {...props}
   />
 )
@@ -68,8 +69,9 @@ export function ToastClose({
       )}
       toast-close=""
       {...props}
+      aria-label="Dismiss notification"
     >
-      <X className="h-4 w-4" />
+      <X className="h-4 w-4" aria-hidden="true" />
     </ToastPrimitive.Close>
   )
 }

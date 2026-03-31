@@ -20,6 +20,9 @@ export function useVersionCheck() {
       }
     }
 
+    // Run immediately on mount so users who load the page after a deploy are notified
+    // right away, rather than waiting up to POLL_INTERVAL_MS before the first check.
+    void check()
     const id = setInterval(check, POLL_INTERVAL_MS)
     return () => clearInterval(id)
   }, [])
