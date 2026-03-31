@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { X } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -43,7 +44,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ filters, values, onChange, onClear, className }: FilterBarProps) {
-  const hasActive = Object.values(values).some((v) => v !== '')
+  const hasActive = useMemo(() => Object.values(values).some((v) => v !== ''), [values])
 
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className ?? ''}`}>

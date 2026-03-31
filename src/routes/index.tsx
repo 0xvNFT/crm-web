@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+
+const NotFoundPage = lazy(() => import('@/features/errors/NotFoundPage'))
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
@@ -317,8 +319,8 @@ export function AppRouter() {
           />
         </Route>
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* Catch-all — show 404 instead of silent redirect so users know the URL was wrong */}
+        <Route path="*" element={<Wrap><NotFoundPage /></Wrap>} />
       </Routes>
   )
 }
