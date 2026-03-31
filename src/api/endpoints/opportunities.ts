@@ -25,9 +25,9 @@ export function useOpportunities(page = 0, size = 20, filters: Record<string, st
 export function useOpportunitySearch(q: string) {
   return useQuery({
     queryKey: ['opportunities', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities/search', { params: { q } })
+        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

@@ -23,9 +23,9 @@ export function useCoachingNotes(page = 0, size = 20) {
 export function useCoachingSearch(q: string) {
   return useQuery({
     queryKey: ['coaching', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching/search', { params: { q } })
+        .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

@@ -15,8 +15,8 @@ export function useProducts(page = 0, size = 20, filters: Record<string, string>
 export function useProductSearch(q: string) {
   return useQuery({
     queryKey: ['products', 'search', q],
-    queryFn: () =>
-      client.get<PagePharmaProduct>('/api/v1/pharma/products/search', { params: { name: q } }).then((r) => r.data.content ?? []),
+    queryFn: ({ signal }) =>
+      client.get<PagePharmaProduct>('/api/v1/pharma/products/search', { params: { name: q }, signal }).then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })
 }

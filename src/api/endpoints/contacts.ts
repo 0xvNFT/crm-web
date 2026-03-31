@@ -19,9 +19,9 @@ export function useContacts(page = 0, size = 20, filters: Record<string, string>
 export function useContactSearch(name: string) {
   return useQuery({
     queryKey: ['contacts', 'search', name],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaContact>('/api/v1/pharma/contacts/search', { params: { name } })
+        .get<PagePharmaContact>('/api/v1/pharma/contacts/search', { params: { name }, signal })
         .then((r) => r.data.content ?? []),
     enabled: name.trim().length >= 2,
     placeholderData: (prev) => prev,

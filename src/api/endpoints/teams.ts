@@ -33,9 +33,9 @@ export function useTeam(id: string) {
 export function useTeamSearch(q: string) {
   return useQuery({
     queryKey: ['teams', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaTeam>('/api/v1/pharma/teams/search', { params: { q } })
+        .get<PagePharmaTeam>('/api/v1/pharma/teams/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

@@ -33,9 +33,9 @@ export function useTerritory(id: string) {
 export function useTerritorySearch(q: string) {
   return useQuery({
     queryKey: ['territories', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaTerritory>('/api/v1/pharma/territories/search', { params: { q } })
+        .get<PagePharmaTerritory>('/api/v1/pharma/territories/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

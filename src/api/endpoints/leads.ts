@@ -26,9 +26,9 @@ export function useLead(id: string) {
 export function useLeadSearch(q: string) {
   return useQuery({
     queryKey: ['leads', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaLead>('/api/v1/pharma/leads/search', { params: { q } })
+        .get<PagePharmaLead>('/api/v1/pharma/leads/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })
