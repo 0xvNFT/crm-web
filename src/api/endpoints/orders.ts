@@ -28,10 +28,11 @@ export function useOrder(id: string) {
 export function useOrderSearch(q: string) {
   return useQuery({
     queryKey: ['orders', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
         .get<PagePharmaOrder>('/api/v1/pharma/orders/search', {
           params: { q },
+          signal,
         })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,

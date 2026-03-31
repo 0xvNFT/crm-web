@@ -18,8 +18,8 @@ export function useActivities(page = 0, size = 20, filters: Record<string, strin
 export function useActivitySearch(q: string) {
   return useQuery({
     queryKey: ['activities', 'search', q],
-    queryFn: () =>
-      client.get<PagePharmaActivity>('/api/v1/pharma/activities/search', { params: { q } })
+    queryFn: ({ signal }) =>
+      client.get<PagePharmaActivity>('/api/v1/pharma/activities/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

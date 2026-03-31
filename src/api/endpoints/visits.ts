@@ -38,9 +38,9 @@ export function useVisit(id: string) {
 export function useVisitSearch(query: string) {
   return useQuery({
     queryKey: ['visits', 'search', query],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaFieldVisit>('/api/v1/pharma/visits/search', { params: { q: query } })
+        .get<PagePharmaFieldVisit>('/api/v1/pharma/visits/search', { params: { q: query }, signal })
         .then((r) => r.data.content ?? []),
     enabled: query.trim().length >= 2,
     placeholderData: (prev) => prev,

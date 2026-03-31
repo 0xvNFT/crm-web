@@ -24,9 +24,9 @@ export function useInvoices(page = 0, size = 20, filters: Record<string, string>
 export function useInvoiceSearch(q: string) {
   return useQuery({
     queryKey: ['invoices', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaInvoice>('/api/v1/pharma/invoices/search', { params: { q } })
+        .get<PagePharmaInvoice>('/api/v1/pharma/invoices/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })

@@ -45,9 +45,9 @@ export function useUpdateAccount(id: string) {
 export function useAccountSearch(q: string) {
   return useQuery({
     queryKey: ['accounts', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaAccount>('/api/v1/pharma/accounts/search', { params: { q } })
+        .get<PagePharmaAccount>('/api/v1/pharma/accounts/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

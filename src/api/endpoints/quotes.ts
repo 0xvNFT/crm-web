@@ -19,9 +19,9 @@ export function useQuotes(page = 0, size = 20, filters: Record<string, string> =
 export function useQuoteSearch(q: string) {
   return useQuery({
     queryKey: ['quotes', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PagePharmaQuote>('/api/v1/pharma/quotes/search', { params: { q } })
+        .get<PagePharmaQuote>('/api/v1/pharma/quotes/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })
