@@ -63,6 +63,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         : undefined)
 
   const { register, handleSubmit, control, watch, formState: { errors } } = useForm<ActivityFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(activitySchema) as Resolver<ActivityFormData>,
     defaultValues: isEdit && activity ? {
       subject:          activity.subject ?? '',
@@ -88,6 +89,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
   function onSubmit(data: ActivityFormData) {
     if (isEdit) {
       // Strip empty strings — backend rejects "" for optional fields
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod activitySchema
       const payload: UpdateActivityRequest = Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
       ) as UpdateActivityRequest
@@ -99,6 +101,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
+      // Why: Object.fromEntries not needed for create — data matches schema shape directly
       createActivity(data as CreateActivityRequest, {
         onSuccess: (created) => {
           toast('Activity created', { variant: 'success' })

@@ -84,6 +84,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     : undefined
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<OpportunityFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(opportunityFormSchema) as Resolver<OpportunityFormData>,
     defaultValues: isEdit && opportunity ? {
       topic:            opportunity.topic ?? '',
@@ -110,6 +111,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
   function onSubmit(data: OpportunityFormData) {
     if (isEdit) {
       // Strip empty strings — backend rejects "" for optional fields
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod opportunitySchema
       const payload: UpdateOpportunityRequest = Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
       ) as UpdateOpportunityRequest
@@ -121,6 +123,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
+      // Why: data matches schema shape directly; widened union fields are string in CreateOpportunityRequest
       createOpportunity(data as CreateOpportunityRequest, {
         onSuccess: (created) => {
           toast('Opportunity created', { variant: 'success' })

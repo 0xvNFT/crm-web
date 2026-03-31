@@ -77,6 +77,7 @@ export function AccountEditForm({ accountId, account, onSuccess, onCancel }: Acc
 
   function onSubmit(data: AccountEditFormData) {
     // Strip empty strings so backend doesn't receive "" for URL/email/optional fields
+    // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod accountEditSchema
     const payload = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
     ) as UpdatePharmaAccountRequest

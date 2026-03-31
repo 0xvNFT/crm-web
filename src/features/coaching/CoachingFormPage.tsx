@@ -81,6 +81,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
 
   const { register, control, handleSubmit, watch, formState: { errors } } =
     useForm<CoachingNoteFormData | CoachingNoteEditFormData>({
+      // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
       resolver: zodResolver(schema) as Resolver<CoachingNoteFormData | CoachingNoteEditFormData>,
       defaultValues: isEdit && note ? {
         noteTitle:         note.noteTitle ?? '',

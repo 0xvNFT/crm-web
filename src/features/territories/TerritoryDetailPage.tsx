@@ -119,6 +119,7 @@ export default function TerritoryDetailPage() {
   }
 
   function onSubmit(data: UpdateTerritoryFormData) {
+    // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod updateTerritorySchema
     const clean = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
     ) as UpdateTerritoryRequest

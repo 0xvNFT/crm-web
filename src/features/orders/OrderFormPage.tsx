@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
+import { PageHeader } from '@/components/shared/PageHeader'
 import type { PharmaAccount } from '@/api/app-types'
 
 export default function OrderFormPage() {
@@ -25,18 +26,19 @@ export default function OrderFormPage() {
   const debouncedAccountQuery = useDebounce(accountQuery, 300)
   const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
 
-  const mergedAccounts = [
-    ...cachedAccounts,
-    ...(accountResults ?? []).filter((a) => !cachedAccounts.find((c) => c.id === a.id)),
-  ]
-
-  const accountOptions = mergedAccounts
-    .filter((a) => a.id && a.name)
-    .map((a) => ({
-      value: a.id!,
-      label: a.name!,
-      sublabel: a.accountType ?? undefined,
-    }))
+  const accountOptions = useMemo(() => {
+    const merged = [
+      ...cachedAccounts,
+      ...(accountResults ?? []).filter((a) => !cachedAccounts.find((c) => c.id === a.id)),
+    ]
+    return merged
+      .filter((a) => a.id && a.name)
+      .map((a) => ({
+        value: a.id!,
+        label: a.name!,
+        sublabel: a.accountType ?? undefined,
+      }))
+  }, [cachedAccounts, accountResults])
 
   const { mutate: createOrder, isPending } = useCreateOrder()
 
@@ -79,10 +81,7 @@ export default function OrderFormPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">New Order</h1>
-          <p className="text-sm text-muted-foreground">Create a new sales order</p>
-        </div>
+        <PageHeader title="New Order" description="Create a new sales order" />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
