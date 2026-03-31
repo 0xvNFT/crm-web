@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Package } from 'lucide-react'
 import { useProducts, useProductSearch } from '@/api/endpoints/products'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -21,6 +21,8 @@ const PRODUCT_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'product.status' },
 ]
 
+const FILTER_KEYS = ['status']
+
 const columns: Column<PharmaProduct>[] = [
   { header: 'Name', accessor: 'name', sortable: true },
   { header: 'NDC', accessor: 'ndcNumber' },
@@ -33,25 +35,17 @@ const columns: Column<PharmaProduct>[] = [
 export default function ProductListPage() {
   const navigate = useNavigate()
   const { isAdmin } = useRole()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const listQuery = useProducts(page, 20)
+  const listQuery = useProducts(page, 20, filters)
   const searchQuery = useProductSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError

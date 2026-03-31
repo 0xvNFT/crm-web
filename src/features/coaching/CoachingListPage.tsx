@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, AlertCircle } from 'lucide-react'
 import { useCoachingNotes, useCoachingSearch } from '@/api/endpoints/coaching'
 import { useRole } from '@/hooks/useRole'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -20,7 +20,7 @@ export default function CoachingListPage() {
   const debouncedQuery = useDebounce(query, 300)
   const isSearching = debouncedQuery.trim().length >= 2
 
-  const { page, goToPage } = usePagination()
+  const { page, goToPage } = useListParams([])
   const { data: listData } = useCoachingNotes(page)
   const { data: searchResults } = useCoachingSearch(debouncedQuery)
 

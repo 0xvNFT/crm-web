@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShoppingCart, Plus } from 'lucide-react'
 import { useOrders, useOrderSearch } from '@/api/endpoints/orders'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -20,6 +20,8 @@ const ORDER_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'order.status' },
 ]
 
+const FILTER_KEYS = ['status']
+
 const columns: Column<PharmaOrder>[] = [
   { header: 'Order #',  accessor: 'orderNumber',  sortable: true, cell: (row) => row.orderNumber ?? '—' },
   { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
@@ -31,25 +33,17 @@ const columns: Column<PharmaOrder>[] = [
 
 export default function OrderListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery   = useOrders(page, 20, filters)
   const searchQuery = useOrderSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading  = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError    = isSearching ? searchQuery.isError   : listQuery.isError

@@ -12,7 +12,7 @@ import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaLead } from '@/api/app-types'
 
@@ -20,6 +20,8 @@ const LEAD_FILTERS: FilterDef[] = [
   { param: 'leadStatus', label: 'Status', configKey: 'lead.status' },
   { param: 'rating', label: 'Rating', configKey: 'lead.rating' },
 ]
+
+const FILTER_KEYS = ['leadStatus', 'rating']
 
 const columns: Column<PharmaLead>[] = [
   { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
@@ -32,20 +34,12 @@ const columns: Column<PharmaLead>[] = [
 
 export default function LeadListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isSearching = debouncedQuery.trim().length >= 2
 

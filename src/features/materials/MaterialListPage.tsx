@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { useMaterials } from '@/api/endpoints/materials'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -16,6 +15,8 @@ import type { PharmaMaterial } from '@/api/app-types'
 const MATERIAL_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'material.status' },
 ]
+
+const FILTER_KEYS = ['status']
 
 const columns: Column<PharmaMaterial>[] = [
   { header: 'Title', accessor: 'title', sortable: true },
@@ -32,20 +33,12 @@ const columns: Column<PharmaMaterial>[] = [
 
 export default function MaterialListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
-  const [filters, setFilters] = useState<Record<string, string>>({})
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
 
   const { data, isLoading, isError, error } = useMaterials(page, 20, filters)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage error={error} />
