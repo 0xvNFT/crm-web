@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/pharma/visits/{id}": {
+    "/api/v1/pharma/visits/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -22,7 +22,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users/{id}": {
+    "/api/v1/pharma/users/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -40,7 +40,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/{id}": {
+    "/api/v1/pharma/territories/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -58,7 +58,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}": {
+    "/api/v1/pharma/teams/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -76,7 +76,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/rep-targets/{id}": {
+    "/api/v1/pharma/rep-targets/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -95,7 +95,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/{id}": {
+    "/api/v1/pharma/quotes/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -113,7 +113,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products/{id}": {
+    "/api/v1/pharma/products/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -132,7 +132,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/{id}": {
+    "/api/v1/pharma/orders/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -151,7 +151,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/opportunities/{id}": {
+    "/api/v1/pharma/opportunities/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -169,7 +169,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials/{id}": {
+    "/api/v1/pharma/materials/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -187,7 +187,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads/{id}": {
+    "/api/v1/pharma/leads/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -205,7 +205,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/{id}": {
+    "/api/v1/pharma/invoices/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -223,7 +223,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/{id}": {
+    "/api/v1/pharma/contacts/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -242,7 +242,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/{id}": {
+    "/api/v1/pharma/coaching/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -260,7 +260,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/{id}": {
+    "/api/v1/pharma/activities/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -279,7 +279,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/accounts/{id}": {
+    "/api/v1/pharma/accounts/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -298,7 +298,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/core/approval-rules/{id}": {
+    "/api/v1/core/approval-rules/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -317,7 +317,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/profile": {
+    "/api/v1/auth/profile": {
         parameters: {
             query?: never;
             header?: never;
@@ -337,7 +337,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/plans/{id}": {
+    "/api/v1/admin/plans/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -355,7 +355,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits": {
+    "/api/v1/pharma/visits": {
         parameters: {
             query?: never;
             header?: never;
@@ -373,7 +373,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/submit": {
+    "/api/v1/pharma/visits/{id}/submit": {
         parameters: {
             query?: never;
             header?: never;
@@ -390,7 +390,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/signature": {
+    "/api/v1/pharma/visits/{id}/signature": {
         parameters: {
             query?: never;
             header?: never;
@@ -407,7 +407,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/reject": {
+    "/api/v1/pharma/visits/{id}/reject": {
         parameters: {
             query?: never;
             header?: never;
@@ -424,7 +424,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/check-out": {
+    "/api/v1/pharma/visits/{id}/check-out": {
         parameters: {
             query?: never;
             header?: never;
@@ -441,7 +441,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/check-in": {
+    "/api/v1/pharma/visits/{id}/check-in": {
         parameters: {
             query?: never;
             header?: never;
@@ -458,7 +458,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/{id}/approve": {
+    "/api/v1/pharma/visits/{id}/approve": {
         parameters: {
             query?: never;
             header?: never;
@@ -475,7 +475,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/{id}/verify": {
+    "/api/v1/pharma/visit-audits/{id}/verify": {
         parameters: {
             query?: never;
             header?: never;
@@ -492,7 +492,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/{id}/override": {
+    "/api/v1/pharma/visit-audits/{id}/override": {
         parameters: {
             query?: never;
             header?: never;
@@ -509,7 +509,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/visits/{visitId}": {
+    "/api/v1/pharma/visit-audits/visits/{visitId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -526,7 +526,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users": {
+    "/api/v1/pharma/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -547,7 +547,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users/{id}/resend-invite": {
+    "/api/v1/pharma/users/{id}/resend-invite": {
         parameters: {
             query?: never;
             header?: never;
@@ -564,7 +564,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users/{id}/reactivate": {
+    "/api/v1/pharma/users/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -581,7 +581,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users/{id}/deactivate": {
+    "/api/v1/pharma/users/{id}/deactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -598,7 +598,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories": {
+    "/api/v1/pharma/territories": {
         parameters: {
             query?: never;
             header?: never;
@@ -616,7 +616,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/{id}/accounts/{accountId}": {
+    "/api/v1/pharma/territories/{id}/accounts/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -633,7 +633,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams": {
+    "/api/v1/pharma/teams": {
         parameters: {
             query?: never;
             header?: never;
@@ -651,7 +651,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}/reactivate": {
+    "/api/v1/pharma/teams/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -668,7 +668,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}/members/{userId}": {
+    "/api/v1/pharma/teams/{id}/members/{userId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -686,7 +686,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}/deactivate": {
+    "/api/v1/pharma/teams/{id}/deactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -703,7 +703,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/rep-targets": {
+    "/api/v1/pharma/rep-targets": {
         parameters: {
             query?: never;
             header?: never;
@@ -721,7 +721,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes": {
+    "/api/v1/pharma/quotes": {
         parameters: {
             query?: never;
             header?: never;
@@ -739,7 +739,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/{id}/submit": {
+    "/api/v1/pharma/quotes/{id}/submit": {
         parameters: {
             query?: never;
             header?: never;
@@ -756,7 +756,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/{id}/reject": {
+    "/api/v1/pharma/quotes/{id}/reject": {
         parameters: {
             query?: never;
             header?: never;
@@ -773,7 +773,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/{id}/convert": {
+    "/api/v1/pharma/quotes/{id}/convert": {
         parameters: {
             query?: never;
             header?: never;
@@ -790,7 +790,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/{id}/approve": {
+    "/api/v1/pharma/quotes/{id}/approve": {
         parameters: {
             query?: never;
             header?: never;
@@ -807,7 +807,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products": {
+    "/api/v1/pharma/products": {
         parameters: {
             query?: never;
             header?: never;
@@ -825,7 +825,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/prices": {
+    "/api/v1/pharma/prices": {
         parameters: {
             query?: never;
             header?: never;
@@ -842,7 +842,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders": {
+    "/api/v1/pharma/orders": {
         parameters: {
             query?: never;
             header?: never;
@@ -860,7 +860,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/{id}/reject": {
+    "/api/v1/pharma/orders/{id}/reject": {
         parameters: {
             query?: never;
             header?: never;
@@ -877,7 +877,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/{id}/generate-invoice": {
+    "/api/v1/pharma/orders/{id}/generate-invoice": {
         parameters: {
             query?: never;
             header?: never;
@@ -894,7 +894,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/{id}/approve": {
+    "/api/v1/pharma/orders/{id}/approve": {
         parameters: {
             query?: never;
             header?: never;
@@ -911,7 +911,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/opportunities": {
+    "/api/v1/pharma/opportunities": {
         parameters: {
             query?: never;
             header?: never;
@@ -929,7 +929,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/opportunities/{id}/stage": {
+    "/api/v1/pharma/opportunities/{id}/stage": {
         parameters: {
             query?: never;
             header?: never;
@@ -946,7 +946,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials": {
+    "/api/v1/pharma/materials": {
         parameters: {
             query?: never;
             header?: never;
@@ -964,7 +964,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials/{id}/archive": {
+    "/api/v1/pharma/materials/{id}/archive": {
         parameters: {
             query?: never;
             header?: never;
@@ -981,7 +981,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials/{id}/approve": {
+    "/api/v1/pharma/materials/{id}/approve": {
         parameters: {
             query?: never;
             header?: never;
@@ -998,7 +998,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads": {
+    "/api/v1/pharma/leads": {
         parameters: {
             query?: never;
             header?: never;
@@ -1016,7 +1016,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads/{id}/convert": {
+    "/api/v1/pharma/leads/{id}/convert": {
         parameters: {
             query?: never;
             header?: never;
@@ -1036,7 +1036,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices": {
+    "/api/v1/pharma/invoices": {
         parameters: {
             query?: never;
             header?: never;
@@ -1054,7 +1054,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/{id}/void": {
+    "/api/v1/pharma/invoices/{id}/void": {
         parameters: {
             query?: never;
             header?: never;
@@ -1071,7 +1071,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/{id}/send": {
+    "/api/v1/pharma/invoices/{id}/send": {
         parameters: {
             query?: never;
             header?: never;
@@ -1088,7 +1088,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/{id}/pay": {
+    "/api/v1/pharma/invoices/{id}/pay": {
         parameters: {
             query?: never;
             header?: never;
@@ -1105,7 +1105,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts": {
+    "/api/v1/pharma/contacts": {
         parameters: {
             query?: never;
             header?: never;
@@ -1123,7 +1123,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/{id}/affiliations": {
+    "/api/v1/pharma/contacts/{id}/affiliations": {
         parameters: {
             query?: never;
             header?: never;
@@ -1141,7 +1141,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching": {
+    "/api/v1/pharma/coaching": {
         parameters: {
             query?: never;
             header?: never;
@@ -1159,7 +1159,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/{id}/complete-followup": {
+    "/api/v1/pharma/coaching/{id}/complete-followup": {
         parameters: {
             query?: never;
             header?: never;
@@ -1176,7 +1176,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities": {
+    "/api/v1/pharma/activities": {
         parameters: {
             query?: never;
             header?: never;
@@ -1194,7 +1194,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/{id}/complete": {
+    "/api/v1/pharma/activities/{id}/complete": {
         parameters: {
             query?: never;
             header?: never;
@@ -1211,7 +1211,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/accounts": {
+    "/api/v1/pharma/accounts": {
         parameters: {
             query?: never;
             header?: never;
@@ -1229,7 +1229,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/accounts/{id}/territories/{territoryId}": {
+    "/api/v1/pharma/accounts/{id}/territories/{territoryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1246,7 +1246,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/notifications/{id}/read": {
+    "/api/v1/notifications/{id}/read": {
         parameters: {
             query?: never;
             header?: never;
@@ -1263,7 +1263,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/notifications/read-all": {
+    "/api/v1/notifications/read-all": {
         parameters: {
             query?: never;
             header?: never;
@@ -1280,7 +1280,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/core/approval-rules": {
+    "/api/v1/core/approval-rules": {
         parameters: {
             query?: never;
             header?: never;
@@ -1298,7 +1298,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/billing/webhook": {
+    "/api/v1/billing/webhook": {
         parameters: {
             query?: never;
             header?: never;
@@ -1315,7 +1315,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/billing/portal": {
+    "/api/v1/billing/portal": {
         parameters: {
             query?: never;
             header?: never;
@@ -1332,7 +1332,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/billing/checkout": {
+    "/api/v1/billing/checkout": {
         parameters: {
             query?: never;
             header?: never;
@@ -1349,7 +1349,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/reset-password": {
+    "/api/v1/auth/reset-password": {
         parameters: {
             query?: never;
             header?: never;
@@ -1373,7 +1373,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/resend-verification": {
+    "/api/v1/auth/resend-verification": {
         parameters: {
             query?: never;
             header?: never;
@@ -1393,7 +1393,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/register": {
+    "/api/v1/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -1413,7 +1413,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/logout": {
+    "/api/v1/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -1424,7 +1424,7 @@ export interface paths {
         put?: never;
         /**
          * Logout
-         * @description Clears the authentication cookie.
+         * @description Clears the authentication cookie and revokes the JWT.
          */
         post: operations["logout"];
         delete?: never;
@@ -1433,7 +1433,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login": {
+    "/api/v1/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -1453,7 +1453,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/forgot-password": {
+    "/api/v1/auth/forgot-password": {
         parameters: {
             query?: never;
             header?: never;
@@ -1473,7 +1473,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/change-password": {
+    "/api/v1/auth/change-password": {
         parameters: {
             query?: never;
             header?: never;
@@ -1493,7 +1493,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/accept-invite": {
+    "/api/v1/auth/accept-invite": {
         parameters: {
             query?: never;
             header?: never;
@@ -1513,7 +1513,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/tenants": {
+    "/api/v1/admin/tenants": {
         parameters: {
             query?: never;
             header?: never;
@@ -1531,7 +1531,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/tenants/{id}/suspend": {
+    "/api/v1/admin/tenants/{id}/suspend": {
         parameters: {
             query?: never;
             header?: never;
@@ -1548,7 +1548,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/tenants/{id}/reactivate": {
+    "/api/v1/admin/tenants/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -1565,7 +1565,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/plans": {
+    "/api/v1/admin/plans": {
         parameters: {
             query?: never;
             header?: never;
@@ -1583,7 +1583,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/{id}/assign-rep/{repId}": {
+    "/api/v1/pharma/territories/{id}/assign-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1600,7 +1600,7 @@ export interface paths {
         patch: operations["assignRep"];
         trace?: never;
     };
-    "/api/pharma/visits/search": {
+    "/api/v1/pharma/visits/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -1617,7 +1617,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/pending-review": {
+    "/api/v1/pharma/visits/pending-review": {
         parameters: {
             query?: never;
             header?: never;
@@ -1634,7 +1634,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/by-territory/{territoryId}": {
+    "/api/v1/pharma/visits/by-territory/{territoryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1651,7 +1651,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/by-rep/{repId}": {
+    "/api/v1/pharma/visits/by-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1668,7 +1668,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/by-contact/{contactId}": {
+    "/api/v1/pharma/visits/by-contact/{contactId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1685,7 +1685,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visits/by-account/{accountId}": {
+    "/api/v1/pharma/visits/by-account/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1702,7 +1702,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/{id}": {
+    "/api/v1/pharma/visit-audits/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1719,7 +1719,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/pending": {
+    "/api/v1/pharma/visit-audits/pending": {
         parameters: {
             query?: never;
             header?: never;
@@ -1736,7 +1736,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/by-rep/{repId}": {
+    "/api/v1/pharma/visit-audits/by-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1753,7 +1753,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/visit-audits/by-auditor/{auditorId}": {
+    "/api/v1/pharma/visit-audits/by-auditor/{auditorId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1770,7 +1770,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/users/search": {
+    "/api/v1/pharma/users/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -1787,7 +1787,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/{id}/accounts": {
+    "/api/v1/pharma/territories/{id}/accounts": {
         parameters: {
             query?: never;
             header?: never;
@@ -1804,7 +1804,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/search": {
+    "/api/v1/pharma/territories/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -1821,7 +1821,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/by-rep/{repId}": {
+    "/api/v1/pharma/territories/by-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1838,7 +1838,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/by-manager/{managerId}": {
+    "/api/v1/pharma/territories/by-manager/{managerId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1855,7 +1855,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/{id}/members": {
+    "/api/v1/pharma/teams/{id}/members": {
         parameters: {
             query?: never;
             header?: never;
@@ -1872,7 +1872,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/search": {
+    "/api/v1/pharma/teams/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -1889,7 +1889,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/teams/by-user/{userId}": {
+    "/api/v1/pharma/teams/by-user/{userId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1906,7 +1906,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reports/pipeline": {
+    "/api/v1/pharma/reports/pipeline": {
         parameters: {
             query?: never;
             header?: never;
@@ -1923,7 +1923,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reports/lead-funnel": {
+    "/api/v1/pharma/reports/lead-funnel": {
         parameters: {
             query?: never;
             header?: never;
@@ -1940,7 +1940,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reports/invoice-aging": {
+    "/api/v1/pharma/reports/invoice-aging": {
         parameters: {
             query?: never;
             header?: never;
@@ -1957,7 +1957,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reports/activities": {
+    "/api/v1/pharma/reports/activities": {
         parameters: {
             query?: never;
             header?: never;
@@ -1974,7 +1974,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reporting/kpi/territory-performance": {
+    "/api/v1/pharma/reporting/kpi/territory-performance": {
         parameters: {
             query?: never;
             header?: never;
@@ -1991,7 +1991,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reporting/kpi/doctor-coverage": {
+    "/api/v1/pharma/reporting/kpi/doctor-coverage": {
         parameters: {
             query?: never;
             header?: never;
@@ -2008,7 +2008,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reporting/kpi/call-summary": {
+    "/api/v1/pharma/reporting/kpi/call-summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -2025,7 +2025,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/reporting/kpi/activity-summary": {
+    "/api/v1/pharma/reporting/kpi/activity-summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -2042,7 +2042,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/search": {
+    "/api/v1/pharma/quotes/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2059,7 +2059,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/pending-approval": {
+    "/api/v1/pharma/quotes/pending-approval": {
         parameters: {
             query?: never;
             header?: never;
@@ -2076,7 +2076,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/by-rep/{repId}": {
+    "/api/v1/pharma/quotes/by-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2093,7 +2093,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/quotes/by-account/{accountId}": {
+    "/api/v1/pharma/quotes/by-account/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2110,7 +2110,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products/{id}/batches": {
+    "/api/v1/pharma/products/{id}/batches": {
         parameters: {
             query?: never;
             header?: never;
@@ -2127,7 +2127,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products/search": {
+    "/api/v1/pharma/products/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2144,7 +2144,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products/ndc/{ndcNumber}": {
+    "/api/v1/pharma/products/ndc/{ndcNumber}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2161,7 +2161,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/products/controlled": {
+    "/api/v1/pharma/products/controlled": {
         parameters: {
             query?: never;
             header?: never;
@@ -2178,7 +2178,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/prices/{id}": {
+    "/api/v1/pharma/prices/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2195,7 +2195,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/prices/history/{productId}": {
+    "/api/v1/pharma/prices/history/{productId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2212,7 +2212,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/prices/current": {
+    "/api/v1/pharma/prices/current": {
         parameters: {
             query?: never;
             header?: never;
@@ -2229,7 +2229,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/search": {
+    "/api/v1/pharma/orders/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2246,7 +2246,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/pending-approval": {
+    "/api/v1/pharma/orders/pending-approval": {
         parameters: {
             query?: never;
             header?: never;
@@ -2263,7 +2263,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/orders/by-account/{accountId}": {
+    "/api/v1/pharma/orders/by-account/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2280,7 +2280,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/opportunities/search": {
+    "/api/v1/pharma/opportunities/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2297,7 +2297,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/materials/current": {
+    "/api/v1/pharma/materials/current": {
         parameters: {
             query?: never;
             header?: never;
@@ -2314,7 +2314,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads/search": {
+    "/api/v1/pharma/leads/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2331,7 +2331,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/leads/by-user/{userId}": {
+    "/api/v1/pharma/leads/by-user/{userId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2348,7 +2348,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/invoices/search": {
+    "/api/v1/pharma/invoices/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2365,7 +2365,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/search": {
+    "/api/v1/pharma/contacts/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2382,7 +2382,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/prescribers": {
+    "/api/v1/pharma/contacts/prescribers": {
         parameters: {
             query?: never;
             header?: never;
@@ -2399,7 +2399,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/healthcare-professionals": {
+    "/api/v1/pharma/contacts/healthcare-professionals": {
         parameters: {
             query?: never;
             header?: never;
@@ -2416,7 +2416,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/account/{accountId}": {
+    "/api/v1/pharma/contacts/account/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2433,7 +2433,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/config": {
+    "/api/v1/pharma/config": {
         parameters: {
             query?: never;
             header?: never;
@@ -2450,7 +2450,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/search": {
+    "/api/v1/pharma/coaching/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2467,7 +2467,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/overdue-followups": {
+    "/api/v1/pharma/coaching/overdue-followups": {
         parameters: {
             query?: never;
             header?: never;
@@ -2484,7 +2484,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/by-rep/{repId}": {
+    "/api/v1/pharma/coaching/by-rep/{repId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2501,7 +2501,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/by-rep/{repId}/date-range": {
+    "/api/v1/pharma/coaching/by-rep/{repId}/date-range": {
         parameters: {
             query?: never;
             header?: never;
@@ -2518,7 +2518,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/coaching/by-coach/{coachId}": {
+    "/api/v1/pharma/coaching/by-coach/{coachId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2535,7 +2535,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/search": {
+    "/api/v1/pharma/activities/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2552,7 +2552,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/by-opportunity/{opportunityId}": {
+    "/api/v1/pharma/activities/by-opportunity/{opportunityId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2569,7 +2569,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/by-contact/{contactId}": {
+    "/api/v1/pharma/activities/by-contact/{contactId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2586,7 +2586,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/activities/by-account/{accountId}": {
+    "/api/v1/pharma/activities/by-account/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2603,7 +2603,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/accounts/{id}/territories": {
+    "/api/v1/pharma/accounts/{id}/territories": {
         parameters: {
             query?: never;
             header?: never;
@@ -2620,7 +2620,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/accounts/search": {
+    "/api/v1/pharma/accounts/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2637,7 +2637,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/notifications": {
+    "/api/v1/notifications": {
         parameters: {
             query?: never;
             header?: never;
@@ -2654,7 +2654,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/notifications/all": {
+    "/api/v1/notifications/all": {
         parameters: {
             query?: never;
             header?: never;
@@ -2671,7 +2671,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/core/approval-rules/by-entity-type/{entityType}": {
+    "/api/v1/core/approval-rules/by-entity-type/{entityType}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2688,7 +2688,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/billing/subscription": {
+    "/api/v1/billing/subscription": {
         parameters: {
             query?: never;
             header?: never;
@@ -2705,7 +2705,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/billing/plans": {
+    "/api/v1/billing/plans": {
         parameters: {
             query?: never;
             header?: never;
@@ -2722,7 +2722,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/verify": {
+    "/api/v1/auth/verify": {
         parameters: {
             query?: never;
             header?: never;
@@ -2742,7 +2742,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/me": {
+    "/api/v1/auth/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -2762,7 +2762,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/tenants/{id}/users": {
+    "/api/v1/admin/tenants/{id}/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -2779,7 +2779,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/territories/account-assignments/{assignmentId}": {
+    "/api/v1/pharma/territories/account-assignments/{assignmentId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2796,7 +2796,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pharma/contacts/affiliations/{affiliationId}": {
+    "/api/v1/pharma/contacts/affiliations/{affiliationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -3160,6 +3160,8 @@ export interface components {
             aiGrowthPotential?: string;
             /** Format: date-time */
             createdAt?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             updatedAt?: string;
             createdBy?: components["schemas"]["User"];
@@ -3283,6 +3285,8 @@ export interface components {
             packageSize?: string;
             unitPrice: number;
             status?: string;
+            /** Format: int64 */
+            version?: number;
             controlledSubstance?: boolean;
             deaSchedule?: string;
             requiresRefrigeration?: boolean;
@@ -4028,6 +4032,8 @@ export interface components {
             /** Format: int32 */
             userHcpCount?: number;
             status?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -4084,6 +4090,8 @@ export interface components {
             contactCode?: string;
             status?: string;
             notes?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -4166,6 +4174,8 @@ export interface components {
             isPrivate?: boolean;
             /** Format: date-time */
             createdAt?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             updatedAt?: string;
         };
@@ -4533,6 +4543,8 @@ export interface components {
             relatedOpportunity?: components["schemas"]["PharmaOpportunity"];
             /** Format: date-time */
             createdAt?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             updatedAt?: string;
         };
@@ -4561,6 +4573,8 @@ export interface components {
             leadSource?: string;
             type?: string;
             budgetConfirmed?: boolean;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -4870,21 +4884,21 @@ export interface components {
             sort?: string[];
         };
         PagePharmaFieldVisitResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisitResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -4892,11 +4906,11 @@ export interface components {
             offset?: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            pageNumber?: number;
-            /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
+            /** Format: int32 */
+            pageNumber?: number;
             unpaged?: boolean;
+            paged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -4904,75 +4918,75 @@ export interface components {
             unsorted?: boolean;
         };
         PagePharmaVisitAudit: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageUser: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTerritoryResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritoryResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTeamResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeamResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PipelineSummary: {
@@ -5047,57 +5061,57 @@ export interface components {
             completedCount?: number;
         };
         PageRepTarget: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RepTarget"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaQuoteResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaProduct: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PharmaProductBatch: {
@@ -5131,170 +5145,172 @@ export interface components {
             regulatoryNotes?: string;
             /** Format: date-time */
             createdAt?: string;
+            /** Format: int64 */
+            version?: number;
             /** Format: date-time */
             updatedAt?: string;
             expired?: boolean;
         };
         PagePharmaOrderResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrderResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOpportunityResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaMaterialResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterialResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaLeadResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLeadResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaInvoiceResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoiceResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaContactResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContactResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaCoachingNoteResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaActivityResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaAccountResponse: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccountResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Notification: {
@@ -5317,39 +5333,39 @@ export interface components {
             createdAt?: string;
         };
         PageNotification: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageApprovalRule: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Subscription: {
@@ -8593,6 +8609,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -8606,7 +8623,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaFieldVisitResponse"][];
+                    "*/*": components["schemas"]["PagePharmaFieldVisitResponse"];
                 };
             };
         };
@@ -8869,6 +8886,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -8882,7 +8900,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTerritoryResponse"][];
+                    "*/*": components["schemas"]["PagePharmaTerritoryResponse"];
                 };
             };
         };
@@ -8961,6 +8979,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -8974,7 +8993,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaTeamResponse"][];
+                    "*/*": components["schemas"]["PagePharmaTeamResponse"];
                 };
             };
         };
@@ -9186,6 +9205,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9199,7 +9219,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaQuoteResponse"][];
+                    "*/*": components["schemas"]["PagePharmaQuoteResponse"];
                 };
             };
         };
@@ -9300,6 +9320,7 @@ export interface operations {
         parameters: {
             query: {
                 name: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9313,7 +9334,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"][];
+                    "*/*": components["schemas"]["PagePharmaProduct"];
                 };
             };
         };
@@ -9431,6 +9452,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9444,7 +9466,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaOrderResponse"][];
+                    "*/*": components["schemas"]["PagePharmaOrderResponse"];
                 };
             };
         };
@@ -9495,6 +9517,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9508,7 +9531,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaOpportunityResponse"][];
+                    "*/*": components["schemas"]["PagePharmaOpportunityResponse"];
                 };
             };
         };
@@ -9539,6 +9562,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9552,7 +9576,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaLeadResponse"][];
+                    "*/*": components["schemas"]["PagePharmaLeadResponse"];
                 };
             };
         };
@@ -9585,6 +9609,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9598,7 +9623,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaInvoiceResponse"][];
+                    "*/*": components["schemas"]["PagePharmaInvoiceResponse"];
                 };
             };
         };
@@ -9607,6 +9632,7 @@ export interface operations {
         parameters: {
             query: {
                 name: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9620,7 +9646,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaContactResponse"][];
+                    "*/*": components["schemas"]["PagePharmaContactResponse"];
                 };
             };
         };
@@ -9713,6 +9739,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9726,7 +9753,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaCoachingNoteResponse"][];
+                    "*/*": components["schemas"]["PagePharmaCoachingNoteResponse"];
                 };
             };
         };
@@ -9830,6 +9857,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9843,7 +9871,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaActivityResponse"][];
+                    "*/*": components["schemas"]["PagePharmaActivityResponse"];
                 };
             };
         };
@@ -9946,6 +9974,7 @@ export interface operations {
         parameters: {
             query: {
                 q: string;
+                pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path?: never;
@@ -9959,7 +9988,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaAccountResponse"][];
+                    "*/*": components["schemas"]["PagePharmaAccountResponse"];
                 };
             };
         };

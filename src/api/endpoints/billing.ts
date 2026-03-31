@@ -8,7 +8,7 @@ export function useListPlans() {
     queryKey: ['billing', 'plans'],
     // Uses tenant-facing endpoint — NOT /api/admin/plans (SUPER_ADMIN only)
     queryFn: () =>
-      client.get<PlanResponse[]>('/api/billing/plans').then((r) => r.data),
+      client.get<PlanResponse[]>('/api/v1/billing/plans').then((r) => r.data),
     staleTime: 5 * 60 * 1000, // plans rarely change
   })
 }
@@ -17,7 +17,7 @@ export function useSubscription() {
   return useQuery({
     queryKey: ['billing', 'subscription'],
     queryFn: () =>
-      client.get<BillingSubscription>('/api/billing/subscription')
+      client.get<BillingSubscription>('/api/v1/billing/subscription')
         .then((r) => r.data)
         .catch((err: unknown) => {
           // 404 = no subscription exists yet — return null, not an error
@@ -31,7 +31,7 @@ export function useCreateCheckout() {
   return useMutation({
     mutationFn: (body: CheckoutRequest) =>
       client
-        .post<Record<string, string>>('/api/billing/checkout', body)
+        .post<Record<string, string>>('/api/v1/billing/checkout', body)
         .then((r) => r.data['checkoutUrl'] as string),
   })
 }
@@ -40,7 +40,7 @@ export function useCreatePortal() {
   return useMutation({
     mutationFn: (body: PortalRequest) =>
       client
-        .post<Record<string, string>>('/api/billing/portal', body)
+        .post<Record<string, string>>('/api/v1/billing/portal', body)
         .then((r) => r.data['portalUrl'] as string),
   })
 }

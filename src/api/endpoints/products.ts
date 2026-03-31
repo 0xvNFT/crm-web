@@ -7,7 +7,7 @@ export function useProducts(page = 0, size = 20, filters: Record<string, string>
   return useQuery({
     queryKey: ['products', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
-      client.get<PagePharmaProduct>('/api/pharma/products', { params: { page, size, sort: 'name,asc', ...cleanFilters } }).then((r) => r.data),
+      client.get<PagePharmaProduct>('/api/v1/pharma/products', { params: { page, size, sort: 'name,asc', ...cleanFilters } }).then((r) => r.data),
     placeholderData: (prev) => prev,
   })
 }
@@ -16,7 +16,7 @@ export function useProductSearch(q: string) {
   return useQuery({
     queryKey: ['products', 'search', q],
     queryFn: () =>
-      client.get<PharmaProduct[]>('/api/pharma/products/search', { params: { name: q } }).then((r) => r.data),
+      client.get<PagePharmaProduct>('/api/v1/pharma/products/search', { params: { name: q } }).then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
   })
 }
@@ -25,7 +25,7 @@ export function useProductBatches(productId: string) {
   return useQuery({
     queryKey: ['products', productId, 'batches'],
     queryFn: () =>
-      client.get<PharmaProductBatch[]>(`/api/pharma/products/${productId}/batches`).then((r) => r.data),
+      client.get<PharmaProductBatch[]>(`/api/v1/pharma/products/${productId}/batches`).then((r) => r.data),
     enabled: !!productId,
   })
 }
@@ -34,7 +34,7 @@ export function useCurrentPrice(productId: string, accountId: string) {
   return useQuery({
     queryKey: ['pricing', 'current', productId, accountId],
     queryFn: () =>
-      client.get<number>('/api/pharma/prices/current', { params: { productId, accountId } }).then((r) => r.data),
+      client.get<number>('/api/v1/pharma/prices/current', { params: { productId, accountId } }).then((r) => r.data),
     enabled: !!productId && !!accountId,
   })
 }
@@ -42,7 +42,7 @@ export function useCurrentPrice(productId: string, accountId: string) {
 export function useProduct(id: string) {
   return useQuery({
     queryKey: ['products', id],
-    queryFn: () => client.get<PharmaProduct>(`/api/pharma/products/${id}`).then((r) => r.data),
+    queryFn: () => client.get<PharmaProduct>(`/api/v1/pharma/products/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -51,7 +51,7 @@ export function useCreateProduct() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreateProductRequest) =>
-      client.post<PharmaProduct>('/api/pharma/products', data).then((r) => r.data),
+      client.post<PharmaProduct>('/api/v1/pharma/products', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['products'] }),
   })
 }
@@ -60,7 +60,7 @@ export function useUpdateProduct(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateProductRequest) =>
-      client.put<PharmaProduct>(`/api/pharma/products/${id}`, data).then((r) => r.data),
+      client.put<PharmaProduct>(`/api/v1/pharma/products/${id}`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['products', id] })
       qc.invalidateQueries({ queryKey: ['products', 'list'] })
