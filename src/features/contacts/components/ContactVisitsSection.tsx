@@ -57,7 +57,7 @@ export function ContactVisitsSection({ contactId }: ContactVisitsSectionProps) {
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{visit.visitType ? formatLabel(visit.visitType) : '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{formatDate(visit.scheduledStart)}</td>
                   <td className="px-4 py-3">
-                    {visit.status ? <StatusBadge status={visit.status.toUpperCase()} /> : '—'}
+                    {visit.status ? <StatusBadge status={visit.status} /> : '—'}
                   </td>
                 </tr>
               ))}

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X, Check } from 'lucide-react'
@@ -42,12 +41,9 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
   const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
   const leadSourceOptions = useConfigOptions('contact.leadSource')
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ContactEditFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<ContactEditFormData>({
     resolver: zodResolver(contactEditSchema),
-  })
-
-  useEffect(() => {
-    reset({
+    defaultValues: {
       firstName:              contact.firstName              ?? '',
       lastName:               contact.lastName               ?? '',
       title:                  contact.title                  ?? '',
@@ -76,8 +72,8 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
       consentConfirmedStatus: contact.consentConfirmedStatus ?? undefined,
       consentConfirmedDate:   contact.consentConfirmedDate   ?? '',
       notes:                  contact.notes                  ?? '',
-    })
-  }, [contact, reset])
+    },
+  })
 
   // isManager guard: only managers can edit — callers must enforce this, but belt-and-suspenders check
   if (!isManager) return null
@@ -142,7 +138,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="contactType"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                 <SelectContent>
                   {contactTypeOptions.map((opt) => (
@@ -161,7 +157,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="status"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                 <SelectContent>
                   {contactStatusOptions.map((opt) => (
@@ -180,7 +176,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="customerClass"
             control={control}
             render={({ field }) => (
-              <Select value={field.value || undefined} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                 <SelectContent>
                   {customerClassOptions.map((opt) => (
@@ -196,7 +192,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="adoptionStage"
             control={control}
             render={({ field }) => (
-              <Select value={field.value || undefined} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
                 <SelectContent>
                   {adoptionStageOptions.map((opt) => (
@@ -212,7 +208,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="leadSource"
             control={control}
             render={({ field }) => (
-              <Select value={field.value || undefined} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
                 <SelectContent>
                   {leadSourceOptions.map((opt) => (
@@ -234,7 +230,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             name="consentConfirmedStatus"
             control={control}
             render={({ field }) => (
-              <Select value={field.value ?? ''} onValueChange={field.onChange}>
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                 <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                 <SelectContent>
                   {consentStatusOptions.map((opt) => (

@@ -39,7 +39,7 @@ const columns: Column<PharmaContact>[] = [
   { header: 'Mobile', accessor: (row) => row.mobile ?? row.phone ?? '—' },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={(row.status ?? 'active').toUpperCase()} />,
+    accessor: (row) => <StatusBadge status={row.status ?? 'active'} />,
   },
 ]
 

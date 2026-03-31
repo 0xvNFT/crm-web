@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import React, { useId } from 'react'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
@@ -29,7 +29,13 @@ export function FormRow({ label, required, error, fieldId, children, className }
         {label}
         {required && <span className="ml-0.5 text-destructive">*</span>}
       </Label>
-      {children}
+      {/* Pass aria-describedby to native inputs via cloneElement when an error exists */}
+      {error && fieldId
+        ? React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
+            'aria-describedby': `${id}-error`,
+            'aria-invalid': true,
+          })
+        : children}
       {error && (
         <p id={`${id}-error`} className="text-xs text-destructive" role="alert">
           {error}

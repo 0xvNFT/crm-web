@@ -127,7 +127,7 @@ export default function MaterialDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{material.title}</h1>
-            {material.status && <StatusBadge status={material.status.toUpperCase()} />}
+            {material.status && <StatusBadge status={material.status} />}
             {material.isCurrent && (
               <span className="inline-flex items-center rounded-full bg-green-50 border border-green-200 px-2.5 py-0.5 text-xs font-semibold text-green-700">
                 Current Version

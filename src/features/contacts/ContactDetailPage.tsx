@@ -85,7 +85,7 @@ export default function ContactDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{fullName}</h1>
-            <StatusBadge status={(contact.status ?? 'active').toUpperCase()} />
+            <StatusBadge status={contact.status ?? 'active'} />
             {contact.prescribingAuthority && (
               <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                 <Award className="h-3 w-3" />

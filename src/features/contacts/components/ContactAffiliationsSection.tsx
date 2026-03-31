@@ -41,7 +41,7 @@ function AffiliationRow({
       <div className="space-y-0.5 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium text-foreground truncate">
-            {affiliation.account?.name ?? '—'}
+            {affiliation.accountName ?? '—'}
           </p>
           {affiliation.isPrimaryAffiliation && (
             <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-xs font-semibold text-primary shrink-0">
@@ -87,7 +87,7 @@ function AffiliationRow({
               })
             }
             title="Remove Affiliation?"
-            description={`Remove the affiliation with "${affiliation.account?.name}"? This cannot be undone.`}
+            description={`Remove the affiliation with "${affiliation.accountName}"? This cannot be undone.`}
             confirmLabel="Remove"
             isPending={isPending}
           />

@@ -40,7 +40,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
     resolver: zodResolver(schema) as Resolver<UpdateTeamFormData>,
     defaultValues: isEdit && team ? {
       name:         team.name ?? '',
-      teamType:     team.teamType ?? '',
+      teamType:     team.teamType ?? undefined,
       description:  team.description ?? '',
       emailAddress: team.emailAddress ?? '',
     } : {},
@@ -91,7 +91,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
               name="teamType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type…" />
                   </SelectTrigger>

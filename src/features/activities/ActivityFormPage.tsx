@@ -20,7 +20,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { PharmaActivity } from '@/api/app-types'
+import type { PharmaActivity, CreateActivityRequest, UpdateActivityRequest } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -66,10 +66,10 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
     resolver: zodResolver(activitySchema) as Resolver<ActivityFormData>,
     defaultValues: isEdit && activity ? {
       subject:          activity.subject ?? '',
-      activityType:     activity.activityType ?? '',
-      assignedUserId:   activity.assignedUserId ?? '',
-      status:           activity.status ?? '',
-      priority:         activity.priority ?? '',
+      activityType:     activity.activityType ?? undefined,
+      assignedUserId:   activity.assignedUserId ?? undefined,
+      status:           activity.status ?? undefined,
+      priority:         activity.priority ?? undefined,
       dueDate:          activity.dueDate ?? '',
       durationMinutes:  activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
       outcome:          activity.outcome ?? '',
@@ -87,7 +87,11 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
 
   function onSubmit(data: ActivityFormData) {
     if (isEdit) {
-      updateActivity(data, {
+      // Strip empty strings — backend rejects "" for optional fields
+      const payload: UpdateActivityRequest = Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+      ) as UpdateActivityRequest
+      updateActivity(payload, {
         onSuccess: () => {
           toast('Activity updated', { variant: 'success' })
           navigate(`/activities/${id}`)
@@ -95,7 +99,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createActivity(data, {
+      createActivity(data as CreateActivityRequest, {
         onSuccess: (created) => {
           toast('Activity created', { variant: 'success' })
           navigate(`/activities/${created.id}`)
@@ -127,7 +131,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="activityType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     {activityTypeOptions.map((opt) => (
@@ -143,7 +147,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="status"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                   <SelectContent>
                     {statusOptions.map((opt) => (
@@ -159,7 +163,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="priority"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
                   <SelectContent>
                     {priorityOptions.map((opt) => (
@@ -185,7 +189,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               control={control}
               render={({ field }) => (
                 <Combobox
-                  value={field.value ?? ''}
+                  value={field.value ?? undefined}
                   onChange={field.onChange}
                   options={ownerOptions}
                   selectedOption={selectedOwnerOption}
