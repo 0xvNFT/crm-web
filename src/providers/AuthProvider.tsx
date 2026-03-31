@@ -1,13 +1,11 @@
-import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react'
-import client from '@/api/client'
+import { createContext, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import { useMe } from '@/api/endpoints/auth'
+import { authEvents } from '@/api/authEvents'
+import type { AuthUser } from '@/api/app-types'
 
-export interface AuthUser {
-  userId: string
-  tenantId: string
-  email: string
-  fullName: string
-  roles: string[]
-}
+export type { AuthUser }
 
 interface AuthContextValue {
   user: AuthUser | null
@@ -25,43 +23,46 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const qc = useQueryClient()
+  const navigate = useNavigate()
 
-  // On every app load, restore session by calling /me.
-  // The JWT lives in the httpOnly cookie — JS cannot read it directly.
-  // /me reads the cookie server-side and returns the user info.
+  // H-2: Auth user state managed by React Query — useMe() calls GET /api/v1/auth/me.
+  // useUpdateProfile invalidates ['me'] → this query refetches → user.fullName stays in sync.
+  // staleTime: Infinity means it only refetches when explicitly invalidated, not on every focus.
+  const { data: user = null, isLoading } = useMe()
+
+  // H-3: Listen for 401 events from Axios interceptor and do a soft React Router navigation.
+  // Using a ref for navigate to avoid stale closure issues in the effect.
+  const navigateRef = useRef(navigate)
+  navigateRef.current = navigate
+
   useEffect(() => {
-    client
-      .get<AuthUser>('/api/v1/auth/me')
-      .then((r) => setUser(r.data))
-      .catch((err: unknown) => {
-        // 401 = not logged in. Any other error (network, server) = don't redirect,
-        // keep user null so PrivateRoute handles the redirect.
-        if (
-          err &&
-          typeof err === 'object' &&
-          'response' in err &&
-          (err as { response?: { status?: number } }).response?.status !== 401
-        ) {
-          // Network error — don't clear existing session aggressively
-        }
-        setUser(null)
-      })
-      .finally(() => setIsLoading(false))
-  }, [])
+    return authEvents.onUnauthorized(() => {
+      // Invalidate the ['me'] query so the next render sees null user
+      qc.setQueryData(['me'], null)
+      navigateRef.current('/login', { replace: true })
+    })
+  }, [qc])
 
-  const login = useCallback((data: AuthUser) => {
-    setUser(data)
-  }, [])
+  // login: called after a successful login mutation to update the cache directly
+  const login = useCallback(
+    (data: AuthUser) => {
+      qc.setQueryData(['me'], data)
+    },
+    [qc]
+  )
 
+  // logout: clear server-side cookie then wipe the cache
   const logout = useCallback(async () => {
     try {
+      const { default: client } = await import('@/api/client')
       await client.post('/api/v1/auth/logout')
     } finally {
-      setUser(null)
+      qc.setQueryData(['me'], null)
+      qc.clear()
+      navigateRef.current('/login', { replace: true })
     }
-  }, [])
+  }, [qc])
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>

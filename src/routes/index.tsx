@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
@@ -78,8 +78,7 @@ function Wrap({ children }: { children: React.ReactNode }) {
 
 export function AppRouter() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Wrap><LoginPage /></Wrap>} />
         <Route path="/register" element={<Wrap><RegisterPage /></Wrap>} />
@@ -321,6 +320,5 @@ export function AppRouter() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </BrowserRouter>
   )
 }

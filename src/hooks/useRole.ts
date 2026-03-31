@@ -1,4 +1,5 @@
 import { useAuth } from '@/hooks/useAuth'
+import type { Role } from '@/api/app-types'
 
 /**
  * Role hierarchy: ADMIN > MANAGER > REP
@@ -11,10 +12,11 @@ import { useAuth } from '@/hooks/useAuth'
  */
 export function useRole() {
   const { user } = useAuth()
-  const roles = user?.roles ?? []
+  const roles: Role[] = user?.roles ?? []
 
   const isAdmin = roles.includes('ADMIN')
   const isManager = roles.includes('MANAGER') || isAdmin
+  // isRep must check !!user — never use !isManager (that's true for logged-out users too)
   const isRep = !!user && roles.includes('FIELD_REP')
 
   return { isAdmin, isManager, isRep }
