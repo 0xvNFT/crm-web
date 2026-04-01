@@ -5,6 +5,7 @@ import { useTeam, useTeamMembers, useDeactivateTeam, useReactivateTeam, useAddTe
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -81,7 +82,7 @@ export default function TeamDetailPage() {
   const { mutate: addMember, isPending: isAddingMember } = useAddTeamMember(id ?? '')
   const { mutate: removeMember, isPending: isRemovingMember } = useRemoveTeamMember(id ?? '')
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !team) return <ErrorMessage message="Team not found." />
 
   function handleSelectUser(user: TenantUserSummary) {

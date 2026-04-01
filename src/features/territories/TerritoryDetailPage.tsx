@@ -9,6 +9,7 @@ import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -93,7 +94,7 @@ export default function TerritoryDetailPage() {
     resolver: zodResolver(updateTerritorySchema),
   })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !territory) return <ErrorMessage message="Territory not found." />
 
   function startEdit() {

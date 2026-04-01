@@ -6,7 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, Trash2 } from 'lucide-react'
 import { useContact, useDeleteContact } from '@/api/endpoints/contacts'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -57,7 +57,7 @@ export default function ContactDetailPage() {
   const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
   const { isManager } = useRole()
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !contact) return <ErrorMessage message="Contact not found." />
 
   const fullName = [contact.salutation, contact.firstName, contact.middleName, contact.lastName]

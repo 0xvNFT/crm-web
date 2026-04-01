@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useOpportunity, useUpdateOpportunity, useAdvanceOpportunityStage } from '@/api/endpoints/opportunities'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -96,7 +96,7 @@ export default function OpportunityDetailPage() {
   const { register, handleSubmit, reset, control, formState: { errors } } =
     useForm<OpportunityEditFormData>({ resolver: zodResolver(opportunityEditSchema) })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !opp) return <ErrorMessage message="Opportunity not found." />
 
 

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, Globe, Phone, Mail, Building2, Trash2 } from 'lucide-react'
 import { useAccount, useDeleteAccount } from '@/api/endpoints/accounts'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -54,7 +54,7 @@ export default function AccountDetailPage() {
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
   const { isManager } = useRole()
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !account) return <ErrorMessage message="Account not found." />
 
   return (

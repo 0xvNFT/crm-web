@@ -7,7 +7,7 @@ import { Pagination } from '@/components/shared/Pagination'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaMaterial } from '@/api/app-types'
@@ -40,7 +40,7 @@ export default function MaterialListPage() {
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (

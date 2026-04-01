@@ -5,6 +5,7 @@ const NotFoundPage = lazy(() => import('@/features/errors/NotFoundPage'))
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
+// import { Skeleton } from '@/components/ui/skeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
 // Auth pages
@@ -75,6 +76,7 @@ const MaterialDetailPage = lazy(() => import('@/features/materials/MaterialDetai
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
+  // return <Suspense fallback={< Skeleton />}>{children}</Suspense>
   return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 }
 

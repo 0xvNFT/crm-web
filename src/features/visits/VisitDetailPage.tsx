@@ -4,7 +4,7 @@ import { ArrowLeft, MapPin, Clock, User, CheckCircle, XCircle, LogIn, LogOut, Se
 import { useVisit, useSubmitVisit, useApproveVisit, useCheckInVisit } from '@/api/endpoints/visits'
 import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -64,7 +64,7 @@ export default function VisitDetailPage() {
   const [showCheckIn, setShowCheckIn] = useState(false)
   const [showCheckOut, setShowCheckOut] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !visit) return <ErrorMessage />
 
   const status = visit.status?.toUpperCase() ?? ''

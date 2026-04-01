@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Mail, Phone, Pencil } from 'lucide-react'
 import { useLead, useConvertLead, useUpdateLead } from '@/api/endpoints/leads'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -47,7 +47,7 @@ export default function LeadDetailPage() {
   const [showConvert, setShowConvert] = useState(false)
   const [showClose, setShowClose] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !lead) return <ErrorMessage message="Lead not found." />
 
   const leadName = `${lead.firstName ?? ''} ${lead.lastName}`.trim()

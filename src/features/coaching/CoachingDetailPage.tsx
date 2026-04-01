@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, CheckCircle } from 'lucide-react'
 import { useCoachingNote, useCompleteFollowUp } from '@/api/endpoints/coaching'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -44,7 +44,7 @@ export default function CoachingDetailPage() {
   const { data: note, isLoading, isError } = useCoachingNote(id ?? '')
   const { mutate: completeFollowUp, isPending: isCompleting } = useCompleteFollowUp(id ?? '')
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !note) return <ErrorMessage message="Coaching note not found." />
 
   const followUpPending = note.followUpRequired && !note.followUpCompleted

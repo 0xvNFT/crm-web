@@ -4,7 +4,7 @@ import { ArrowLeft, Pencil, FileText } from 'lucide-react'
 import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -48,7 +48,7 @@ export default function OrderDetailPage() {
   const [showReject, setShowReject] = useState(false)
   const [showGenerateInvoice, setShowGenerateInvoice] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !order) return <ErrorMessage message="Order not found." />
 
   const isPending = order.status === 'pending' || order.status === 'submitted'

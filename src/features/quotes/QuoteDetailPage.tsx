@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, RefreshCw } from 'lucide-react'
 import { useQuote, useApproveQuote, useRejectQuote, useConvertQuote } from '@/api/endpoints/quotes'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -51,7 +51,7 @@ export default function QuoteDetailPage() {
   const [showReject, setShowReject] = useState(false)
   const [showConvert, setShowConvert] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
 
   const isSubmitted = quote.status === 'submitted' || quote.status === 'pending'

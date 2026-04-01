@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMaterial, useUpdateMaterial, useApproveMaterial, useArchiveMaterial } from '@/api/endpoints/materials'
 import type { UpdateMaterialRequest } from '@/api/app-types'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -60,7 +60,7 @@ export default function MaterialDetailPage() {
     resolver: zodResolver(materialEditSchema),
   })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !material) return <ErrorMessage message="Material not found." />
 
   const status = material.status?.toLowerCase() ?? ''
