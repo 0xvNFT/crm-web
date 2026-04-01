@@ -15,6 +15,8 @@ import { toast } from '@/hooks/useToast'
 import { VisitEditForm } from './components/VisitEditForm'
 import { VisitRejectDialog } from './components/VisitRejectDialog'
 import { VisitCheckOutDialog } from './components/VisitCheckOutDialog'
+import { VisitProductsSection } from './components/VisitProductsSection'
+import { VisitMaterialsSection } from './components/VisitMaterialsSection'
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -298,6 +300,9 @@ export default function VisitDetailPage() {
               <p className="text-sm text-foreground whitespace-pre-wrap">{visit.notes}</p>
             </DetailSection>
           )}
+
+          <VisitProductsSection visitId={id ?? ''} visit={visit} />
+          <VisitMaterialsSection visitId={id ?? ''} visit={visit} />
         </>
       )}
 
