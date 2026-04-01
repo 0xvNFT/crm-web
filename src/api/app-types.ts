@@ -38,6 +38,17 @@ export type PharmaVisitAudit         = components['schemas']['PharmaVisitAudit']
 export type PharmaAccountTerritory   = components['schemas']['PharmaAccountTerritoryResponse']
 export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliationResponse']
 export type LeadConversionResult     = components['schemas']['LeadConversionResult']
+
+// ─── Territory lifecycle types ────────────────────────────────────────────────
+export type SecondaryRepInfo         = components['schemas']['SecondaryRepInfo']
+export type ProductFocusInfo         = components['schemas']['ProductFocusInfo']
+export type AddProductFocusRequest   = components['schemas']['AddProductFocusRequest']
+
+// ─── Visit lifecycle types ────────────────────────────────────────────────────
+export type VisitProductInfo         = components['schemas']['VisitProductInfo']
+export type VisitMaterialInfo        = components['schemas']['VisitMaterialInfo']
+export type AddVisitProductRequest   = components['schemas']['AddVisitProductRequest']
+export type AddVisitMaterialRequest  = components['schemas']['AddVisitMaterialRequest']
 export type User                     = components['schemas']['User']
 export type Notification             = components['schemas']['Notification']
 export type TenantUserSummary        = components['schemas']['TenantUserSummary']
