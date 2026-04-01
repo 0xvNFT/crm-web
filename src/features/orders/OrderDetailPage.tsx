@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, FileText } from 'lucide-react'
+import { ArrowLeft, Pencil, FileText, FileCheck2 } from 'lucide-react'
 import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -106,6 +106,20 @@ export default function OrderDetailPage() {
         <DetailRow label="Status"        value={order.status ? <StatusBadge status={order.status} /> : '—'} />
         <DetailRow label="Order Date"    value={order.orderDate ? formatDate(order.orderDate) : null} />
         <DetailRow label="Delivery Date" value={order.deliveryDate ? formatDate(order.deliveryDate) : null} />
+        {order.sourceQuoteId && (
+          <DetailRow
+            label="Source Quote"
+            value={
+              <button
+                className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                onClick={() => navigate(`/quotes/${order.sourceQuoteId}`)}
+              >
+                <FileCheck2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                {order.sourceQuoteNumber ?? 'View Quote'}
+              </button>
+            }
+          />
+        )}
         {order.notes && <DetailRow label="Notes" value={order.notes} />}
       </Section>
 
