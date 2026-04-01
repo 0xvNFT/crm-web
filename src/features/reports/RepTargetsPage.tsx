@@ -19,17 +19,8 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { useRole } from '@/hooks/useRole'
+import { CURRENT_YEAR, CURRENT_MONTH, MONTHS } from './components/kpi-constants'
 import type { RepTarget } from '@/api/app-types'
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const CURRENT_YEAR = new Date().getFullYear()
-const CURRENT_MONTH = new Date().getMonth() + 1
-
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
 
 // ─── Form ─────────────────────────────────────────────────────────────────────
 

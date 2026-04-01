@@ -1,5 +1,6 @@
 import { formatLabel } from '@/utils/formatters'
-import { KpiBadge, CALL_RATE_TARGET, COMPLIANCE_TARGET, REACH_TARGET } from './KpiShared'
+import { KpiBadge } from './KpiShared'
+import { CALL_RATE_TARGET, COMPLIANCE_TARGET, REACH_TARGET } from './kpi-constants'
 import type {
   KpiCallSummaryRow,
   KpiActivitySummaryRow,
