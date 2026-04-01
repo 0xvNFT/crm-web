@@ -9,7 +9,7 @@ import {
 } from '@/api/endpoints/invoices'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -54,7 +54,7 @@ export default function InvoiceDetailPage() {
   const [showPay,  setShowPay]    = useState(false)
   const [showVoid, setShowVoid]   = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !invoice) return <ErrorMessage message="Invoice not found." />
 
   const status   = invoice.status ?? 'draft'
