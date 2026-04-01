@@ -4,6 +4,8 @@ import { ArrowLeft, Pencil, X, Check, Building2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTerritory, useUpdateTerritory, useTerritoryAccounts } from '@/api/endpoints/territories'
+import { TerritorySecondaryRepsSection } from './components/TerritorySecondaryRepsSection'
+import { TerritoryProductFocusSection } from './components/TerritoryProductFocusSection'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
@@ -217,6 +219,9 @@ export default function TerritoryDetailPage() {
               />
             )}
           </div>
+
+          <TerritorySecondaryRepsSection territoryId={id ?? ''} />
+          <TerritoryProductFocusSection territoryId={id ?? ''} />
         </div>
       )}
 

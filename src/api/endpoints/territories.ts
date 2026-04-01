@@ -6,6 +6,9 @@ import type {
   PharmaAccountTerritory,
   CreateTerritoryRequest,
   UpdateTerritoryRequest,
+  SecondaryRepInfo,
+  ProductFocusInfo,
+  AddProductFocusRequest,
 } from '@/api/app-types'
 
 export function useTerritories(page = 0, size = 20, filters: Record<string, string> = {}) {
@@ -52,6 +55,74 @@ export function useTerritoryAccounts(id: string) {
     enabled: !!id,
   })
 }
+
+// ─── Secondary Reps ───────────────────────────────────────────────────────────
+
+export function useTerritorySecondaryReps(id: string) {
+  return useQuery({
+    queryKey: ['territories', id, 'secondary-reps'],
+    queryFn: () =>
+      client
+        .get<SecondaryRepInfo[]>(`/api/v1/pharma/territories/${id}/secondary-reps`)
+        .then((r) => r.data),
+    enabled: !!id,
+  })
+}
+
+export function useAddSecondaryRep(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (userId: string) =>
+      client
+        .post<SecondaryRepInfo>(`/api/v1/pharma/territories/${territoryId}/secondary-reps/${userId}`)
+        .then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'secondary-reps'] }),
+  })
+}
+
+export function useRemoveSecondaryRep(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (userId: string) =>
+      client.delete(`/api/v1/pharma/territories/${territoryId}/secondary-reps/${userId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'secondary-reps'] }),
+  })
+}
+
+// ─── Product Focus ────────────────────────────────────────────────────────────
+
+export function useTerritoryProductFocus(id: string) {
+  return useQuery({
+    queryKey: ['territories', id, 'products'],
+    queryFn: () =>
+      client
+        .get<ProductFocusInfo[]>(`/api/v1/pharma/territories/${id}/products`)
+        .then((r) => r.data),
+    enabled: !!id,
+  })
+}
+
+export function useAddProductFocus(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddProductFocusRequest) =>
+      client
+        .post<ProductFocusInfo>(`/api/v1/pharma/territories/${territoryId}/products`, data)
+        .then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'products'] }),
+  })
+}
+
+export function useRemoveProductFocus(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (productId: string) =>
+      client.delete(`/api/v1/pharma/territories/${territoryId}/products/${productId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'products'] }),
+  })
+}
+
+// ─── CRUD ─────────────────────────────────────────────────────────────────────
 
 export function useCreateTerritory() {
   const qc = useQueryClient()
