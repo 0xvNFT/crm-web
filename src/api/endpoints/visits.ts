@@ -8,6 +8,10 @@ import type {
   CheckInRequest,
   CheckOutRequest,
   SignatureRequest,
+  VisitProductInfo,
+  VisitMaterialInfo,
+  AddVisitProductRequest,
+  AddVisitMaterialRequest,
 } from '@/api/app-types'
 
 // ─── Queries ───────────────────────────────────────────────────────────────────
@@ -171,6 +175,66 @@ export function useCheckOutVisit() {
     onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
   })
 }
+
+// ─── Visit Products ───────────────────────────────────────────────────────────
+
+export function useVisitProducts(visitId: string) {
+  return useQuery({
+    queryKey: ['visits', visitId, 'products'],
+    queryFn: () =>
+      client.get<VisitProductInfo[]>(`/api/v1/pharma/visits/${visitId}/products`).then((r) => r.data),
+    enabled: !!visitId,
+  })
+}
+
+export function useAddVisitProduct(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddVisitProductRequest) =>
+      client.post<VisitProductInfo>(`/api/v1/pharma/visits/${visitId}/products`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'products'] }),
+  })
+}
+
+export function useRemoveVisitProduct(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (productId: string) =>
+      client.delete(`/api/v1/pharma/visits/${visitId}/products/${productId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'products'] }),
+  })
+}
+
+// ─── Visit Materials ──────────────────────────────────────────────────────────
+
+export function useVisitMaterials(visitId: string) {
+  return useQuery({
+    queryKey: ['visits', visitId, 'materials'],
+    queryFn: () =>
+      client.get<VisitMaterialInfo[]>(`/api/v1/pharma/visits/${visitId}/materials`).then((r) => r.data),
+    enabled: !!visitId,
+  })
+}
+
+export function useAddVisitMaterial(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddVisitMaterialRequest) =>
+      client.post<VisitMaterialInfo>(`/api/v1/pharma/visits/${visitId}/materials`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'materials'] }),
+  })
+}
+
+export function useRemoveVisitMaterial(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (materialId: string) =>
+      client.delete(`/api/v1/pharma/visits/${visitId}/materials/${materialId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'materials'] }),
+  })
+}
+
+// ─── Signature ────────────────────────────────────────────────────────────────
 
 export function useCaptureSignature() {
   const qc = useQueryClient()

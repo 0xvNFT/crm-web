@@ -16,6 +16,18 @@ export function useMaterials(page = 0, size = 20, filters: Record<string, string
   })
 }
 
+export function useMaterialSearch(q: string) {
+  return useQuery({
+    queryKey: ['materials', 'search', q],
+    queryFn: ({ signal }) =>
+      client
+        .get<PagePharmaMaterial>('/api/v1/pharma/materials', { params: { title: q, size: 20 }, signal })
+        .then((r) => r.data.content ?? []),
+    enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useMaterial(id: string) {
   return useQuery({
     queryKey: ['materials', id],
