@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, Phone, Pencil } from 'lucide-react'
-import { useLead, useConvertLead, useUpdateLead } from '@/api/endpoints/leads'
+import { ArrowLeft, Mail, Phone, Pencil, User } from 'lucide-react'
+import { useLead, useUpdateLead } from '@/api/endpoints/leads'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -11,6 +11,7 @@ import { toast } from '@/hooks/useToast'
 import { useRole } from '@/hooks/useRole'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
+import { LeadConvertDialog } from './components/LeadConvertDialog'
 
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -42,7 +43,6 @@ export default function LeadDetailPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
   const { data: lead, isLoading, isError } = useLead(id ?? '')
-  const { mutate: convertLead, isPending: isConverting } = useConvertLead()
   const { mutate: updateLead, isPending: isClosing } = useUpdateLead(id ?? '')
   const [showConvert, setShowConvert] = useState(false)
   const [showClose, setShowClose] = useState(false)
@@ -125,6 +125,18 @@ export default function LeadDetailPage() {
       <DetailSection title="Qualification">
         <DetailField label="Converted" value={lead.isConverted} />
         <DetailField label="Converted Date" value={lead.convertedDate ? formatDate(lead.convertedDate) : null} />
+        {lead.relatedContactId && (
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium text-muted-foreground">Related Contact</p>
+            <button
+              className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+              onClick={() => navigate(`/contacts/${lead.relatedContactId}`)}
+            >
+              <User className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {lead.relatedContactName ?? 'View Contact'}
+            </button>
+          </div>
+        )}
       </DetailSection>
 
       <DetailSection title="Timestamps">
@@ -156,28 +168,10 @@ export default function LeadDetailPage() {
         isPending={isClosing}
       />
 
-      <ConfirmDialog
+      <LeadConvertDialog
         open={showConvert}
-        onCancel={() => setShowConvert(false)}
-        onConfirm={() =>
-          convertLead(
-            { id: id ?? '', data: {} },
-            {
-              onSuccess: () => {
-                toast('Lead converted successfully', { variant: 'success' })
-                setShowConvert(false)
-              },
-              onError: (err) => {
-                toast(parseApiError(err), { variant: 'destructive' })
-                setShowConvert(false)
-              },
-            }
-          )
-        }
-        title="Convert Lead?"
-        description="This will convert the lead into an account and opportunity. This action cannot be undone."
-        confirmLabel="Convert"
-        isPending={isConverting}
+        leadId={id ?? ''}
+        onClose={() => setShowConvert(false)}
       />
     </div>
   )
