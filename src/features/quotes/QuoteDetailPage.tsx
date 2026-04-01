@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Pencil, RefreshCw, TrendingUp } from 'lucide-react'
 import { useQuote, useApproveQuote, useRejectQuote, useConvertQuote } from '@/api/endpoints/quotes'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
@@ -106,6 +106,18 @@ export default function QuoteDetailPage() {
         <DetailField label="Status"       value={quote.status} />
         <DetailField label="Valid From"   value={quote.validFrom ? formatDate(quote.validFrom) : null} />
         <DetailField label="Valid Until"  value={quote.validUntil ? formatDate(quote.validUntil) : null} />
+        {quote.opportunityId && (
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium text-muted-foreground">Opportunity</p>
+            <button
+              className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+              onClick={() => navigate(`/opportunities/${quote.opportunityId}`)}
+            >
+              <TrendingUp className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {quote.opportunityName ?? 'View Opportunity'}
+            </button>
+          </div>
+        )}
       </DetailSection>
 
       <DetailSection title="Account">
