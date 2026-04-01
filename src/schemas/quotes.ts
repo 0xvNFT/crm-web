@@ -10,6 +10,7 @@ export const quoteItemSchema = z.object({
 export const quoteSchema = z.object({
   accountId: z.string().min(1, 'Account is required'),
   contactId: z.string().optional(),
+  opportunityId: z.string().optional(),
   validFrom: z.string().min(1, 'Valid from date is required'),
   validUntil: z.string().min(1, 'Valid until date is required'),
   items: z.array(quoteItemSchema).min(1, 'At least one item is required'),
