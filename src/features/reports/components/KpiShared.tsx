@@ -1,21 +1,6 @@
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-export const CALL_RATE_TARGET = 90
-export const COMPLIANCE_TARGET = 85
-export const REACH_TARGET = 90
-
-export const CURRENT_YEAR = new Date().getFullYear()
-export const CURRENT_MONTH = new Date().getMonth() + 1
-
-export const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
-
-export const QUARTERS = ['Q1 (Jan–Mar)', 'Q2 (Apr–Jun)', 'Q3 (Jul–Sep)', 'Q4 (Oct–Dec)']
+import { CURRENT_YEAR, MONTHS, QUARTERS } from './kpi-constants'
 
 // ─── KPI indicator ────────────────────────────────────────────────────────────
 

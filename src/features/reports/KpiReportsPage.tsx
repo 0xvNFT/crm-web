@@ -10,7 +10,8 @@ import {
 import { useRole } from '@/hooks/useRole'
 import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { KpiSection, PeriodSelector, CURRENT_YEAR, CURRENT_MONTH, QUARTERS } from './components/KpiShared'
+import { KpiSection, PeriodSelector } from './components/KpiShared'
+import { CURRENT_YEAR, CURRENT_MONTH, QUARTERS } from './components/kpi-constants'
 import { CallSummaryTable, ActivitySummaryTable, DoctorCoverageTable, TerritoryPerformanceTable } from './components/KpiTables'
 
 export default function KpiReportsPage() {
