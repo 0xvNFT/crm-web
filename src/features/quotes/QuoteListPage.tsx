@@ -4,6 +4,8 @@ import { FileText } from 'lucide-react'
 import { useQuotes, useQuoteSearch } from '@/api/endpoints/quotes'
 import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
@@ -22,7 +24,7 @@ const QUOTE_FILTERS: FilterDef[] = [
 
 const FILTER_KEYS = ['status']
 
-const columns: Column<PharmaQuote>[] = [
+const ALL_COLUMNS: Column<PharmaQuote>[] = [
   { header: 'Quote #', accessor: (row) => row.quoteNumber ?? '—' },
   { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   {
@@ -33,12 +35,16 @@ const columns: Column<PharmaQuote>[] = [
     header: 'Total',
     accessor: (row) => row.totalAmount != null ? formatCurrency(row.totalAmount) : '—',
   },
+  { header: 'Assigned Rep', accessor: (row) => row.assignedRepName ?? '—' },
   { header: 'Valid From', accessor: (row) => row.validFrom ? formatDate(row.validFrom) : '—' },
   { header: 'Created', accessor: (row) => row.createdAt ? formatDate(row.createdAt) : '—' },
 ]
 
 export default function QuoteListPage() {
   const navigate = useNavigate()
+  const { isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Quotes')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Assigned Rep')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -65,7 +71,7 @@ export default function QuoteListPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Quotes"
+        title={title}
         description="Sales quotes and proposals"
         actions={<Button onClick={() => navigate('/quotes/new')}>New Quote</Button>}
       />
@@ -89,7 +95,7 @@ export default function QuoteListPage() {
         onRowClick={(row) => navigate(`/quotes/${row.id}`)}
         empty={isSearching
           ? { icon: FileText, title: `No quotes found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: FileText, title: 'No quotes yet', description: 'Quotes will appear here once created.' }
+          : { icon: FileText, title: emptyTitle, description: emptyDescription }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
