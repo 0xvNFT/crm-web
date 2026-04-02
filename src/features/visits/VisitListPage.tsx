@@ -5,6 +5,7 @@ import { useVisits, useVisitSearch } from '@/api/endpoints/visits'
 import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
@@ -24,7 +25,7 @@ const VISIT_FILTERS: FilterDef[] = [
 
 const FILTER_KEYS = ['visitType', 'status']
 
-const columns: Column<PharmaFieldVisit>[] = [
+const ALL_COLUMNS: Column<PharmaFieldVisit>[] = [
   { header: 'Visit #', accessor: 'visitNumber', sortable: true },
   {
     header: 'Subject',
@@ -51,7 +52,9 @@ const columns: Column<PharmaFieldVisit>[] = [
 
 export default function VisitListPage() {
   const navigate = useNavigate()
-  const { isRep } = useRole()
+  const { isRep, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Visits')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Rep')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -78,7 +81,7 @@ export default function VisitListPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Visits"
+        title={title}
         description="Field visit records and check-in/check-out activity"
         actions={
           isRep ? (
@@ -119,8 +122,8 @@ export default function VisitListPage() {
               }
             : {
                 icon: MapPin,
-                title: 'No visits yet',
-                description: 'Schedule your first field visit to get started.',
+                title: emptyTitle,
+                description: emptyDescription,
                 // action: isRep ? (
                 //   <Button size="sm" onClick={() => navigate('/visits/new')}>
                 //     <Plus className="h-4 w-4 mr-1.5" />

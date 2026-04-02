@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useListParams } from '@/hooks/useListParams'
 import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import type { PharmaOpportunity } from '@/api/app-types'
 
@@ -24,7 +25,7 @@ const OPPORTUNITY_FILTERS: FilterDef[] = [
 
 const FILTER_KEYS = ['status', 'salesStage']
 
-const columns: Column<PharmaOpportunity>[] = [
+const ALL_COLUMNS: Column<PharmaOpportunity>[] = [
   { header: 'Topic',    accessor: 'topic', sortable: true },
   { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
   { header: 'Stage',    accessor: (row) => row.salesStage ? formatLabel(row.salesStage) : '—' },
@@ -39,7 +40,9 @@ export default function OpportunityListPage() {
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const { isReadOnly } = useRole()
+  const { isReadOnly, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Opportunities')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -62,7 +65,7 @@ export default function OpportunityListPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Opportunities"
+        title={title}
         description="Track your pipeline and close deals"
         actions={
           !isReadOnly ? (
@@ -95,17 +98,10 @@ export default function OpportunityListPage() {
         columns={columns}
         data={opportunities}
         onRowClick={(row) => navigate(`/opportunities/${row.id}`)}
-        empty={{
-          icon: TrendingUp,
-          title: isSearching ? `No opportunities found for "${debouncedQuery}"` : 'No opportunities yet',
-          description: isSearching ? undefined : 'Create your first opportunity to start tracking pipeline.',
-          // action: isManager ? (
-          //   <Button size="sm" onClick={() => navigate('/opportunities/new')}>
-          //     <Plus className="h-4 w-4 mr-1.5" />
-          //     New Opportunity
-          //   </Button>
-          // ) : undefined,
-        }}
+        empty={isSearching
+          ? { icon: TrendingUp, title: `No opportunities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: TrendingUp, title: emptyTitle, description: emptyDescription }
+        }
       />
 
       {!isSearching && (

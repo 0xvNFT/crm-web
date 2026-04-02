@@ -5,6 +5,7 @@ import { useActivities, useActivitySearch } from '@/api/endpoints/activities'
 import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
@@ -31,7 +32,7 @@ const ACTIVITY_FILTERS: FilterDef[] = [
 
 const FILTER_KEYS = ['activityType', 'status']
 
-const columns: Column<ActivityRow>[] = [
+const ALL_COLUMNS: Column<ActivityRow>[] = [
   {
     header: 'Subject',
     accessor: (row) => (
@@ -50,6 +51,10 @@ const columns: Column<ActivityRow>[] = [
     accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} />,
   },
   {
+    header: 'Assigned To',
+    accessor: (row) => row.assignedUserName ?? '—',
+  },
+  {
     header: 'Due Date',
     accessor: (row) => (row.dueDate ? formatDate(row.dueDate) : '—'),
   },
@@ -65,7 +70,9 @@ const columns: Column<ActivityRow>[] = [
 
 export default function ActivityListPage() {
   const navigate = useNavigate()
-  const { isReadOnly } = useRole()
+  const { isReadOnly, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Activities')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Assigned To')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -95,7 +102,7 @@ export default function ActivityListPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Activities"
+        title={title}
         description="Manage pharma activities, calls, and meetings"
         actions={!isReadOnly ? (
           <Button size="sm" onClick={() => navigate('/activities/new')}>
@@ -127,7 +134,7 @@ export default function ActivityListPage() {
         onRowClick={(row) => navigate(`/activities/${row.id}`)}
         empty={isSearching
           ? { icon: Calendar, title: `No activities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Calendar, title: 'No activities yet', description: 'No activities have been recorded yet.' }
+          : { icon: Calendar, title: emptyTitle, description: emptyDescription }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />

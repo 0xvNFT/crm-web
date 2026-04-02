@@ -13,6 +13,8 @@ import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useListParams } from '@/hooks/useListParams'
+import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaLead } from '@/api/app-types'
 
@@ -23,7 +25,7 @@ const LEAD_FILTERS: FilterDef[] = [
 
 const FILTER_KEYS = ['leadStatus', 'rating']
 
-const columns: Column<PharmaLead>[] = [
+const ALL_COLUMNS: Column<PharmaLead>[] = [
   { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
   { header: 'Company', accessor: (row) => row.companyName },
   { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'UNKNOWN'} /> },
@@ -34,7 +36,10 @@ const columns: Column<PharmaLead>[] = [
 
 export default function LeadListPage() {
   const navigate = useNavigate()
+  const { isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Leads')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
 
@@ -61,7 +66,7 @@ export default function LeadListPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <PageHeader
-          title="Leads"
+          title={title}
           description="Potential customers and prospects"
         />
         <Button onClick={() => navigate('/leads/new')}>
@@ -89,7 +94,7 @@ export default function LeadListPage() {
         onRowClick={(row) => navigate(`/leads/${row.id}`)}
         empty={isSearching
           ? { icon: Users, title: `No leads found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Users, title: 'No leads yet', description: 'No leads have been added yet.' }
+          : { icon: Users, title: emptyTitle, description: emptyDescription }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />
