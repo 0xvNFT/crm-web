@@ -38,7 +38,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function CoachingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const [showComplete, setShowComplete] = useState(false)
 
   const { data: note, isLoading, isError } = useCoachingNote(id ?? '')
@@ -81,7 +81,7 @@ export default function CoachingDetailPage() {
           </div>
         </div>
 
-        {isManager && (
+        {isManager && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             {followUpPending && (
               <Button size="sm" variant="outline" onClick={() => setShowComplete(true)}>

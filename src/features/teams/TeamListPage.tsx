@@ -47,7 +47,7 @@ const columns: Column<PharmaTeam>[] = [
 
 export default function TeamListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -77,7 +77,7 @@ export default function TeamListPage() {
         title="Teams"
         description="Manage your field force teams"
         actions={
-          isManager ? (
+          isManager && !isReadOnly ? (
             <Button size="sm" onClick={() => navigate('/teams/new')}>
               <Plus className="h-4 w-4 mr-1.5" />
               New Team

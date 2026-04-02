@@ -62,7 +62,7 @@ export default function TerritoryDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const [repQuery, setRepQuery] = useState('')
   const [managerQuery, setManagerQuery] = useState('')
@@ -158,7 +158,7 @@ export default function TerritoryDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && isManager && !isReadOnly && (
           <Button variant="outline" size="sm" onClick={startEdit}>
             <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit

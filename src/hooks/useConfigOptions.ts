@@ -14,5 +14,11 @@ function toLabel(value: string): string {
 export function useConfigOptions(key: string): ConfigOption[] {
   const { data } = useConfig()
   const values = data?.[key] ?? []
-  return values.map((v) => ({ value: v, label: toLabel(v) }))
+  // Prefer parallel label array (e.g. "user.role.label") when available.
+  // Backend provides index-matched labels for keys where auto-generated labels are wrong.
+  const labels = data?.[`${key}.label`]
+  return values.map((v, i) => ({
+    value: v,
+    label: labels?.[i] ?? toLabel(v),
+  }))
 }

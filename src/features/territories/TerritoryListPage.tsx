@@ -45,7 +45,7 @@ const columns: Column<PharmaTerritory>[] = [
 
 export default function TerritoryListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -75,7 +75,7 @@ export default function TerritoryListPage() {
         title="Territories"
         description="Manage your sales territories and assignments"
         actions={
-          isManager ? (
+          isManager && !isReadOnly ? (
             <Button size="sm" onClick={() => navigate('/territories/new')}>
               <Plus className="h-4 w-4 mr-1.5" />
               New Territory

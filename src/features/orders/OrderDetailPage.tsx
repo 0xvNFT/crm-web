@@ -37,7 +37,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const { data: order, isLoading, isError } = useOrder(id ?? '')
   const { mutate: approveOrder, isPending: isApproving } = useApproveOrder(id ?? '')
@@ -52,9 +52,9 @@ export default function OrderDetailPage() {
   if (isError || !order) return <ErrorMessage message="Order not found." />
 
   const isPending = order.status === 'pending' || order.status === 'submitted'
-  const canAct = isManager && isPending
-  const canEdit = order.status === 'draft' || order.status === 'pending'
-  const canGenerateInvoice = isManager && (
+  const canAct = isManager && isPending && !isReadOnly
+  const canEdit = (order.status === 'draft' || order.status === 'pending') && !isReadOnly
+  const canGenerateInvoice = isManager && !isReadOnly && (
     order.status === 'processing' || order.approvalStatus === 'approved'
   )
 

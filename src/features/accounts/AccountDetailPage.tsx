@@ -52,7 +52,7 @@ export default function AccountDetailPage() {
 
   const { data: account, isLoading, isError } = useAccount(id ?? '')
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !account) return <ErrorMessage message="Account not found." />
@@ -92,16 +92,18 @@ export default function AccountDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
               Edit
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
-              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-              Delete
-            </Button>
+            {isManager && (
+              <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                Delete
+              </Button>
+            )}
           </div>
         )}
       </div>

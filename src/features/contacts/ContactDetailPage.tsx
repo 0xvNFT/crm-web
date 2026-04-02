@@ -55,7 +55,7 @@ export default function ContactDetailPage() {
 
   const { data: contact, isLoading, isError } = useContact(id ?? '')
   const { mutate: deleteContact, isPending: isDeleting } = useDeleteContact()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !contact) return <ErrorMessage message="Contact not found." />
@@ -116,16 +116,18 @@ export default function ContactDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
               Edit
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
-              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-              Delete
-            </Button>
+            {isManager && (
+              <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                Delete
+              </Button>
+            )}
           </div>
         )}
       </div>

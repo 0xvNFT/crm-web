@@ -33,7 +33,7 @@ function FormSection({ title, children }: { title: string; children: React.React
 
 export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: ContactEditFormProps) {
   const { mutate: updateContact, isPending } = useUpdateContact(contactId)
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
   const contactTypeOptions = useConfigOptions('contact.type')
   const contactStatusOptions = useConfigOptions('contact.status')
   const consentStatusOptions = useConfigOptions('contact.consentStatus')
@@ -75,8 +75,8 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
     },
   })
 
-  // isManager guard: only managers can edit — callers must enforce this, but belt-and-suspenders check
-  if (!isManager) return null
+  // Belt-and-suspenders: callers enforce this but READ_ONLY must never see the edit form
+  if (isReadOnly) return null
 
   function onSubmit(data: ContactEditFormData) {
     const { consentConfirmedStatus, consentConfirmedDate, ...rest } = data

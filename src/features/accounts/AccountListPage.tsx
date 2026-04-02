@@ -35,7 +35,7 @@ const FILTER_KEYS = ['accountType', 'status']
 
 export default function AccountListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -69,7 +69,7 @@ export default function AccountListPage() {
       <PageHeader
         title="Accounts"
         description="Manage your pharmaceutical accounts"
-        actions={isManager ? (
+        actions={!isReadOnly ? (
           <Button size="sm" onClick={() => navigate('/accounts/new')}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Account

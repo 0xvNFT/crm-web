@@ -101,7 +101,7 @@ export interface KpiPeriod {
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 // Role type — use this everywhere, never raw string.
 // TypeScript will catch typos like 'FEILD_REP' at compile time.
-export const ROLES = ['ADMIN', 'MANAGER', 'FIELD_REP'] as const
+export const ROLES = ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] as const
 export type Role = typeof ROLES[number]
 
 // Manually defined — backend login returns token=null in body (it's in the httpOnly cookie)

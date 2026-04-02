@@ -41,7 +41,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { data: lead, isLoading, isError } = useLead(id ?? '')
   const { mutate: updateLead, isPending: isClosing } = useUpdateLead(id ?? '')
   const [showConvert, setShowConvert] = useState(false)
@@ -51,8 +51,8 @@ export default function LeadDetailPage() {
   if (isError || !lead) return <ErrorMessage message="Lead not found." />
 
   const leadName = `${lead.firstName ?? ''} ${lead.lastName}`.trim()
-  const canConvert = isManager && !lead.isConverted
-  const canClose = isManager && lead.leadStatus !== 'canceled' && !lead.isConverted
+  const canConvert = isManager && !lead.isConverted && !isReadOnly
+  const canClose = isManager && lead.leadStatus !== 'canceled' && !lead.isConverted && !isReadOnly
 
   return (
     <div className="space-y-4">
@@ -70,10 +70,12 @@ export default function LeadDetailPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
+          {!isReadOnly && (
+            <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          )}
           {canClose && (
             <Button variant="outline" size="sm" onClick={() => setShowClose(true)}>
               Close Lead

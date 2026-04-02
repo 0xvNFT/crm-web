@@ -172,11 +172,11 @@ export function AppRouter() {
             }
           />
 
-          {/* MANAGER+ only */}
+          {/* Territories — read: FIELD_REP + READ_ONLY; write: ADMIN/MANAGER only */}
           <Route
             path="/territories"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'READ_ONLY']}>
                 <Wrap><TerritoryListPage /></Wrap>
               </RoleRoute>
             }
@@ -192,15 +192,16 @@ export function AppRouter() {
           <Route
             path="/territories/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'READ_ONLY']}>
                 <Wrap><TerritoryDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Teams — all non-CSR roles can view; write: ADMIN/MANAGER only */}
           <Route
             path="/teams"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><TeamListPage /></Wrap>
               </RoleRoute>
             }
@@ -224,15 +225,16 @@ export function AppRouter() {
           <Route
             path="/teams/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><TeamDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Materials — all roles including CSR can view */}
           <Route
             path="/materials"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><MaterialListPage /></Wrap>
               </RoleRoute>
             }
@@ -240,15 +242,16 @@ export function AppRouter() {
           <Route
             path="/materials/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><MaterialDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Products — all roles including CSR can view; write: ADMIN only */}
           <Route
             path="/products"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><ProductListPage /></Wrap>
               </RoleRoute>
             }
@@ -264,7 +267,7 @@ export function AppRouter() {
           <Route
             path="/products/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><ProductDetailPage /></Wrap>
               </RoleRoute>
             }
@@ -277,10 +280,11 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
+          {/* Reports — all non-CSR roles */}
           <Route
             path="/reports"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><ReportsPage /></Wrap>
               </RoleRoute>
             }
@@ -288,7 +292,7 @@ export function AppRouter() {
           <Route
             path="/reports/kpi"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><KpiReportsPage /></Wrap>
               </RoleRoute>
             }
