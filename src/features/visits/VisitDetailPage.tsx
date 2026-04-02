@@ -50,7 +50,7 @@ function DetailField({ label, value }: { label: string; value?: string | null })
 export default function VisitDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { user } = useAuth()
 
   const { data: visit, isLoading, isError } = useVisit(id ?? '')
@@ -73,11 +73,11 @@ export default function VisitDetailPage() {
   const isOwnVisit = visit.assignedRepId === user?.userId
 
 
-  const canCheckIn = isOwnVisit && status === 'SCHEDULED' && !visit.checkInTime
-  const canCheckOut = isOwnVisit && !!visit.checkInTime && !visit.checkOutTime
-  const canSubmit = isOwnVisit && (status === 'COMPLETED' || status === 'DRAFT') && !['PENDING_APPROVAL', 'APPROVED'].includes(status)
-  const canApproveReject = isManager && status === 'PENDING_APPROVAL'
-  const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED'
+  const canCheckIn = isOwnVisit && status === 'SCHEDULED' && !visit.checkInTime && !isReadOnly
+  const canCheckOut = isOwnVisit && !!visit.checkInTime && !visit.checkOutTime && !isReadOnly
+  const canSubmit = isOwnVisit && (status === 'COMPLETED' || status === 'DRAFT') && !['PENDING_APPROVAL', 'APPROVED'].includes(status) && !isReadOnly
+  const canApproveReject = isManager && status === 'PENDING_APPROVAL' && !isReadOnly
+  const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED' && !isReadOnly
 
   function handleCheckIn() {
     if (!id) return

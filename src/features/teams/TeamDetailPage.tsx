@@ -63,7 +63,7 @@ function ActiveBadge({ isActive }: { isActive?: boolean }) {
 export default function TeamDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const [showDeactivate, setShowDeactivate] = useState(false)
   const [showAddMember, setShowAddMember] = useState(false)
@@ -132,7 +132,7 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        {isManager && (
+        {isManager && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={() => navigate(`/teams/${id}/edit`)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
@@ -158,7 +158,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Add Member inline form */}
-      {showAddMember && isManager && (
+      {showAddMember && isManager && !isReadOnly && (
         <div className="rounded-xl border bg-background p-5 space-y-3">
           <h2 className="text-sm font-semibold text-foreground">Add Member</h2>
           <div className="max-w-md space-y-2">
@@ -251,7 +251,7 @@ export default function TeamDetailPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground">{formatDate(member.joinedAt)}</span>
-                  {isManager && team.isActive && (
+                  {isManager && !isReadOnly && team.isActive && (
                     <Button
                       variant="ghost"
                       size="icon"

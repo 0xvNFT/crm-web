@@ -43,7 +43,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const { data: invoice, isLoading, isError } = useInvoice(id ?? '')
   const { mutate: sendInvoice,  isPending: isSending  } = useSendInvoice(id ?? '')
@@ -62,7 +62,7 @@ export default function InvoiceDetailPage() {
   const isSent   = status === 'sent'
   const isPaid   = status === 'paid'
   const isVoided = status === 'canceled' || status === 'void'
-  const canAct   = isManager && !isPaid && !isVoided && !invoice.isLocked
+  const canAct   = isManager && !isPaid && !isVoided && !invoice.isLocked && !isReadOnly
 
   return (
     <div className="space-y-4">

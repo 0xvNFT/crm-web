@@ -35,7 +35,7 @@ const columns: Column<PharmaInvoice>[] = [
 
 export default function InvoiceListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -64,7 +64,7 @@ export default function InvoiceListPage() {
       <PageHeader
         title="Invoices"
         description="Track and manage customer invoices"
-        actions={isManager ? (
+        actions={isManager && !isReadOnly ? (
           <Button size="sm" onClick={() => navigate('/invoices/new')}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Invoice

@@ -88,7 +88,7 @@ export default function OpportunityDetailPage() {
   const { data: opp, isLoading, isError } = useOpportunity(id ?? '')
   const { mutate: updateOpp, isPending } = useUpdateOpportunity(id ?? '')
   const { mutate: advanceStage, isPending: isAdvancing } = useAdvanceOpportunityStage(id ?? '')
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
 
   const salesStageOptions      = useConfigOptions('opportunity.salesStage')
   const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
@@ -173,7 +173,7 @@ export default function OpportunityDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             {nextStage && (
               <Button size="sm" onClick={() => confirmAdvanceStage(nextStage)}>

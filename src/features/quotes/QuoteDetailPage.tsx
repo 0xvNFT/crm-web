@@ -40,7 +40,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function QuoteDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const { data: quote, isLoading, isError } = useQuote(id ?? '')
   const { mutate: approveQuote, isPending: isApproving } = useApproveQuote(id ?? '')
@@ -57,8 +57,8 @@ export default function QuoteDetailPage() {
   const isSubmitted = quote.status === 'submitted' || quote.status === 'pending'
   const isApproved = quote.status === 'approved'
   const isDraft = quote.status === 'draft'
-  const canAct = isManager && isSubmitted
-  const canConvert = isApproved
+  const canAct = isManager && isSubmitted && !isReadOnly
+  const canConvert = isApproved && !isReadOnly
 
   return (
     <div className="space-y-4">
@@ -76,7 +76,7 @@ export default function QuoteDetailPage() {
           )}
         </div>
         <div className="flex gap-2 shrink-0 flex-wrap justify-end">
-          {isDraft && (
+          {isDraft && !isReadOnly && (
             <Button variant="outline" size="sm" onClick={() => navigate(`/quotes/${id}/edit`)}>
               <Pencil className="h-4 w-4 mr-1.5" />
               Edit

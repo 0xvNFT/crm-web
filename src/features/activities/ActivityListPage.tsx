@@ -65,7 +65,7 @@ const columns: Column<ActivityRow>[] = [
 
 export default function ActivityListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
@@ -97,7 +97,7 @@ export default function ActivityListPage() {
       <PageHeader
         title="Activities"
         description="Manage pharma activities, calls, and meetings"
-        actions={isManager ? (
+        actions={!isReadOnly ? (
           <Button size="sm" onClick={() => navigate('/activities/new')}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Activity

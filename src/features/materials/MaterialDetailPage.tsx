@@ -46,7 +46,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const [editing, setEditing] = useState(false)
   const [showApprove, setShowApprove] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
@@ -64,9 +64,9 @@ export default function MaterialDetailPage() {
   if (isError || !material) return <ErrorMessage message="Material not found." />
 
   const status = material.status?.toLowerCase() ?? ''
-  const canEdit = isManager && (status === 'draft' || status === 'pending_approval')
-  const canApprove = isManager && status === 'pending_approval'
-  const canArchive = isManager && status === 'approved'
+  const canEdit = isManager && !isReadOnly && (status === 'draft' || status === 'pending_approval')
+  const canApprove = isManager && !isReadOnly && status === 'pending_approval'
+  const canArchive = isManager && !isReadOnly && status === 'approved'
 
   function startEdit() {
     reset({

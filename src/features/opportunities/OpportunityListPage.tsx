@@ -39,7 +39,7 @@ export default function OpportunityListPage() {
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -65,7 +65,7 @@ export default function OpportunityListPage() {
         title="Opportunities"
         description="Track your pipeline and close deals"
         actions={
-          isManager ? (
+          !isReadOnly ? (
             <Button size="sm" onClick={() => navigate('/opportunities/new')}>
               <Plus className="h-4 w-4 mr-1.5" />
               New Opportunity
