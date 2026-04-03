@@ -1774,6 +1774,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/visits/by-opportunity/{opportunityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List visits linked to an opportunity (paginated) */
+        get: operations["getByOpportunity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/visits/by-contact/{contactId}": {
         parameters: {
             query?: never;
@@ -2700,7 +2717,7 @@ export interface paths {
             cookie?: never;
         };
         /** List activities by opportunity (paginated) */
-        get: operations["getByOpportunity"];
+        get: operations["getByOpportunity_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4829,7 +4846,8 @@ export interface components {
             budgetConfirmed?: boolean;
         };
         StageRequest: {
-            stage: string;
+            /** @enum {string} */
+            stage: "prospecting" | "qualification" | "proposal" | "negotiation" | "closed_won" | "closed_lost";
         };
         CreateMaterialRequest: {
             title: string;
@@ -5244,6 +5262,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisitResponse"][];
@@ -5253,8 +5273,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -5265,8 +5283,8 @@ export interface components {
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
             unpaged?: boolean;
+            paged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -5278,6 +5296,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
@@ -5287,8 +5307,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageUser: {
@@ -5296,6 +5314,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
@@ -5305,8 +5325,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaTerritoryResponse: {
@@ -5314,6 +5332,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritoryResponse"][];
@@ -5323,8 +5343,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         TerritoryRepInfo: {
@@ -5340,6 +5358,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeamResponse"][];
@@ -5349,8 +5369,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PipelineSummary: {
@@ -5429,6 +5447,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RepTarget"][];
@@ -5438,8 +5458,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaQuoteResponse: {
@@ -5447,6 +5465,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuoteResponse"][];
@@ -5456,8 +5476,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaProduct: {
@@ -5465,6 +5483,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
@@ -5474,8 +5494,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PharmaProductBatch: {
@@ -5520,6 +5538,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrderResponse"][];
@@ -5529,8 +5549,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaOpportunityResponse: {
@@ -5538,6 +5556,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunityResponse"][];
@@ -5547,8 +5567,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaMaterialResponse: {
@@ -5556,6 +5574,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterialResponse"][];
@@ -5565,8 +5585,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaLeadResponse: {
@@ -5574,6 +5592,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLeadResponse"][];
@@ -5583,8 +5603,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaInvoiceResponse: {
@@ -5592,6 +5610,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoiceResponse"][];
@@ -5601,8 +5621,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaContactResponse: {
@@ -5610,6 +5628,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContactResponse"][];
@@ -5619,8 +5639,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaCoachingNoteResponse: {
@@ -5628,6 +5646,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNoteResponse"][];
@@ -5637,8 +5657,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaActivityResponse: {
@@ -5646,6 +5664,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivityResponse"][];
@@ -5655,8 +5675,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PagePharmaAccountResponse: {
@@ -5664,6 +5682,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccountResponse"][];
@@ -5673,8 +5693,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Notification: {
@@ -5701,6 +5719,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
@@ -5710,8 +5730,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageApprovalRule: {
@@ -5719,6 +5737,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
@@ -5728,8 +5748,6 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Subscription: {
@@ -9294,6 +9312,30 @@ export interface operations {
             };
         };
     };
+    getByOpportunity: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                opportunityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagePharmaFieldVisitResponse"];
+                };
+            };
+        };
+    };
     getByContact: {
         parameters: {
             query: {
@@ -10516,7 +10558,7 @@ export interface operations {
             };
         };
     };
-    getByOpportunity: {
+    getByOpportunity_1: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];

@@ -230,7 +230,7 @@ export type ConvertLeadRequest    = components['schemas']['ConvertLeadRequest']
 
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
-export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
+export type StageRequest          = { stage: string }                              // { stage } — opportunity advance; widened from enum literal (config-driven)
 
 // ─── Visit request types ──────────────────────────────────────────────────────
 // Widen config-driven union literals to string
