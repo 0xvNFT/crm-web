@@ -135,7 +135,7 @@ export default function OpportunityDetailPage() {
   // Next stage in the pipeline (not applicable for closed stages)
   const currentIdx = opp.salesStage ? STAGE_ORDER.indexOf(opp.salesStage) : -1
   const isClosed = opp.salesStage === 'closed_won' || opp.salesStage === 'closed_lost'
-  const nextStage = !isClosed && currentIdx >= 0 && currentIdx < STAGE_ORDER.indexOf('closed_won') - 1
+  const nextStage = !isClosed && currentIdx >= 0 && currentIdx < STAGE_ORDER.length - 1
     ? STAGE_ORDER[currentIdx + 1]
     : null
 

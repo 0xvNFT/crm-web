@@ -36,7 +36,7 @@ const ALL_COLUMNS: Column<PharmaLead>[] = [
 
 export default function LeadListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Leads')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
@@ -69,10 +69,12 @@ export default function LeadListPage() {
           title={title}
           description="Potential customers and prospects"
         />
-        <Button onClick={() => navigate('/leads/new')}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Lead
-        </Button>
+        {!isReadOnly && (
+          <Button onClick={() => navigate('/leads/new')}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Lead
+          </Button>
+        )}
       </div>
       <SearchInput
         value={query}

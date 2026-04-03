@@ -165,7 +165,7 @@ export function LeadConvertDialog({
         <DialogHeader>
           <DialogTitle>Convert Lead?</DialogTitle>
           <DialogDescription>
-            This will create an Account, Contact, and Opportunity from this lead.
+            This will create an Account and Contact from this lead (and an Opportunity if a topic is set).
             You can override the account or contact below, or leave blank to auto-create from lead data.
             This action cannot be undone.
           </DialogDescription>
