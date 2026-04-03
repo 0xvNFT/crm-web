@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, X, Check, Building2 } from 'lucide-react'
+import { ArrowLeft, Pencil, X, Check, Building2, Users } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTerritory, useUpdateTerritory, useTerritoryAccounts } from '@/api/endpoints/territories'
+import { useTerritory, useUpdateTerritory, useTerritoryAccounts, useTerritoryReps } from '@/api/endpoints/territories'
 import { TerritorySecondaryRepsSection } from './components/TerritorySecondaryRepsSection'
 import { TerritoryProductFocusSection } from './components/TerritoryProductFocusSection'
 import { useStaffSearch } from '@/api/endpoints/users'
@@ -72,6 +72,7 @@ export default function TerritoryDetailPage() {
   const { data: territory, isLoading, isError } = useTerritory(id ?? '')
   const { mutate: updateTerritory, isPending } = useUpdateTerritory(id ?? '')
   const { data: accounts, isLoading: isLoadingAccounts } = useTerritoryAccounts(id ?? '')
+  const { data: reps, isLoading: isLoadingReps } = useTerritoryReps(id ?? '')
   const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
   const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
   const regionOptions = useConfigOptions('territory.region')
@@ -178,10 +179,37 @@ export default function TerritoryDetailPage() {
             <DetailField label="Created" value={formatDate(territory.createdAt)} />
           </DetailSection>
 
-          <DetailSection title="Assignment">
-            <DetailField label="Primary Rep" value={territory.primaryRepName} />
-            <DetailField label="Manager" value={territory.managerName} />
-          </DetailSection>
+          <div className="rounded-xl border bg-background p-5 space-y-4">
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Users className="h-3.5 w-3.5" strokeWidth={1.75} />
+              Reps
+            </h2>
+            {isLoadingReps ? (
+              <LoadingSpinner />
+            ) : !reps || reps.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No reps assigned to this territory.</p>
+            ) : (
+              <ul className="divide-y">
+                {reps.map((rep) => (
+                  <li key={rep.userId} className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{rep.userName ?? '—'}</p>
+                      {rep.assignedAt && (
+                        <p className="text-xs text-muted-foreground">Assigned {formatDate(rep.assignedAt)}</p>
+                      )}
+                    </div>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      rep.role === 'primary'
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'bg-muted text-muted-foreground border'
+                    }`}>
+                      {rep.role === 'primary' ? 'Primary' : 'Secondary'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <DetailSection title="Targets">
             <DetailField
@@ -220,7 +248,7 @@ export default function TerritoryDetailPage() {
             )}
           </div>
 
-          <TerritorySecondaryRepsSection territoryId={id ?? ''} />
+          {isManager && <TerritorySecondaryRepsSection territoryId={id ?? ''} />}
           <TerritoryProductFocusSection territoryId={id ?? ''} />
         </div>
       )}

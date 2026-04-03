@@ -7,6 +7,7 @@ import type {
   CreateTerritoryRequest,
   UpdateTerritoryRequest,
   SecondaryRepInfo,
+  TerritoryRepInfo,
   ProductFocusInfo,
   AddProductFocusRequest,
 } from '@/api/app-types'
@@ -51,6 +52,19 @@ export function useTerritoryAccounts(id: string) {
     queryFn: () =>
       client
         .get<PharmaAccountTerritory[]>(`/api/v1/pharma/territories/${id}/accounts`)
+        .then((r) => r.data),
+    enabled: !!id,
+  })
+}
+
+// ─── All Reps (primary + secondary, role-labelled) ───────────────────────────
+
+export function useTerritoryReps(id: string) {
+  return useQuery({
+    queryKey: ['territories', id, 'reps'],
+    queryFn: () =>
+      client
+        .get<TerritoryRepInfo[]>(`/api/v1/pharma/territories/${id}/reps`)
         .then((r) => r.data),
     enabled: !!id,
   })
