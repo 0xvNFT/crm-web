@@ -173,6 +173,10 @@ export default function LeadDetailPage() {
       <LeadConvertDialog
         open={showConvert}
         leadId={id ?? ''}
+        sourceAccountId={lead.relatedAccountId}
+        sourceAccountName={lead.relatedAccountName}
+        sourceContactId={lead.relatedContactId}
+        sourceContactName={lead.relatedContactName}
         onClose={() => setShowConvert(false)}
       />
     </div>

@@ -51,6 +51,20 @@ export function useActivitiesByContact(contactId: string, page = 0, size = 10) {
   })
 }
 
+export function useActivitiesByOpportunity(opportunityId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['activities', 'by-opportunity', opportunityId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaActivity>(`/api/v1/pharma/activities/by-opportunity/${opportunityId}`, {
+          params: { page, size, sort: 'createdAt,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!opportunityId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useActivitiesByAccount(accountId: string, page = 0, size = 10) {
   return useQuery({
     queryKey: ['activities', 'by-account', accountId, { page, size }],

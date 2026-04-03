@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Building2, User, TrendingUp, ExternalLink } from 'lucide-react'
 import { useConvertLead } from '@/api/endpoints/leads'
+import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useContactSearch } from '@/api/endpoints/contacts'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
@@ -14,27 +15,63 @@ import type { LeadConversionResult } from '@/api/app-types'
 interface LeadConvertDialogProps {
   open: boolean
   leadId: string
+  // Source fields from the lead — used to pre-fill pickers
+  sourceAccountId?: string
+  sourceAccountName?: string
+  sourceContactId?: string
+  sourceContactName?: string
   onClose: () => void
 }
 
-export function LeadConvertDialog({ open, leadId, onClose }: LeadConvertDialogProps) {
+export function LeadConvertDialog({
+  open,
+  leadId,
+  sourceAccountId,
+  sourceAccountName,
+  sourceContactId,
+  sourceContactName,
+  onClose,
+}: LeadConvertDialogProps) {
   const navigate = useNavigate()
   const { mutate: convertLead, isPending } = useConvertLead()
 
   const [result, setResult] = useState<LeadConversionResult | null>(null)
-  const [contactId, setContactId] = useState<string>('')
+
+  // Account picker — pre-seeded from source account if present
+  const [accountId, setAccountId] = useState<string>(sourceAccountId ?? '')
+  const [accountQuery, setAccountQuery] = useState('')
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const accountOptions: ComboboxOption[] = (accountResults ?? []).map((a) => ({
+    value: a.id!,
+    label: a.name ?? '',
+  }))
+  const selectedAccountOption: ComboboxOption | undefined = sourceAccountId
+    ? { value: sourceAccountId, label: sourceAccountName ?? '' }
+    : undefined
+
+  // Contact picker — pre-seeded from source contact if present
+  const [contactId, setContactId] = useState<string>(sourceContactId ?? '')
   const [contactQuery, setContactQuery] = useState('')
   const debouncedContactQuery = useDebounce(contactQuery, 300)
-
   const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(debouncedContactQuery)
   const contactOptions: ComboboxOption[] = (contactResults ?? []).map((c) => ({
     value: c.id!,
     label: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim(),
   }))
+  const selectedContactOption: ComboboxOption | undefined = sourceContactId
+    ? { value: sourceContactId, label: sourceContactName ?? '' }
+    : undefined
 
   function handleConvert() {
     convertLead(
-      { id: leadId, data: { contactId: contactId || undefined } },
+      {
+        id: leadId,
+        data: {
+          accountId: accountId || undefined,
+          contactId: contactId || undefined,
+        },
+      },
       {
         onSuccess: (data) => {
           setResult(data)
@@ -48,7 +85,9 @@ export function LeadConvertDialog({ open, leadId, onClose }: LeadConvertDialogPr
 
   function handleClose() {
     setResult(null)
-    setContactId('')
+    setAccountId(sourceAccountId ?? '')
+    setContactId(sourceContactId ?? '')
+    setAccountQuery('')
     setContactQuery('')
     onClose()
   }
@@ -126,26 +165,56 @@ export function LeadConvertDialog({ open, leadId, onClose }: LeadConvertDialogPr
         <DialogHeader>
           <DialogTitle>Convert Lead?</DialogTitle>
           <DialogDescription>
-            This will create an Account and Opportunity from this lead. A Contact will be
-            auto-created from the lead's name, or you can link an existing contact below.
+            This will create an Account, Contact, and Opportunity from this lead.
+            You can override the account or contact below, or leave blank to auto-create from lead data.
             This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-2 space-y-2">
-          <p className="text-sm font-medium">Link existing contact (optional)</p>
-          <Combobox
-            value={contactId}
-            onChange={setContactId}
-            options={contactOptions}
-            placeholder="Search contacts…"
-            searchPlaceholder="Type name…"
-            onSearchChange={setContactQuery}
-            isLoading={isSearchingContacts}
-          />
-          <p className="text-xs text-muted-foreground">
-            Leave blank to auto-create a new contact from the lead's name.
-          </p>
+        <div className="py-2 space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">
+              Account
+              {sourceAccountId && (
+                <span className="ml-2 text-xs font-normal text-muted-foreground">Source account pre-filled — you can change it</span>
+              )}
+            </p>
+            <Combobox
+              value={accountId}
+              onChange={setAccountId}
+              options={accountOptions}
+              selectedOption={selectedAccountOption}
+              placeholder={sourceAccountId ? (sourceAccountName ?? 'Source account') : 'Search accounts…'}
+              searchPlaceholder="Type account name…"
+              onSearchChange={setAccountQuery}
+              isLoading={isSearchingAccounts}
+            />
+            {!sourceAccountId && (
+              <p className="text-xs text-muted-foreground">Leave blank to auto-create from lead data.</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium">
+              Contact
+              {sourceContactId && (
+                <span className="ml-2 text-xs font-normal text-muted-foreground">Source contact pre-filled — you can change it</span>
+              )}
+            </p>
+            <Combobox
+              value={contactId}
+              onChange={setContactId}
+              options={contactOptions}
+              selectedOption={selectedContactOption}
+              placeholder={sourceContactId ? (sourceContactName ?? 'Source contact') : 'Search contacts…'}
+              searchPlaceholder="Type name…"
+              onSearchChange={setContactQuery}
+              isLoading={isSearchingContacts}
+            />
+            {!sourceContactId && (
+              <p className="text-xs text-muted-foreground">Leave blank to auto-create from lead's name.</p>
+            )}
+          </div>
         </div>
 
         <DialogFooter>
