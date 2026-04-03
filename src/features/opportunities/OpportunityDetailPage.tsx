@@ -20,6 +20,8 @@ import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { opportunityEditSchema, type OpportunityEditFormData } from '@/schemas/opportunities'
+import { OpportunityActivitiesSection } from './components/OpportunityActivitiesSection'
+import { OpportunityVisitsSection } from './components/OpportunityVisitsSection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -234,6 +236,9 @@ export default function OpportunityDetailPage() {
               <DetailField label="Last Updated"   value={formatDate(opp.updatedAt)} />
             </div>
           </div>
+
+          <OpportunityActivitiesSection opportunityId={opp.id ?? ''} />
+          <OpportunityVisitsSection opportunityId={opp.id ?? ''} />
         </div>
       )}
 

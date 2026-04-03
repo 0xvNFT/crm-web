@@ -51,6 +51,20 @@ export function useVisitSearch(query: string) {
   })
 }
 
+export function useVisitsByOpportunity(opportunityId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['visits', 'by-opportunity', opportunityId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaFieldVisit>(`/api/v1/pharma/visits/by-opportunity/${opportunityId}`, {
+          params: { page, size, sort: 'scheduledStart,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!opportunityId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useVisitsByContact(contactId: string, page = 0, size = 10) {
   return useQuery({
     queryKey: ['visits', 'by-contact', contactId, { page, size }],
