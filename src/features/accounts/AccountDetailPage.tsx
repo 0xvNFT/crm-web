@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, Globe, Phone, Mail, Building2, Trash2 } from 'lucide-react'
+import { ArrowLeft, Pencil, Globe, Phone, Mail, Building2, Trash2, UserPlus } from 'lucide-react'
 import { useAccount, useDeleteAccount } from '@/api/endpoints/accounts'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
@@ -94,6 +94,10 @@ export default function AccountDetailPage() {
 
         {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={() => navigate('/leads/new', { state: { accountId: account.id, companyName: account.name } })}>
+              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+              Create Lead
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
               Edit

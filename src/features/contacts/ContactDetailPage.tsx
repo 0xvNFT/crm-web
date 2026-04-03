@@ -3,7 +3,7 @@
 // Your task is read-only — list + detail view. No create or edit required.
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, Phone, Mail, MapPin, Award, Shield, Pencil, Trash2, UserPlus } from 'lucide-react'
 import { useContact, useDeleteContact } from '@/api/endpoints/contacts'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
@@ -118,6 +118,24 @@ export default function ContactDetailPage() {
 
         {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/leads/new', {
+                state: {
+                  contactId: contact.id,
+                  firstName:   contact.firstName  ?? undefined,
+                  lastName:    contact.lastName   ?? undefined,
+                  email:       contact.email      ?? undefined,
+                  phone:       contact.phone ?? contact.mobile ?? undefined,
+                  companyName: contact.accountName ?? undefined,
+                  ...(contact.accountId ? { accountId: contact.accountId } : {}),
+                },
+              })}
+            >
+              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+              Create Lead
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
               Edit
