@@ -5,8 +5,8 @@ const NotFoundPage = lazy(() => import('@/features/errors/NotFoundPage'))
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
-// import { Skeleton } from '@/components/ui/skeleton'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+ import { Skeleton } from '@/components/ui/skeleton'
+// import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
 // Auth pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'))
@@ -76,8 +76,8 @@ const MaterialDetailPage = lazy(() => import('@/features/materials/MaterialDetai
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  // return <Suspense fallback={< Skeleton />}>{children}</Suspense>
-  return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+   return <Suspense fallback={< Skeleton />}>{children}</Suspense>
+  // return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 }
 
 export function AppRouter() {
