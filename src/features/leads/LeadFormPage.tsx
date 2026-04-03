@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,7 +6,7 @@ import { useCreateLead, useUpdateLead, useLead } from '@/api/endpoints/leads'
 import { useConfig } from '@/api/endpoints/config'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { leadSchema, type LeadFormData } from '@/schemas/leads'
-import type { CreateLeadRequest, UpdateLeadRequest } from '@/api/app-types'
+import type { CreateLeadRequest, UpdateLeadRequest, PharmaLead } from '@/api/app-types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -15,7 +15,6 @@ import { FormRow } from '@/components/shared/FormRow'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { PharmaLead } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -26,41 +25,56 @@ function FormSection({ title, children }: { title: string; children: React.React
   )
 }
 
+interface LeadPrefill {
+  accountId?: string
+  contactId?: string
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string
+  companyName?: string
+}
+
 // Rendered only after data + config are ready — defaultValues are stable on first useForm call
-function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
+function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolean; prefill?: LeadPrefill }) {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const { mutate: createLead, isPending: isCreating } = useCreateLead()
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead(id ?? '')
   const isPending = isCreating || isUpdating
 
-  const leadStatusOptions  = useConfigOptions('lead.status')
-  const ratingOptions      = useConfigOptions('lead.rating')
-  const leadSourceOptions  = useConfigOptions('lead.source')
+  const leadStatusOptions = useConfigOptions('lead.status')
+  const ratingOptions     = useConfigOptions('lead.rating')
+  const leadSourceOptions = useConfigOptions('lead.source')
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
     // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(leadSchema) as Resolver<LeadFormData>,
     defaultValues: isEdit && lead ? {
-      lastName:    lead.lastName ?? '',
-      firstName:   lead.firstName ?? '',
+      lastName:    lead.lastName    ?? '',
+      firstName:   lead.firstName   ?? '',
       companyName: lead.companyName ?? '',
-      email:       lead.email ?? '',
-      phone:       lead.phone ?? '',
-      leadStatus:  lead.leadStatus ?? undefined,
-      rating:      lead.rating ?? undefined,
-      leadSource:  lead.leadSource ?? undefined,
+      email:       lead.email       ?? '',
+      phone:       lead.phone       ?? '',
+      leadStatus:  lead.leadStatus  ?? undefined,
+      rating:      lead.rating      ?? undefined,
+      leadSource:  lead.leadSource  ?? undefined,
       leadScore:   lead.leadScore != null ? Number(lead.leadScore) : undefined,
-    } : {},
+    } : {
+      firstName:   prefill?.firstName   ?? '',
+      lastName:    prefill?.lastName    ?? '',
+      email:       prefill?.email       ?? '',
+      phone:       prefill?.phone       ?? '',
+      companyName: prefill?.companyName ?? '',
+    },
   })
 
   function onSubmit(data: LeadFormData) {
     if (isEdit) {
-      // Strip empty strings — backend rejects "" for optional fields
       // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod leadSchema
-      const payload: UpdateLeadRequest = Object.fromEntries(
+      const payload = Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-      ) as UpdateLeadRequest
+      ) as unknown as UpdateLeadRequest
       updateLead(payload, {
         onSuccess: () => {
           toast('Lead updated', { variant: 'success' })
@@ -69,8 +83,13 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      // Why: data matches schema shape directly; widened union fields are string in CreateLeadRequest
-      createLead(data as CreateLeadRequest, {
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod leadSchema
+      const payload = {
+        ...Object.fromEntries(Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)),
+        ...(prefill?.accountId ? { accountId: prefill.accountId } : {}),
+        ...(prefill?.contactId ? { contactId: prefill.contactId } : {}),
+      } as unknown as CreateLeadRequest
+      createLead(payload, {
         onSuccess: (created) => {
           toast('Lead created', { variant: 'success' })
           navigate(`/leads/${created.id}`)
@@ -95,19 +114,29 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormSection title="Contact Info">
           <FormRow label="First Name" error={errors.firstName?.message}>
-            <Input {...register('firstName')} placeholder="Juan" />
+            {prefill?.firstName
+              ? <p className="text-sm text-foreground py-2">{prefill.firstName}</p>
+              : <Input {...register('firstName')} placeholder="Juan" />}
           </FormRow>
           <FormRow label="Last Name" required error={errors.lastName?.message}>
-            <Input {...register('lastName')} placeholder="Dela Cruz" />
+            {prefill?.lastName
+              ? <p className="text-sm text-foreground py-2">{prefill.lastName}</p>
+              : <Input {...register('lastName')} placeholder="Dela Cruz" />}
           </FormRow>
           <FormRow label="Company" error={errors.companyName?.message}>
-            <Input {...register('companyName')} placeholder="Company name" />
+            {prefill?.companyName
+              ? <p className="text-sm text-foreground py-2">{prefill.companyName}</p>
+              : <Input {...register('companyName')} placeholder="Company name" />}
           </FormRow>
           <FormRow label="Email" error={errors.email?.message}>
-            <Input {...register('email')} type="email" placeholder="juan@example.com" />
+            {prefill?.email
+              ? <p className="text-sm text-foreground py-2">{prefill.email}</p>
+              : <Input {...register('email')} type="email" placeholder="juan@example.com" />}
           </FormRow>
           <FormRow label="Phone" error={errors.phone?.message}>
-            <Input {...register('phone')} placeholder="+63 9xx xxx xxxx" />
+            {prefill?.phone
+              ? <p className="text-sm text-foreground py-2">{prefill.phone}</p>
+              : <Input {...register('phone')} placeholder="+63 9xx xxx xxxx" />}
           </FormRow>
         </FormSection>
 
@@ -180,11 +209,13 @@ function LeadForm({ lead, isEdit }: { lead?: PharmaLead; isEdit: boolean }) {
 
 export default function LeadFormPage() {
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
   const isEdit = !!id
+  const prefill = !isEdit ? (location.state as LeadPrefill | null) ?? undefined : undefined
   const { data: lead, isLoading: isLoadingLead } = useLead(id ?? '')
   const { isLoading: isLoadingConfig } = useConfig()
 
   if (isLoadingConfig || (isEdit && isLoadingLead)) return <LoadingSpinner />
 
-  return <LeadForm lead={lead} isEdit={isEdit} />
+  return <LeadForm lead={lead} isEdit={isEdit} prefill={prefill} />
 }

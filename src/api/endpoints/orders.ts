@@ -75,6 +75,22 @@ export function useUpdateOrder(id: string) {
   })
 }
 
+export function useShipOrder(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => client.post<PharmaOrder>(`/api/v1/pharma/orders/${id}/ship`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['orders'] }),
+  })
+}
+
+export function useDeliverOrder(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => client.post<PharmaOrder>(`/api/v1/pharma/orders/${id}/deliver`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['orders'] }),
+  })
+}
+
 export function useGenerateInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({

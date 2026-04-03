@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, Clock, User, CheckCircle, XCircle, LogIn, LogOut, Send, FileSignature, Pencil } from 'lucide-react'
+import { ArrowLeft, MapPin, Clock, User, CheckCircle, XCircle, LogIn, LogOut, Send, FileSignature, Pencil, TrendingUp } from 'lucide-react'
 import { useVisit, useSubmitVisit, useApproveVisit, useCheckInVisit } from '@/api/endpoints/visits'
 import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
@@ -203,6 +203,18 @@ export default function VisitDetailPage() {
                 <DetailField label="Territory" value={visit.territoryName} />
                 <DetailField label="Visit Type" value={visit.visitType?.replace(/_/g, ' ')} />
                 <DetailField label="Priority" value={visit.priority} />
+                {visit.opportunityId && (
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-medium text-muted-foreground">Opportunity</p>
+                    <button
+                      className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                      onClick={() => navigate(`/opportunities/${visit.opportunityId}`)}
+                    >
+                      <TrendingUp className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      {visit.opportunityName ?? 'View Opportunity'}
+                    </button>
+                  </div>
+                )}
               </div>
             </DetailSection>
 

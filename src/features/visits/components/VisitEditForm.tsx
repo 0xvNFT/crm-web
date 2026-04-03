@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, X } from 'lucide-react'
 import { useUpdateVisit } from '@/api/endpoints/visits'
+import { useOpportunitySearch } from '@/api/endpoints/opportunities'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { visitEditSchema, type VisitEditFormData } from '@/schemas/visits'
@@ -32,6 +36,14 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
   const visitTypeOptions = useConfigOptions('visit.type')
   const visitPriorityOptions = useConfigOptions('visit.priority')
 
+  const [oppQuery, setOppQuery] = useState('')
+  const debouncedOppQuery = useDebounce(oppQuery, 300)
+  const { data: oppResults, isLoading: isSearchingOpps } = useOpportunitySearch(debouncedOppQuery)
+  const oppOptions: ComboboxOption[] = (oppResults ?? []).map((o) => ({ value: o.id!, label: o.topic ?? o.id! }))
+  const selectedOppOption: ComboboxOption | undefined = visit.opportunityId
+    ? { value: visit.opportunityId, label: visit.opportunityName ?? visit.opportunityId }
+    : undefined
+
   const { register, handleSubmit, control, formState: { errors } } = useForm<VisitEditFormData>({
     resolver: zodResolver(visitEditSchema),
     defaultValues: {
@@ -44,14 +56,21 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
       scheduledEnd:   visit.scheduledEnd   ?? '',
       callObjectives: visit.callObjectives ?? '',
       notes:          visit.notes          ?? '',
+      opportunityId:  visit.opportunityId  ?? undefined,
     },
   })
 
   function onSubmit(data: VisitEditFormData) {
     // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod visitEditSchema
-    const clean = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    const base = Object.fromEntries(
+      Object.entries(data).filter(([k, v]) => v !== '' && v !== undefined && k !== 'clearOpportunity')
     ) as UpdateVisitRequest
+    // If there was an opportunity linked and the user cleared the field, send clearOpportunity: true
+    const hadOpportunity = !!visit.opportunityId
+    const clearedOpportunity = hadOpportunity && !data.opportunityId
+    const clean: UpdateVisitRequest = clearedOpportunity
+      ? { ...base, clearOpportunity: true }
+      : base
     updateVisit(clean, {
       onSuccess: () => {
         toast('Visit updated', { variant: 'success' })
@@ -131,6 +150,25 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
           </FormRow>
           <FormRow label="Notes" error={errors.notes?.message} className="sm:col-span-2">
             <Textarea {...register('notes')} rows={2} />
+          </FormRow>
+          <FormRow label="Opportunity" error={errors.opportunityId?.message} className="sm:col-span-2">
+            <Controller
+              name="opportunityId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={oppOptions}
+                  selectedOption={selectedOppOption}
+                  placeholder="Link an opportunity…"
+                  searchPlaceholder="Search opportunities…"
+                  onSearchChange={setOppQuery}
+                  isLoading={isSearchingOpps}
+                  error={!!errors.opportunityId}
+                />
+              )}
+            />
           </FormRow>
         </div>
       </div>

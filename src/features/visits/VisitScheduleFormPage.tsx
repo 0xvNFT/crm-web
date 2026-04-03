@@ -1,15 +1,19 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useScheduleVisit } from '@/api/endpoints/visits'
 import { useAccounts } from '@/api/endpoints/accounts'
+import { useOpportunitySearch } from '@/api/endpoints/opportunities'
 import { useAuth } from '@/hooks/useAuth'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -33,6 +37,11 @@ export default function VisitScheduleFormPage() {
   const accounts = accountsPage?.content ?? []
   const visitTypeOptions = useConfigOptions('visit.type')
 
+  const [oppQuery, setOppQuery] = useState('')
+  const debouncedOppQuery = useDebounce(oppQuery, 300)
+  const { data: oppResults, isLoading: isSearchingOpps } = useOpportunitySearch(debouncedOppQuery)
+  const oppOptions: ComboboxOption[] = (oppResults ?? []).map((o) => ({ value: o.id!, label: o.topic ?? o.id! }))
+
   const { register, handleSubmit, control, formState: { errors } } = useForm<ScheduleVisitFormData>({
     resolver: zodResolver(scheduleVisitSchema),
   })
@@ -45,6 +54,7 @@ export default function VisitScheduleFormPage() {
         accountId: data.accountId,
         contactId: data.contactId || undefined,
         territoryId: data.territoryId || undefined,
+        opportunityId: data.opportunityId || undefined,
         subject: data.subject,
         visitType: data.visitType,
         scheduledStart: data.scheduledStart,
@@ -115,6 +125,25 @@ export default function VisitScheduleFormPage() {
                     ))}
                   </SelectContent>
                 </Select>
+              )}
+            />
+          </FormRow>
+
+          <FormRow label="Opportunity" error={errors.opportunityId?.message}>
+            <Controller
+              name="opportunityId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={oppOptions}
+                  placeholder="Link an opportunity…"
+                  searchPlaceholder="Search opportunities…"
+                  onSearchChange={setOppQuery}
+                  isLoading={isSearchingOpps}
+                  error={!!errors.opportunityId}
+                />
               )}
             />
           </FormRow>

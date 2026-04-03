@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, FileText, FileCheck2 } from 'lucide-react'
-import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice } from '@/api/endpoints/orders'
+import { ArrowLeft, Pencil, FileText, FileCheck2, Truck, PackageCheck } from 'lucide-react'
+import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice, useShipOrder, useDeliverOrder } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
@@ -37,16 +37,21 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager, isReadOnly } = useRole()
+  const { isManager, isReadOnly, isCsr } = useRole()
+  const canFulfill = (isManager || isCsr) && !isReadOnly
 
   const { data: order, isLoading, isError } = useOrder(id ?? '')
   const { mutate: approveOrder, isPending: isApproving } = useApproveOrder(id ?? '')
   const { mutate: rejectOrder, isPending: isRejecting } = useRejectOrder(id ?? '')
   const { mutate: generateInvoice, isPending: isGenerating } = useGenerateInvoice(id ?? '')
+  const { mutate: shipOrder, isPending: isShipping } = useShipOrder(id ?? '')
+  const { mutate: deliverOrder, isPending: isDelivering } = useDeliverOrder(id ?? '')
 
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
   const [showGenerateInvoice, setShowGenerateInvoice] = useState(false)
+  const [showShip, setShowShip] = useState(false)
+  const [showDeliver, setShowDeliver] = useState(false)
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !order) return <ErrorMessage message="Order not found." />
@@ -57,6 +62,8 @@ export default function OrderDetailPage() {
   const canGenerateInvoice = isManager && !isReadOnly && (
     order.status === 'processing' || order.approvalStatus === 'approved'
   )
+  const canShip    = canFulfill && order.status === 'processing'
+  const canDeliver = canFulfill && order.status === 'shipped'
 
   return (
     <div className="space-y-4">
@@ -79,6 +86,18 @@ export default function OrderDetailPage() {
             <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${id}/edit`)}>
               <Pencil className="h-4 w-4 mr-2" />
               Edit
+            </Button>
+          )}
+          {canShip && (
+            <Button size="sm" variant="outline" onClick={() => setShowShip(true)} disabled={isShipping}>
+              <Truck className="h-4 w-4 mr-2" />
+              Mark as Shipped
+            </Button>
+          )}
+          {canDeliver && (
+            <Button size="sm" onClick={() => setShowDeliver(true)} disabled={isDelivering}>
+              <PackageCheck className="h-4 w-4 mr-2" />
+              Mark as Delivered
             </Button>
           )}
           {canGenerateInvoice && (
@@ -181,6 +200,50 @@ export default function OrderDetailPage() {
         <DetailRow label="Created" value={order.createdAt ? formatDate(order.createdAt) : null} />
         <DetailRow label="Updated" value={order.updatedAt ? formatDate(order.updatedAt) : null} />
       </Section>
+
+      {/* Ship dialog */}
+      <ConfirmDialog
+        open={showShip}
+        onCancel={() => setShowShip(false)}
+        onConfirm={() =>
+          shipOrder(undefined, {
+            onSuccess: () => {
+              toast('Order marked as shipped', { variant: 'success' })
+              setShowShip(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowShip(false)
+            },
+          })
+        }
+        title="Mark as Shipped?"
+        description="This will update the order status to Shipped."
+        confirmLabel="Mark as Shipped"
+        isPending={isShipping}
+      />
+
+      {/* Deliver dialog */}
+      <ConfirmDialog
+        open={showDeliver}
+        onCancel={() => setShowDeliver(false)}
+        onConfirm={() =>
+          deliverOrder(undefined, {
+            onSuccess: () => {
+              toast('Order marked as delivered', { variant: 'success' })
+              setShowDeliver(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowDeliver(false)
+            },
+          })
+        }
+        title="Mark as Delivered?"
+        description="This will update the order status to Delivered."
+        confirmLabel="Mark as Delivered"
+        isPending={isDelivering}
+      />
 
       {/* Generate Invoice dialog */}
       <ConfirmDialog
