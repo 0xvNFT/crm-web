@@ -41,6 +41,7 @@ export type LeadConversionResult     = components['schemas']['LeadConversionResu
 
 // ─── Territory lifecycle types ────────────────────────────────────────────────
 export type SecondaryRepInfo         = components['schemas']['SecondaryRepInfo']
+export type TerritoryRepInfo         = components['schemas']['TerritoryRepInfo']
 export type ProductFocusInfo         = components['schemas']['ProductFocusInfo']
 export type AddProductFocusRequest   = components['schemas']['AddProductFocusRequest']
 
