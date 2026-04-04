@@ -1,13 +1,15 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft } from 'lucide-react'
 import { useInvoice, useUpdateInvoice } from '@/api/endpoints/invoices'
 import { invoiceEditSchema, type InvoiceEditFormData } from '@/schemas/invoices'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { FormRow } from '@/components/shared/FormRow'
@@ -22,8 +24,9 @@ interface InvoiceEditFormProps {
 export function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormProps) {
   const navigate = useNavigate()
   const { mutate: updateInvoice, isPending } = useUpdateInvoice(invoiceId)
+  const paymentTermsOptions = useConfigOptions('paymentTerms')
 
-  const { register, handleSubmit, formState: { errors } } = useForm<InvoiceEditFormData>({
+  const { register, control, handleSubmit, formState: { errors } } = useForm<InvoiceEditFormData>({
     resolver: zodResolver(invoiceEditSchema),
     defaultValues,
   })
@@ -66,8 +69,21 @@ export function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormPro
             <Input type="date" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
           </FormRow>
 
-          <FormRow label="Payment Terms">
-            <Input {...register('paymentTerms')} placeholder="e.g. Net 30" />
+          <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
+            <Controller
+              name="paymentTerms"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select terms" /></SelectTrigger>
+                  <SelectContent>
+                    {paymentTermsOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
 
           <FormRow label="Currency">

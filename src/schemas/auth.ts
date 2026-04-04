@@ -1,10 +1,11 @@
 import { z } from 'zod'
+import { emailRequired } from './primitives'
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_.#-])[A-Za-z\d@$!%*?&_.#-]{8,128}$/
 const PASSWORD_MESSAGE = 'Password must be 8–128 characters with at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&_.#-)'
 
 export const loginSchema = z.object({
-  email: z.string().email('Enter a valid email address'),
+  email: emailRequired,
   password: z.string().min(1, 'Password is required'),
 })
 export type LoginFormData = z.infer<typeof loginSchema>
@@ -19,7 +20,7 @@ export const registerSchema = z
       .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
     firstName: z.string().min(1, 'First name is required').max(100),
     lastName: z.string().min(1, 'Last name is required').max(100),
-    email: z.string().email('Enter a valid email address'),
+    email: emailRequired,
     password: z.string().regex(PASSWORD_REGEX, PASSWORD_MESSAGE),
     confirmPassword: z.string(),
   })
@@ -30,7 +31,7 @@ export const registerSchema = z
 export type RegisterFormData = z.infer<typeof registerSchema>
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Enter a valid email address'),
+  email: emailRequired,
 })
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
 
