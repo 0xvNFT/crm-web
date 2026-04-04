@@ -1,40 +1,36 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateContact } from '@/api/endpoints/contacts'
-import { useAccounts } from '@/api/endpoints/accounts'
+import { useAccountSearch } from '@/api/endpoints/accounts'
 import type { CreateContactRequest } from '@/api/app-types'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { contactSchema, type ContactFormData } from '@/schemas/contacts'
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactFormPage() {
   const navigate = useNavigate()
   const { mutate: createContact, isPending } = useCreateContact()
 
-  // Fetch accounts for the picker — size=100 is enough for a dropdown
-  const { data: accountsPage, isLoading: accountsLoading } = useAccounts(0, 100)
-  const accounts = accountsPage?.content ?? []
+  const [accountQuery, setAccountQuery] = useState('')
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const accountOptions: ComboboxOption[] = (accountResults ?? [])
+    .filter((a) => a.id && a.name)
+    .map((a) => ({ value: a.id!, label: `${a.name} — ${a.accountType ?? ''}`.trim() }))
 
   const contactTypeOptions = useConfigOptions('contact.type')
   const SALUTATIONS = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Prof.']
@@ -118,18 +114,14 @@ export default function ContactFormPage() {
               name="accountId"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} disabled={accountsLoading}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={accountsLoading ? 'Loading accounts…' : 'Select account'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accounts.map((a) => (
-                      <SelectItem key={a.id} value={a.id ?? ''}>
-                        {a.name} — {a.accountType}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={accountOptions}
+                  placeholder="Search accounts…"
+                  onSearchChange={setAccountQuery}
+                  isLoading={isSearchingAccounts}
+                />
               )}
             />
           </FormRow>
@@ -341,7 +333,7 @@ export default function ContactFormPage() {
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending || accountsLoading}>
+          <Button type="submit" disabled={isPending}>
             {isPending ? 'Creating…' : 'Create Contact'}
           </Button>
         </div>

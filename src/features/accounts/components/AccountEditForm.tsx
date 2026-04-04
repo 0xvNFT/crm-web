@@ -29,6 +29,7 @@ export function AccountEditForm({ accountId, account, onSuccess, onCancel }: Acc
   const accountTypeOptions = useConfigOptions('account.type')
   const accountStatusOptions = useConfigOptions('account.status')
   const customerClassOptions = useConfigOptions('account.customerClass')
+  const paymentTermsOptions = useConfigOptions('paymentTerms')
 
   const [ownerQuery, setOwnerQuery] = useState('')
   const [parentQuery, setParentQuery] = useState('')
@@ -218,7 +219,20 @@ export function AccountEditForm({ accountId, account, onSuccess, onCancel }: Acc
             <Input {...register('creditLimit')} type="number" min={0} step={0.01} />
           </FormRow>
           <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
-            <Input {...register('paymentTerms')} placeholder="e.g. NET30" />
+            <Controller
+              name="paymentTerms"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                  <SelectTrigger><SelectValue placeholder="Select terms" /></SelectTrigger>
+                  <SelectContent>
+                    {paymentTermsOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </FormRow>
           <FormRow label="Annual Revenue" error={errors.annualRevenue?.message}>
             <Input {...register('annualRevenue')} type="number" min={0} step={0.01} />
