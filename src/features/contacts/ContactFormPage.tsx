@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { PhAddressFields } from '@/components/shared/PhAddressFields'
 import { useCreateContact } from '@/api/endpoints/contacts'
 import { useAccountSearch } from '@/api/endpoints/accounts'
 import type { CreateContactRequest } from '@/api/app-types'
@@ -43,6 +44,7 @@ export default function ContactFormPage() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -78,9 +80,10 @@ export default function ContactFormPage() {
       ...(rest.deaNumber         ? { deaNumber:         rest.deaNumber }         : {}),
       ...(rest.stateLicenseNumber ? { stateLicenseNumber: rest.stateLicenseNumber } : {}),
       ...(rest.addressStreet     ? { addressStreet:     rest.addressStreet }     : {}),
-      ...(rest.addressBarangay   ? { addressBarangay:   rest.addressBarangay }   : {}),
-      ...(rest.addressCity       ? { addressCity:       rest.addressCity }       : {}),
+      ...(rest.addressRegion     ? { addressRegion:     rest.addressRegion }     : {}),
       ...(rest.addressProvince   ? { addressProvince:   rest.addressProvince }   : {}),
+      ...(rest.addressCity       ? { addressCity:       rest.addressCity }       : {}),
+      ...(rest.addressBarangay   ? { addressBarangay:   rest.addressBarangay }   : {}),
       ...(rest.addressPostalCode ? { addressPostalCode: rest.addressPostalCode } : {}),
       ...(rest.notes             ? { notes:             rest.notes }             : {}),
       ...(rest.prescribingAuthority !== undefined ? { prescribingAuthority: rest.prescribingAuthority } : {}),
@@ -304,15 +307,7 @@ export default function ContactFormPage() {
           <FormRow label="Street" error={errors.addressStreet?.message}>
             <Input {...register('addressStreet')} />
           </FormRow>
-          <FormRow label="Barangay" error={errors.addressBarangay?.message}>
-            <Input {...register('addressBarangay')} />
-          </FormRow>
-          <FormRow label="City" error={errors.addressCity?.message}>
-            <Input {...register('addressCity')} />
-          </FormRow>
-          <FormRow label="Province" error={errors.addressProvince?.message}>
-            <Input {...register('addressProvince')} />
-          </FormRow>
+          <PhAddressFields control={control} setValue={setValue} errors={errors} />
           <FormRow label="Postal Code" error={errors.addressPostalCode?.message}>
             <Input {...register('addressPostalCode')} />
           </FormRow>
