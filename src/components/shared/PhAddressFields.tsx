@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { type Control, type FieldErrors, type UseFormSetValue, Controller, useWatch } from 'react-hook-form'
 import {
   getAllRegions,
@@ -48,52 +48,39 @@ export function PhAddressFields({ control, setValue, errors, prefix = 'address',
   const selectedProvinceName = useWatch({ control, name: provinceField })
   const selectedCityName     = useWatch({ control, name: cityField })
 
-  const selectedRegion = REGIONS.find((r) => r.value === selectedRegionName)
+  // Derive options purely from watched values — no useEffect/useState needed
+  const selectedRegion = useMemo(
+    () => REGIONS.find((r) => r.value === selectedRegionName),
+    [selectedRegionName]
+  )
 
-  const [provinces, setProvinces] = useState<{ value: string; psgcCode: string; label: string }[]>([])
-  const [cities,    setCities]    = useState<{ value: string; psgcCode: string; label: string }[]>([])
-  const [barangays, setBarangays] = useState<{ value: string; label: string }[]>([])
+  const provinces = useMemo(() => {
+    if (!selectedRegion) return []
+    return getProvincesByRegion(selectedRegion.psgcCode)
+      .map((p) => ({ value: p.name, psgcCode: p.psgcCode, label: p.name }))
+  }, [selectedRegion])
 
-  // Whether this region has no provinces (e.g. NCR) — cities load directly from region code
+  // NCR and similar regions have no provinces — cities load directly from the region code
   const isProvinceless = !!selectedRegion && provinces.length === 0
 
-  useEffect(() => {
-    if (!selectedRegion) { setProvinces([]); setCities([]); setBarangays([]); return }
-
-    const regionProvinces = getProvincesByRegion(selectedRegion.psgcCode)
-    setProvinces(regionProvinces.map((p) => ({ value: p.name, psgcCode: p.psgcCode, label: p.name })))
-
-    if (regionProvinces.length === 0) {
-      // NCR and similar: load cities directly under the region
-      setCities(
-        getMunicipalitiesByProvince(selectedRegion.psgcCode).map((c) => ({ value: c.name, psgcCode: c.psgcCode, label: c.name }))
-      )
-    } else {
-      setCities([])
+  const cities = useMemo(() => {
+    if (!selectedRegion) return []
+    if (isProvinceless) {
+      return getMunicipalitiesByProvince(selectedRegion.psgcCode)
+        .map((c) => ({ value: c.name, psgcCode: c.psgcCode, label: c.name }))
     }
-    setBarangays([])
-  }, [selectedRegion?.psgcCode])
-
-  useEffect(() => {
-    // Skip if province-less region — cities already loaded from region effect above
-    if (isProvinceless) return
-    if (!selectedProvinceName) { setCities([]); setBarangays([]); return }
     const province = provinces.find((p) => p.value === selectedProvinceName)
-    if (!province) { setCities([]); setBarangays([]); return }
-    setCities(
-      getMunicipalitiesByProvince(province.psgcCode).map((c) => ({ value: c.name, psgcCode: c.psgcCode, label: c.name }))
-    )
-    setBarangays([])
-  }, [selectedProvinceName, provinces, isProvinceless])
+    if (!province) return []
+    return getMunicipalitiesByProvince(province.psgcCode)
+      .map((c) => ({ value: c.name, psgcCode: c.psgcCode, label: c.name }))
+  }, [selectedRegion, isProvinceless, provinces, selectedProvinceName])
 
-  useEffect(() => {
-    if (!selectedCityName) { setBarangays([]); return }
+  const barangays = useMemo(() => {
     const city = cities.find((c) => c.value === selectedCityName)
-    if (!city) { setBarangays([]); return }
-    setBarangays(
-      getBarangaysByMunicipality(city.psgcCode).map((b) => ({ value: b.name, label: b.name }))
-    )
-  }, [selectedCityName, cities])
+    if (!city) return []
+    return getBarangaysByMunicipality(city.psgcCode)
+      .map((b) => ({ value: b.name, label: b.name }))
+  }, [cities, selectedCityName])
 
   return (
     <>
@@ -164,7 +151,7 @@ export function PhAddressFields({ control, setValue, errors, prefix = 'address',
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder={cities.length === 0 ? (selectedRegion ? 'Select province first' : 'Select region first') : 'Select city / municipality'} />
+                <SelectValue placeholder={cities.length === 0 ? (selectedRegion && !isProvinceless ? 'Select province first' : 'Select region first') : 'Select city / municipality'} />
               </SelectTrigger>
               <SelectContent>
                 {cities.map((c) => <SelectItem key={c.psgcCode} value={c.value}>{c.label}</SelectItem>)}
