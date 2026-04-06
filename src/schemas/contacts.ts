@@ -29,9 +29,10 @@ export const contactSchema = z.object({
   consentConfirmedStatus: z.string().optional(),
   consentConfirmedDate: dateField,
   addressStreet: z.string().trim().optional(),
-  addressBarangay: z.string().trim().optional(),
-  addressCity: z.string().trim().optional(),
-  addressProvince: z.string().trim().optional(),
+  addressRegion: z.string().optional(),
+  addressProvince: z.string().optional(),
+  addressCity: z.string().optional(),
+  addressBarangay: z.string().optional(),
   addressPostalCode: z.string().trim().optional(),
   notes: notesField,
 })
@@ -68,6 +69,12 @@ export const contactEditSchema = z.object({
   status: z.string().optional(),
   consentConfirmedStatus: z.string().optional(),
   consentConfirmedDate: dateField,
+  addressStreet: z.string().trim().optional(),
+  addressRegion: z.string().optional(),
+  addressProvince: z.string().optional(),
+  addressCity: z.string().optional(),
+  addressBarangay: z.string().optional(),
+  addressPostalCode: z.string().trim().optional(),
   notes: notesField,
 })
 export type ContactEditFormData = z.infer<typeof contactEditSchema>

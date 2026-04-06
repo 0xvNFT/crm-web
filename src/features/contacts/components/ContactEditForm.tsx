@@ -1,4 +1,5 @@
 import { useForm, Controller } from 'react-hook-form'
+import { PhAddressFields } from '@/components/shared/PhAddressFields'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X, Check } from 'lucide-react'
 import { useUpdateContact } from '@/api/endpoints/contacts'
@@ -10,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { contactEditSchema, type ContactEditFormData } from '@/schemas/contacts'
@@ -22,15 +24,6 @@ interface ContactEditFormProps {
   onCancel: () => void
 }
 
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
 export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: ContactEditFormProps) {
   const { mutate: updateContact, isPending } = useUpdateContact(contactId)
   const { isReadOnly } = useRole()
@@ -41,7 +34,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
   const adoptionStageOptions = useConfigOptions('contact.adoptionStage')
   const leadSourceOptions = useConfigOptions('contact.leadSource')
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<ContactEditFormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<ContactEditFormData>({
     resolver: zodResolver(contactEditSchema),
     defaultValues: {
       firstName:              contact.firstName              ?? '',
@@ -71,6 +64,12 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
       status:                 contact.status                 ?? 'active',
       consentConfirmedStatus: contact.consentConfirmedStatus ?? undefined,
       consentConfirmedDate:   contact.consentConfirmedDate   ?? '',
+      addressStreet:          contact.addressStreet          ?? '',
+      addressRegion:          contact.addressRegion          ?? undefined,
+      addressProvince:        contact.addressProvince        ?? undefined,
+      addressCity:            contact.addressCity            ?? undefined,
+      addressBarangay:        contact.addressBarangay        ?? undefined,
+      addressPostalCode:      contact.addressPostalCode      ?? '',
       notes:                  contact.notes                  ?? '',
     },
   })
@@ -110,6 +109,12 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
       ...(rest.emailOptOut          !== undefined ? { emailOptOut:          rest.emailOptOut }          : {}),
       ...(consentConfirmedStatus   ? { consentStatus: consentConfirmedStatus }         : {}),
       ...(consentConfirmedDate     ? { consentDate:   consentConfirmedDate }           : {}),
+      ...(rest.addressStreet     ? { addressStreet:     rest.addressStreet }     : {}),
+      ...(rest.addressRegion     ? { addressRegion:     rest.addressRegion }     : {}),
+      ...(rest.addressProvince   ? { addressProvince:   rest.addressProvince }   : {}),
+      ...(rest.addressCity       ? { addressCity:       rest.addressCity }       : {}),
+      ...(rest.addressBarangay   ? { addressBarangay:   rest.addressBarangay }   : {}),
+      ...(rest.addressPostalCode ? { addressPostalCode: rest.addressPostalCode } : {}),
     }
 
     updateContact(payload, {
@@ -321,6 +326,16 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
             </Label>
           </div>
         </div>
+      </FormSection>
+
+      <FormSection title="Address">
+        <FormRow label="Street" error={errors.addressStreet?.message}>
+          <Input {...register('addressStreet')} />
+        </FormRow>
+        <PhAddressFields control={control} setValue={setValue} errors={errors} />
+        <FormRow label="Postal Code" error={errors.addressPostalCode?.message}>
+          <Input {...register('addressPostalCode')} />
+        </FormRow>
       </FormSection>
 
       <div className="rounded-xl border bg-background p-5 space-y-2">
