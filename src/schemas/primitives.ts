@@ -29,8 +29,11 @@ export const emailField = z
   .optional()
   .or(z.literal(''))
 
-/** Required email field */
-export const emailRequired = z.email('Email is required')
+/** Required email field — distinct messages for empty vs invalid format */
+export const emailRequired = z
+  .string()
+  .min(1, 'Email is required')
+  .pipe(z.email('Must be a valid email address'))
 
 // ─── URL ──────────────────────────────────────────────────────────────────────
 /** Optional URL field — must start with https:// or http:// when provided */
@@ -63,6 +66,9 @@ export const notesField = z.string().max(2000, 'Notes must be 2000 characters or
 // ─── Numbers ─────────────────────────────────────────────────────────────────
 /** Non-negative decimal — for money, revenue, etc. */
 export const moneyField = z.coerce.number<number>().nonnegative('Must be 0 or greater').optional()
+
+/** Required non-negative decimal — for unit prices, amounts that must be present */
+export const moneyRequired = z.coerce.number<number>().nonnegative('Must be 0 or greater')
 
 /** Non-negative integer — for counts, quantities */
 export const countField = z.coerce.number<number>().int().nonnegative().optional()
