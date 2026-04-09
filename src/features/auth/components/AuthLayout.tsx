@@ -6,10 +6,10 @@ interface AuthLayoutProps {
 }
 
 const HIGHLIGHTS = [
-  'Territory & account coverage at a glance',
-  'End-to-end lead-to-order lifecycle',
-  'Field visit logs, coaching, and compliance',
-  'Role-based for reps, managers, and admins',
+  'Full territory and account visibility',
+  'Lead-to-order pipeline in one place',
+  'Field visit logs with coaching and compliance',
+  'Built for reps, managers, and admins',
 ]
 
 export function AuthLayout({ children }: AuthLayoutProps) {
@@ -20,7 +20,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {/* Logo */}
         <Link to="/login" className="flex items-center gap-2.5 w-fit">
           <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 text-white font-bold text-sm select-none">
-            C
+            AF
           </span>
           <span className="text-auth-panel-foreground font-semibold text-base tracking-tight">
             AlphaForce CRM
@@ -31,13 +31,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className="space-y-6">
           <div className="space-y-3">
             <p className="text-xs font-semibold tracking-widest uppercase text-auth-panel-subtle">
-              Pharma Field Force
+              AlphaForce CRM
             </p>
             <h1 className="text-4xl font-bold text-auth-panel-foreground leading-tight tracking-tight">
-              Manage your field<br />force with clarity.
+              Your field force,<br />fully in control.
             </h1>
             <p className="text-auth-panel-subtle text-sm leading-relaxed max-w-xs">
-              One platform for reps, managers, and admins to run pharmaceutical field operations — end-to-end.
+              From territory planning to order fulfillment - one platform for your entire pharma field operation.
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {/* Mobile-only logo */}
         <div className="mb-8 flex items-center gap-2 lg:hidden">
           <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary text-primary-foreground font-bold text-xs select-none">
-            C
+            AF
           </span>
           <span className="font-semibold text-sm tracking-tight text-foreground">
             AlphaForce CRM
