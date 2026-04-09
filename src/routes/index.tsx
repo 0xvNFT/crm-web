@@ -15,6 +15,7 @@ const ForgotPasswordPage = lazy(() => import('@/features/auth/ForgotPasswordPage
 const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage'))
 const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
 const AcceptInvitePage = lazy(() => import('@/features/auth/AcceptInvitePage'))
+const ForceChangePasswordPage = lazy(() => import('@/features/auth/ForceChangePasswordPage'))
 
 // App pages
 const ProfilePage = lazy(() => import('@/features/auth/ProfilePage'))
@@ -90,6 +91,15 @@ export function AppRouter() {
         <Route path="/reset-password" element={<Wrap><ResetPasswordPage /></Wrap>} />
         <Route path="/verify-email" element={<Wrap><VerifyEmailPage /></Wrap>} />
         <Route path="/accept-invite" element={<Wrap><AcceptInvitePage /></Wrap>} />
+        {/* Force password change — protected (must be logged in) but outside AppShell */}
+        <Route
+          path="/change-password"
+          element={
+            <PrivateRoute>
+              <Wrap><ForceChangePasswordPage /></Wrap>
+            </PrivateRoute>
+          }
+        />
 
         {/* Protected routes — all nested inside AppShell */}
         <Route
