@@ -37,7 +37,7 @@ export default function LoginPage() {
     try {
       const user = await loginMutation.mutateAsync(data)
       login(user)
-      navigate(from, { replace: true })
+      navigate(user.mustChangePassword ? '/change-password' : from, { replace: true })
     } catch (err) {
       const msg = parseApiError(err)
       if (msg.toLowerCase().includes('not verified') || msg.toLowerCase().includes('verify')) {
@@ -131,12 +131,14 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">
-            Create one
-          </Link>
-        </p>
+        {import.meta.env.VITE_REGISTRATION_ENABLED !== 'false' && (
+          <p className="text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">
+              Create one
+            </Link>
+          </p>
+        )}
       </div>
     </AuthLayout>
   )

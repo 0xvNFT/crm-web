@@ -112,6 +112,7 @@ export interface AuthUser {
   email: string
   fullName: string
   roles: Role[]
+  mustChangePassword?: boolean
 }
 
 // ─── Auth request types — all sourced from generated spec, never manually defined ──
