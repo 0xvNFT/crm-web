@@ -325,14 +325,16 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          <Route
-            path="/billing"
-            element={
-              <RoleRoute roles={['ADMIN']}>
-                <Wrap><BillingPage /></Wrap>
-              </RoleRoute>
-            }
-          />
+          {import.meta.env.VITE_BILLING_ENABLED !== 'false' && (
+            <Route
+              path="/billing"
+              element={
+                <RoleRoute roles={['ADMIN']}>
+                  <Wrap><BillingPage /></Wrap>
+                </RoleRoute>
+              }
+            />
+          )}
         </Route>
 
         {/* Catch-all — show 404 instead of silent redirect so users know the URL was wrong */}

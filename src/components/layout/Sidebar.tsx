@@ -63,9 +63,11 @@ const NAV_MANAGER: NavItem[] = [
   { to: '/reports/kpi', label: 'KPI Reports', icon: Target,        roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
 ]
 
+const billingEnabled = import.meta.env.VITE_BILLING_ENABLED !== 'false'
+
 const NAV_ADMIN: NavItem[] = [
   { to: '/admin',   label: 'Admin',   icon: Settings,   roles: ['ADMIN'] },
-  { to: '/billing', label: 'Billing', icon: CreditCard, roles: ['ADMIN'] },
+  ...(billingEnabled ? [{ to: '/billing', label: 'Billing', icon: CreditCard, roles: ['ADMIN'] } as NavItem] : []),
 ]
 
 function NavGroup({
@@ -138,7 +140,7 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
           C
         </span>
         <span className="text-sm font-semibold tracking-tight text-white">
-          CRM CDTS
+          AlphaForce CRM
         </span>
       </div>
 
