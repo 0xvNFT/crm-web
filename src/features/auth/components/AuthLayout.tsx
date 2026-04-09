@@ -23,7 +23,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             C
           </span>
           <span className="text-auth-panel-foreground font-semibold text-base tracking-tight">
-            CRM CDTS
+            AlphaForce CRM
           </span>
         </Link>
 
@@ -57,7 +57,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         {/* Footer */}
         <p className="text-xs text-auth-panel-subtle/60">
-          &copy; {new Date().getFullYear()} CRM CDTS. All rights reserved.
+          &copy; {new Date().getFullYear()} AlphaForce CRM. All rights reserved.
         </p>
       </aside>
 
@@ -69,7 +69,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             C
           </span>
           <span className="font-semibold text-sm tracking-tight text-foreground">
-            CRM CDTS
+            AlphaForce CRM
           </span>
         </div>
 

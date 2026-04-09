@@ -57,7 +57,7 @@ export default function LoginPage() {
       <div className="space-y-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Welcome back</h2>
-          <p className="text-sm text-muted-foreground">Sign in to your CRM CDTS account</p>
+          <p className="text-sm text-muted-foreground">Sign in to your AlphaForce CRM account</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
