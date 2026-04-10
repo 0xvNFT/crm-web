@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useOpportunity, useUpdateOpportunity, useAdvanceOpportunityStage } from '@/api/endpoints/opportunities'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -20,6 +20,8 @@ import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { opportunityEditSchema, type OpportunityEditFormData } from '@/schemas/opportunities'
+import { OpportunityActivitiesSection } from './components/OpportunityActivitiesSection'
+import { OpportunityVisitsSection } from './components/OpportunityVisitsSection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -88,7 +90,7 @@ export default function OpportunityDetailPage() {
   const { data: opp, isLoading, isError } = useOpportunity(id ?? '')
   const { mutate: updateOpp, isPending } = useUpdateOpportunity(id ?? '')
   const { mutate: advanceStage, isPending: isAdvancing } = useAdvanceOpportunityStage(id ?? '')
-  const { isManager } = useRole()
+  const { isReadOnly } = useRole()
 
   const salesStageOptions      = useConfigOptions('opportunity.salesStage')
   const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
@@ -96,7 +98,7 @@ export default function OpportunityDetailPage() {
   const { register, handleSubmit, reset, control, formState: { errors } } =
     useForm<OpportunityEditFormData>({ resolver: zodResolver(opportunityEditSchema) })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !opp) return <ErrorMessage message="Opportunity not found." />
 
 
@@ -133,7 +135,7 @@ export default function OpportunityDetailPage() {
   // Next stage in the pipeline (not applicable for closed stages)
   const currentIdx = opp.salesStage ? STAGE_ORDER.indexOf(opp.salesStage) : -1
   const isClosed = opp.salesStage === 'closed_won' || opp.salesStage === 'closed_lost'
-  const nextStage = !isClosed && currentIdx >= 0 && currentIdx < STAGE_ORDER.indexOf('closed_won') - 1
+  const nextStage = !isClosed && currentIdx >= 0 && currentIdx < STAGE_ORDER.length - 1
     ? STAGE_ORDER[currentIdx + 1]
     : null
 
@@ -147,21 +149,21 @@ export default function OpportunityDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{opp.topic}</h1>
-            {opp.status && <StatusBadge status={opp.status.toUpperCase()} />}
+            {opp.status && <StatusBadge status={opp.status} />}
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {opp.account?.name && (
+            {opp.accountName && (
               <button
-                onClick={() => navigate(`/accounts/${opp.account?.id}`)}
+                onClick={() => navigate(`/accounts/${opp.accountId}`)}
                 className="hover:text-foreground transition-colors hover:underline"
               >
-                {opp.account.name}
+                {opp.accountName}
               </button>
             )}
-            {opp.owner?.fullName && (
+            {opp.ownerName && (
               <>
                 <span>·</span>
-                <span>{opp.owner.fullName}</span>
+                <span>{opp.ownerName}</span>
               </>
             )}
             {opp.estRevenue != null && (
@@ -173,7 +175,7 @@ export default function OpportunityDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             {nextStage && (
               <Button size="sm" onClick={() => confirmAdvanceStage(nextStage)}>
@@ -214,10 +216,10 @@ export default function OpportunityDetailPage() {
           </DetailSection>
 
           <DetailSection title="Relationships">
-            <DetailField label="Account"   value={opp.account?.name} />
-            <DetailField label="Contact"   value={opp.contact ? `${opp.contact.firstName ?? ''} ${opp.contact.lastName ?? ''}`.trim() : undefined} />
-            <DetailField label="Owner"     value={opp.owner?.fullName} />
-            <DetailField label="Territory" value={opp.territory?.territoryName} />
+            <DetailField label="Account"   value={opp.accountName} />
+            <DetailField label="Contact"   value={opp.contactName} />
+            <DetailField label="Owner"     value={opp.ownerName} />
+            <DetailField label="Territory" value={opp.territoryName} />
           </DetailSection>
 
           {opp.description && (
@@ -234,6 +236,9 @@ export default function OpportunityDetailPage() {
               <DetailField label="Last Updated"   value={formatDate(opp.updatedAt)} />
             </div>
           </div>
+
+          <OpportunityActivitiesSection opportunityId={opp.id ?? ''} />
+          <OpportunityVisitsSection opportunityId={opp.id ?? ''} />
         </div>
       )}
 

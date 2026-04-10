@@ -57,7 +57,7 @@ export function ContactActivitiesSection({ contactId }: ContactActivitiesSection
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{formatLabel(activity.activityType)}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{formatDate(activity.dueDate)}</td>
                   <td className="px-4 py-3">
-                    {activity.status ? <StatusBadge status={activity.status.toUpperCase()} /> : '—'}
+                    {activity.status ? <StatusBadge status={activity.status} /> : '—'}
                   </td>
                 </tr>
               ))}

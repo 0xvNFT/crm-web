@@ -7,7 +7,7 @@ export function useUnreadNotifications() {
     queryKey: ['notifications', 'unread'],
     queryFn: () =>
       client
-        .get<PageNotification>('/api/notifications', { params: { page: 0, size: 20 } })
+        .get<PageNotification>('/api/v1/notifications', { params: { page: 0, size: 20 } })
         .then((r) => r.data),
     // Poll every 30s + refetch on tab focus so badge stays fresh
     refetchInterval: 30_000,
@@ -20,7 +20,7 @@ export function useAllNotifications(page = 0) {
     queryKey: ['notifications', 'all', page],
     queryFn: () =>
       client
-        .get<PageNotification>('/api/notifications/all', { params: { page, size: 20 } })
+        .get<PageNotification>('/api/v1/notifications/all', { params: { page, size: 20 } })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
   })
@@ -30,7 +30,7 @@ export function useMarkNotificationRead() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) =>
-      client.post<Notification>(`/api/notifications/${id}/read`).then((r) => r.data),
+      client.post<Notification>(`/api/v1/notifications/${id}/read`).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['notifications'] })
     },
@@ -41,7 +41,7 @@ export function useMarkAllNotificationsRead() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () =>
-      client.post('/api/notifications/read-all').then((r) => r.data),
+      client.post('/api/v1/notifications/read-all').then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['notifications'] })
     },

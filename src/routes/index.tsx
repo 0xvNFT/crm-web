@@ -1,9 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
+
+const NotFoundPage = lazy(() => import('@/features/errors/NotFoundPage'))
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+ import { Skeleton } from '@/components/ui/skeleton'
+// import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
 // Auth pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'))
@@ -12,6 +15,7 @@ const ForgotPasswordPage = lazy(() => import('@/features/auth/ForgotPasswordPage
 const ResetPasswordPage = lazy(() => import('@/features/auth/ResetPasswordPage'))
 const VerifyEmailPage = lazy(() => import('@/features/auth/VerifyEmailPage'))
 const AcceptInvitePage = lazy(() => import('@/features/auth/AcceptInvitePage'))
+const ForceChangePasswordPage = lazy(() => import('@/features/auth/ForceChangePasswordPage'))
 
 // App pages
 const ProfilePage = lazy(() => import('@/features/auth/ProfilePage'))
@@ -73,13 +77,13 @@ const MaterialDetailPage = lazy(() => import('@/features/materials/MaterialDetai
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+   return <Suspense fallback={< Skeleton />}>{children}</Suspense>
+  // return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 }
 
 export function AppRouter() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Wrap><LoginPage /></Wrap>} />
         <Route path="/register" element={<Wrap><RegisterPage /></Wrap>} />
@@ -87,6 +91,15 @@ export function AppRouter() {
         <Route path="/reset-password" element={<Wrap><ResetPasswordPage /></Wrap>} />
         <Route path="/verify-email" element={<Wrap><VerifyEmailPage /></Wrap>} />
         <Route path="/accept-invite" element={<Wrap><AcceptInvitePage /></Wrap>} />
+        {/* Force password change — protected (must be logged in) but outside AppShell */}
+        <Route
+          path="/change-password"
+          element={
+            <PrivateRoute>
+              <Wrap><ForceChangePasswordPage /></Wrap>
+            </PrivateRoute>
+          }
+        />
 
         {/* Protected routes — all nested inside AppShell */}
         <Route
@@ -169,11 +182,11 @@ export function AppRouter() {
             }
           />
 
-          {/* MANAGER+ only */}
+          {/* Territories — read: FIELD_REP + READ_ONLY; write: ADMIN/MANAGER only */}
           <Route
             path="/territories"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'READ_ONLY']}>
                 <Wrap><TerritoryListPage /></Wrap>
               </RoleRoute>
             }
@@ -189,15 +202,16 @@ export function AppRouter() {
           <Route
             path="/territories/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'READ_ONLY']}>
                 <Wrap><TerritoryDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Teams — all non-CSR roles can view; write: ADMIN/MANAGER only */}
           <Route
             path="/teams"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><TeamListPage /></Wrap>
               </RoleRoute>
             }
@@ -221,15 +235,16 @@ export function AppRouter() {
           <Route
             path="/teams/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><TeamDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Materials — all roles including CSR can view */}
           <Route
             path="/materials"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><MaterialListPage /></Wrap>
               </RoleRoute>
             }
@@ -237,15 +252,16 @@ export function AppRouter() {
           <Route
             path="/materials/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><MaterialDetailPage /></Wrap>
               </RoleRoute>
             }
           />
+          {/* Products — all roles including CSR can view; write: ADMIN only */}
           <Route
             path="/products"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><ProductListPage /></Wrap>
               </RoleRoute>
             }
@@ -261,7 +277,7 @@ export function AppRouter() {
           <Route
             path="/products/:id"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
                 <Wrap><ProductDetailPage /></Wrap>
               </RoleRoute>
             }
@@ -274,10 +290,11 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
+          {/* Reports — all non-CSR roles */}
           <Route
             path="/reports"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><ReportsPage /></Wrap>
               </RoleRoute>
             }
@@ -285,7 +302,7 @@ export function AppRouter() {
           <Route
             path="/reports/kpi"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP']}>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><KpiReportsPage /></Wrap>
               </RoleRoute>
             }
@@ -308,19 +325,20 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          <Route
-            path="/billing"
-            element={
-              <RoleRoute roles={['ADMIN']}>
-                <Wrap><BillingPage /></Wrap>
-              </RoleRoute>
-            }
-          />
+          {import.meta.env.VITE_BILLING_ENABLED !== 'false' && (
+            <Route
+              path="/billing"
+              element={
+                <RoleRoute roles={['ADMIN']}>
+                  <Wrap><BillingPage /></Wrap>
+                </RoleRoute>
+              }
+            />
+          )}
         </Route>
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* Catch-all — show 404 instead of silent redirect so users know the URL was wrong */}
+        <Route path="*" element={<Wrap><NotFoundPage /></Wrap>} />
       </Routes>
-    </BrowserRouter>
   )
 }

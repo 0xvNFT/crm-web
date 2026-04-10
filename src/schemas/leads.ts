@@ -1,15 +1,23 @@
 import { z } from 'zod'
+import { nameField, emailField, phoneField } from './primitives'
 
 export const leadSchema = z.object({
-  lastName:    z.string().min(1, 'Last name is required'),
-  firstName:   z.string().optional(),
-  companyName: z.string().optional(),
-  email:       z.string().email('Invalid email').optional().or(z.literal('')),
-  phone:       z.string().optional(),
-  leadStatus:  z.string().optional().transform(v => v || undefined),
-  rating:      z.string().optional().transform(v => v || undefined),
+  lastName:    nameField('Last name'),
+  firstName:   z.string().trim().optional(),
+  companyName: z.string().trim().optional(),
+  email:       emailField,
+  phone:       phoneField,
+  leadStatus:  z.string().optional(),
+  rating:      z.string().optional(),
   leadSource:  z.string().optional(),
   leadScore:   z.coerce.number<number>().int().min(0).optional(),
+  // Additional fields rendered in the form when present
+  topic:             z.string().trim().optional(),
+  industry:          z.string().trim().optional(),
+  estimatedBudget:   z.coerce.number<number>().nonnegative().optional(),
+  decisionTimeframe: z.string().trim().optional(),
+  purchaseProcess:   z.string().trim().optional(),
+  emailOptOut:       z.boolean().optional(),
 })
 
 export type LeadFormData = z.infer<typeof leadSchema>

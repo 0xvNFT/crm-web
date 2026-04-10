@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, Phone, Pencil } from 'lucide-react'
-import { useLead, useConvertLead, useUpdateLead } from '@/api/endpoints/leads'
+import { ArrowLeft, Mail, Phone, Pencil, User } from 'lucide-react'
+import { useLead, useUpdateLead } from '@/api/endpoints/leads'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { toast } from '@/hooks/useToast'
 import { useRole } from '@/hooks/useRole'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
+import { LeadConvertDialog } from './components/LeadConvertDialog'
 
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -40,19 +41,18 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const { data: lead, isLoading, isError } = useLead(id ?? '')
-  const { mutate: convertLead, isPending: isConverting } = useConvertLead()
   const { mutate: updateLead, isPending: isClosing } = useUpdateLead(id ?? '')
   const [showConvert, setShowConvert] = useState(false)
   const [showClose, setShowClose] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !lead) return <ErrorMessage message="Lead not found." />
 
   const leadName = `${lead.firstName ?? ''} ${lead.lastName}`.trim()
-  const canConvert = isManager && !lead.isConverted
-  const canClose = isManager && lead.leadStatus !== 'canceled' && !lead.isConverted
+  const canConvert = isManager && !lead.isConverted && !isReadOnly
+  const canClose = isManager && lead.leadStatus !== 'canceled' && !lead.isConverted && !isReadOnly
 
   return (
     <div className="space-y-4">
@@ -70,10 +70,12 @@ export default function LeadDetailPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
+          {!isReadOnly && (
+            <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          )}
           {canClose && (
             <Button variant="outline" size="sm" onClick={() => setShowClose(true)}>
               Close Lead
@@ -119,12 +121,24 @@ export default function LeadDetailPage() {
       </DetailSection>
 
       <DetailSection title="Assignment">
-        <DetailField label="Owner" value={lead.assignedUser?.fullName} />
+        <DetailField label="Owner" value={lead.assignedUserName} />
       </DetailSection>
 
       <DetailSection title="Qualification">
         <DetailField label="Converted" value={lead.isConverted} />
         <DetailField label="Converted Date" value={lead.convertedDate ? formatDate(lead.convertedDate) : null} />
+        {lead.relatedContactId && (
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium text-muted-foreground">Related Contact</p>
+            <button
+              className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+              onClick={() => navigate(`/contacts/${lead.relatedContactId}`)}
+            >
+              <User className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {lead.relatedContactName ?? 'View Contact'}
+            </button>
+          </div>
+        )}
       </DetailSection>
 
       <DetailSection title="Timestamps">
@@ -156,28 +170,14 @@ export default function LeadDetailPage() {
         isPending={isClosing}
       />
 
-      <ConfirmDialog
+      <LeadConvertDialog
         open={showConvert}
-        onCancel={() => setShowConvert(false)}
-        onConfirm={() =>
-          convertLead(
-            { id: id ?? '', data: {} },
-            {
-              onSuccess: () => {
-                toast('Lead converted successfully', { variant: 'success' })
-                setShowConvert(false)
-              },
-              onError: (err) => {
-                toast(parseApiError(err), { variant: 'destructive' })
-                setShowConvert(false)
-              },
-            }
-          )
-        }
-        title="Convert Lead?"
-        description="This will convert the lead into an account and opportunity. This action cannot be undone."
-        confirmLabel="Convert"
-        isPending={isConverting}
+        leadId={id ?? ''}
+        sourceAccountId={lead.relatedAccountId}
+        sourceAccountName={lead.relatedAccountName}
+        sourceContactId={lead.relatedContactId}
+        sourceContactName={lead.relatedContactName}
+        onClose={() => setShowConvert(false)}
       />
     </div>
   )

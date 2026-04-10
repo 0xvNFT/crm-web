@@ -6,13 +6,15 @@ import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
+import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaLead } from '@/api/app-types'
 
@@ -21,31 +23,28 @@ const LEAD_FILTERS: FilterDef[] = [
   { param: 'rating', label: 'Rating', configKey: 'lead.rating' },
 ]
 
-const columns: Column<PharmaLead>[] = [
+const FILTER_KEYS = ['leadStatus', 'rating']
+
+const ALL_COLUMNS: Column<PharmaLead>[] = [
   { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
   { header: 'Company', accessor: (row) => row.companyName },
   { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'UNKNOWN'} /> },
   { header: 'Rating', accessor: (row) => row.rating ?? '—' },
-  { header: 'Owner', accessor: (row) => row.assignedUser?.fullName },
+  { header: 'Owner', accessor: (row) => row.assignedUserName ?? '—' },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 
 export default function LeadListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { isManager, isReadOnly } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Leads')
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -60,20 +59,22 @@ export default function LeadListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <PageHeader
-          title="Leads"
+          title={title}
           description="Potential customers and prospects"
         />
-        <Button onClick={() => navigate('/leads/new')}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Lead
-        </Button>
+        {!isReadOnly && (
+          <Button onClick={() => navigate('/leads/new')}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Lead
+          </Button>
+        )}
       </div>
       <SearchInput
         value={query}
@@ -95,7 +96,7 @@ export default function LeadListPage() {
         onRowClick={(row) => navigate(`/leads/${row.id}`)}
         empty={isSearching
           ? { icon: Users, title: `No leads found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: Users, title: 'No leads yet', description: 'No leads have been added yet.' }
+          : { icon: Users, title: emptyTitle, description: emptyDescription }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />

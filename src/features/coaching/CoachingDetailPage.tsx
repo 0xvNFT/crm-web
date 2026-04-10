@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, CheckCircle } from 'lucide-react'
 import { useCoachingNote, useCompleteFollowUp } from '@/api/endpoints/coaching'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -38,13 +38,13 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function CoachingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const [showComplete, setShowComplete] = useState(false)
 
   const { data: note, isLoading, isError } = useCoachingNote(id ?? '')
   const { mutate: completeFollowUp, isPending: isCompleting } = useCompleteFollowUp(id ?? '')
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !note) return <ErrorMessage message="Coaching note not found." />
 
   const followUpPending = note.followUpRequired && !note.followUpCompleted
@@ -59,11 +59,11 @@ export default function CoachingDetailPage() {
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{note.noteTitle ?? '—'}</h1>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {note.salesRep?.fullName && <span>{note.salesRep.fullName}</span>}
-            {note.coach?.fullName && (
+            {note.salesRepName && <span>{note.salesRepName}</span>}
+            {note.coachName && (
               <>
                 <span>·</span>
-                <span>Coached by {note.coach.fullName}</span>
+                <span>Coached by {note.coachName}</span>
               </>
             )}
             {note.feedbackType && (
@@ -81,7 +81,7 @@ export default function CoachingDetailPage() {
           </div>
         </div>
 
-        {isManager && (
+        {isManager && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             {followUpPending && (
               <Button size="sm" variant="outline" onClick={() => setShowComplete(true)}>
@@ -113,19 +113,19 @@ export default function CoachingDetailPage() {
       )}
 
       <DetailSection title="Coaching Info">
-        <DetailField label="Rep"           value={note.salesRep?.fullName} />
-        <DetailField label="Coach"         value={note.coach?.fullName} />
+        <DetailField label="Rep"           value={note.salesRepName} />
+        <DetailField label="Coach"         value={note.coachName} />
         <DetailField label="Feedback Type" value={formatLabel(note.feedbackType)} />
         <DetailField label="Date Provided" value={formatDate(note.dateProvided)} />
-        <DetailField label="Territory"     value={note.territory?.territoryName} />
-        {note.visit && (
+        <DetailField label="Territory"     value={note.territoryName} />
+        {note.visitId && (
           <div className="space-y-0.5">
             <p className="text-xs font-medium text-muted-foreground">Linked Visit</p>
             <button
-              onClick={() => navigate(`/visits/${note.visit?.id}`)}
+              onClick={() => navigate(`/visits/${note.visitId}`)}
               className="text-sm text-primary hover:underline"
             >
-              {note.visit.subject ?? note.visit.visitNumber ?? 'View visit'}
+              {note.visitNumber ?? 'View visit'}
             </button>
           </div>
         )}

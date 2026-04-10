@@ -69,7 +69,7 @@ function CoachingHistorySection({ userId }: { userId: string }) {
                   <p className="text-sm font-medium text-foreground">{note.noteTitle ?? '—'}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {note.feedbackType ? formatLabel(note.feedbackType) : '—'}
-                    {note.coach?.fullName ? ` · ${note.coach.fullName}` : ''}
+                    {note.coachName ? ` · ${note.coachName}` : ''}
                   </p>
                 </div>
                 <div className="text-right shrink-0 ml-4">

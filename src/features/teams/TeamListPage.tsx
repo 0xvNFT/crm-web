@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Users2 } from 'lucide-react'
 import { useTeams, useTeamSearch } from '@/api/endpoints/teams'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
@@ -19,6 +19,8 @@ import type { PharmaTeam } from '@/api/app-types'
 const TEAM_FILTERS: FilterDef[] = [
   { param: 'teamType', label: 'Type', configKey: 'team.type' },
 ]
+
+const FILTER_KEYS = ['teamType']
 
 function ActiveBadge({ isActive }: { isActive?: boolean }) {
   return (
@@ -38,33 +40,25 @@ function ActiveBadge({ isActive }: { isActive?: boolean }) {
 const columns: Column<PharmaTeam>[] = [
   { header: 'Name', accessor: 'name', sortable: true },
   { header: 'Type', accessor: (row) => row.teamType ?? '—' },
-  { header: 'Administrator', accessor: (row) => row.administrator?.fullName ?? '—' },
+  { header: 'Administrator', accessor: (row) => row.administratorName ?? '—' },
   { header: 'Email', accessor: (row) => row.emailAddress ?? '—' },
   { header: 'Status', accessor: (row) => <ActiveBadge isActive={row.isActive} /> },
 ]
 
 export default function TeamListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { isManager, isReadOnly } = useRole()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useTeams(page, 20, filters)
   const searchQuery = useTeamSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -74,7 +68,7 @@ export default function TeamListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
@@ -83,7 +77,7 @@ export default function TeamListPage() {
         title="Teams"
         description="Manage your field force teams"
         actions={
-          isManager ? (
+          isManager && !isReadOnly ? (
             <Button size="sm" onClick={() => navigate('/teams/new')}>
               <Plus className="h-4 w-4 mr-1.5" />
               New Team

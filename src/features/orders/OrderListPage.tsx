@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShoppingCart, Plus } from 'lucide-react'
 import { useOrders, useOrderSearch } from '@/api/endpoints/orders'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -20,36 +22,33 @@ const ORDER_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'order.status' },
 ]
 
-const columns: Column<PharmaOrder>[] = [
+const FILTER_KEYS = ['status']
+
+const ALL_COLUMNS: Column<PharmaOrder>[] = [
   { header: 'Order #',  accessor: 'orderNumber',  sortable: true, cell: (row) => row.orderNumber ?? '—' },
-  { header: 'Account',  accessor: 'account',                      cell: (row) => row.account?.name ?? '—' },
+  { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
   { header: 'Status',   accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
   { header: 'Total',    accessor: (row) => formatCurrency(row.totalAmount ?? 0) },
-  { header: 'Owner',    accessor: 'createdBy',                    cell: (row) => row.createdBy?.fullName ?? '—' },
+  { header: 'Owner',    accessor: (row) => row.createdByName ?? '—' },
   { header: 'Created',  accessor: (row) => formatDate(row.createdAt) },
 ]
 
 export default function OrderListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { isReadOnly, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Orders')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery   = useOrders(page, 20, filters)
   const searchQuery = useOrderSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading  = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError    = isSearching ? searchQuery.isError   : listQuery.isError
@@ -59,19 +58,21 @@ export default function OrderListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Orders"
+        title={title}
         description="Manage your pharmaceutical orders"
         actions={
-          <Button onClick={() => navigate('/orders/new')}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Order
-          </Button>
+          !isReadOnly ? (
+            <Button onClick={() => navigate('/orders/new')}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Order
+            </Button>
+          ) : undefined
         }
       />
       <SearchInput
@@ -94,7 +95,7 @@ export default function OrderListPage() {
         onRowClick={(row) => navigate(`/orders/${row.id}`)}
         empty={isSearching
           ? { icon: ShoppingCart, title: `No orders found for "${debouncedQuery}"`, description: 'Try a different search term.' }
-          : { icon: ShoppingCart, title: 'No orders yet', description: 'Orders will appear here once created.' }
+          : { icon: ShoppingCart, title: emptyTitle, description: emptyDescription }
         }
         totalElements={isSearching ? data.length : listQuery.data?.totalElements}
       />

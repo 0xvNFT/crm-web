@@ -6,14 +6,15 @@ import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import type { PharmaOpportunity } from '@/api/app-types'
 
@@ -22,23 +23,26 @@ const OPPORTUNITY_FILTERS: FilterDef[] = [
   { param: 'salesStage',  label: 'Stage',     configKey: 'opportunity.salesStage' },
 ]
 
-const columns: Column<PharmaOpportunity>[] = [
+const FILTER_KEYS = ['status', 'salesStage']
+
+const ALL_COLUMNS: Column<PharmaOpportunity>[] = [
   { header: 'Topic',    accessor: 'topic', sortable: true },
-  { header: 'Account',  accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
   { header: 'Stage',    accessor: (row) => row.salesStage ? formatLabel(row.salesStage) : '—' },
-  { header: 'Status',   accessor: (row) => row.status ? <StatusBadge status={row.status.toUpperCase()} /> : '—' },
+  { header: 'Status',   accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
   { header: 'Revenue',  accessor: (row) => row.estRevenue != null ? formatCurrency(row.estRevenue) : '—' },
   { header: 'Close',    accessor: (row) => formatDate(row.estCloseDate), sortable: false },
-  { header: 'Owner',    accessor: (row) => row.owner?.fullName ?? '—' },
+  { header: 'Owner',    accessor: (row) => row.ownerName ?? '—' },
 ]
 
 export default function OpportunityListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
-  const { isManager } = useRole()
+  const { isReadOnly, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Opportunities')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -52,26 +56,19 @@ export default function OpportunityListPage() {
     ? (searchQuery.data ?? [])
     : (listQuery.data?.content ?? [])
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
-
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Opportunities"
+        title={title}
         description="Track your pipeline and close deals"
         actions={
-          isManager ? (
+          !isReadOnly ? (
             <Button size="sm" onClick={() => navigate('/opportunities/new')}>
               <Plus className="h-4 w-4 mr-1.5" />
               New Opportunity
@@ -101,17 +98,10 @@ export default function OpportunityListPage() {
         columns={columns}
         data={opportunities}
         onRowClick={(row) => navigate(`/opportunities/${row.id}`)}
-        empty={{
-          icon: TrendingUp,
-          title: isSearching ? `No opportunities found for "${debouncedQuery}"` : 'No opportunities yet',
-          description: isSearching ? undefined : 'Create your first opportunity to start tracking pipeline.',
-          // action: isManager ? (
-          //   <Button size="sm" onClick={() => navigate('/opportunities/new')}>
-          //     <Plus className="h-4 w-4 mr-1.5" />
-          //     New Opportunity
-          //   </Button>
-          // ) : undefined,
-        }}
+        empty={isSearching
+          ? { icon: TrendingUp, title: `No opportunities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          : { icon: TrendingUp, title: emptyTitle, description: emptyDescription }
+        }
       />
 
       {!isSearching && (

@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Users } from 'lucide-react'
 import { useContacts, useContactSearch } from '@/api/endpoints/contacts'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -35,20 +35,21 @@ const columns: Column<PharmaContact>[] = [
   },
   { header: 'Type', accessor: 'contactType', sortable: true, cell: (row) => formatLabel(row.contactType) },
   { header: 'Specialty', accessor: 'specialty', sortable: true, cell: (row) => row.specialty ?? '—' },
-  { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   { header: 'Mobile', accessor: (row) => row.mobile ?? row.phone ?? '—' },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={(row.status ?? 'active').toUpperCase()} />,
+    accessor: (row) => <StatusBadge status={row.status ?? 'active'} />,
   },
 ]
 
+const FILTER_KEYS = ['contactType', 'status']
+
 export default function ContactListPage() {
   const navigate = useNavigate()
-  const { page, goToPage } = usePagination()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -56,13 +57,11 @@ export default function ContactListPage() {
   const searchQuery = useContactSearch(debouncedQuery)
 
   function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
+    setFilter(param, value)
   }
 
   function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
+    clearFilters()
   }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
@@ -73,7 +72,7 @@ export default function ContactListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (

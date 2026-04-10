@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, X, Check, Building2 } from 'lucide-react'
+import { ArrowLeft, Pencil, X, Check, Building2, Users } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTerritory, useUpdateTerritory, useTerritoryAccounts } from '@/api/endpoints/territories'
+import { useTerritory, useUpdateTerritory, useTerritoryAccounts, useTerritoryReps } from '@/api/endpoints/territories'
+import { TerritorySecondaryRepsSection } from './components/TerritorySecondaryRepsSection'
+import { TerritoryProductFocusSection } from './components/TerritoryProductFocusSection'
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -18,11 +21,11 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
-import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
+import { formatDate, formatCurrency } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { updateTerritorySchema, type UpdateTerritoryFormData } from '@/schemas/territories'
-import type { PharmaAccountTerritory } from '@/api/app-types'
+import type { PharmaAccountTerritory, UpdateTerritoryRequest } from '@/api/app-types'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -51,9 +54,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 }
 
 const accountColumns: Column<PharmaAccountTerritory>[] = [
-  { header: 'Name', accessor: (row) => row.account?.name ?? '—' },
-  { header: 'Type', accessor: (row) => formatLabel(row.account?.accountType) },
-  { header: 'Status', accessor: (row) => <StatusBadge status={(row.account?.status ?? 'active').toUpperCase()} /> },
+  { header: 'Name', accessor: (row) => row.accountName ?? '—' },
 ]
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
@@ -61,7 +62,7 @@ export default function TerritoryDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const [repQuery, setRepQuery] = useState('')
   const [managerQuery, setManagerQuery] = useState('')
@@ -71,6 +72,7 @@ export default function TerritoryDetailPage() {
   const { data: territory, isLoading, isError } = useTerritory(id ?? '')
   const { mutate: updateTerritory, isPending } = useUpdateTerritory(id ?? '')
   const { data: accounts, isLoading: isLoadingAccounts } = useTerritoryAccounts(id ?? '')
+  const { data: reps, isLoading: isLoadingReps } = useTerritoryReps(id ?? '')
   const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
   const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
   const regionOptions = useConfigOptions('territory.region')
@@ -95,7 +97,7 @@ export default function TerritoryDetailPage() {
     resolver: zodResolver(updateTerritorySchema),
   })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !territory) return <ErrorMessage message="Territory not found." />
 
   function startEdit() {
@@ -106,8 +108,8 @@ export default function TerritoryDetailPage() {
       description: territory?.description ?? '',
       status: territory?.status ?? undefined,
       effectiveFrom: territory?.effectiveFrom ?? '',
-      primaryRepId: (territory?.primaryRep as { id?: string } | undefined)?.id ?? undefined,
-      managerId: (territory?.manager as { id?: string } | undefined)?.id ?? undefined,
+      primaryRepId: territory?.primaryRepId ?? undefined,
+      managerId: territory?.managerId ?? undefined,
       targetRevenueAnnual: territory?.targetRevenueAnnual != null ? Number(territory.targetRevenueAnnual) : undefined,
       targetVisitsMonthly: territory?.targetVisitsMonthly ?? undefined,
       targetNewAccountsQuarterly: territory?.targetNewAccountsQuarterly ?? undefined,
@@ -121,7 +123,11 @@ export default function TerritoryDetailPage() {
   }
 
   function onSubmit(data: UpdateTerritoryFormData) {
-    updateTerritory(data, {
+    // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod updateTerritorySchema
+    const clean = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+    ) as UpdateTerritoryRequest
+    updateTerritory(clean, {
       onSuccess: () => {
         toast('Territory updated', { variant: 'success' })
         setEditing(false)
@@ -140,7 +146,7 @@ export default function TerritoryDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{territory.territoryName}</h1>
-            <StatusBadge status={(territory.status ?? 'active').toUpperCase()} />
+            <StatusBadge status={territory.status ?? 'active'} />
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             <span>{territory.territoryCode}</span>
@@ -153,7 +159,7 @@ export default function TerritoryDetailPage() {
           </div>
         </div>
 
-        {!editing && isManager && (
+        {!editing && isManager && !isReadOnly && (
           <Button variant="outline" size="sm" onClick={startEdit}>
             <Pencil className="h-3.5 w-3.5 mr-1.5" />
             Edit
@@ -173,10 +179,37 @@ export default function TerritoryDetailPage() {
             <DetailField label="Created" value={formatDate(territory.createdAt)} />
           </DetailSection>
 
-          <DetailSection title="Assignment">
-            <DetailField label="Primary Rep" value={territory.primaryRep?.fullName} />
-            <DetailField label="Manager" value={territory.manager?.fullName} />
-          </DetailSection>
+          <div className="rounded-xl border bg-background p-5 space-y-4">
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Users className="h-3.5 w-3.5" strokeWidth={1.75} />
+              Reps
+            </h2>
+            {isLoadingReps ? (
+              <LoadingSpinner />
+            ) : !reps || reps.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No reps assigned to this territory.</p>
+            ) : (
+              <ul className="divide-y">
+                {reps.map((rep) => (
+                  <li key={rep.userId} className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{rep.userName ?? '—'}</p>
+                      {rep.assignedAt && (
+                        <p className="text-xs text-muted-foreground">Assigned {formatDate(rep.assignedAt)}</p>
+                      )}
+                    </div>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      rep.role === 'primary'
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'bg-muted text-muted-foreground border'
+                    }`}>
+                      {rep.role === 'primary' ? 'Primary' : 'Secondary'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <DetailSection title="Targets">
             <DetailField
@@ -205,7 +238,7 @@ export default function TerritoryDetailPage() {
               <DataTable
                 columns={accountColumns}
                 data={accounts ?? []}
-                onRowClick={(row) => navigate(`/accounts/${row.account?.id}`)}
+                onRowClick={(row) => navigate(`/accounts/${row.accountId}`)}
                 empty={{
                   icon: Building2,
                   title: 'No accounts in this territory',
@@ -214,6 +247,9 @@ export default function TerritoryDetailPage() {
               />
             )}
           </div>
+
+          {isManager && <TerritorySecondaryRepsSection territoryId={id ?? ''} />}
+          <TerritoryProductFocusSection territoryId={id ?? ''} />
         </div>
       )}
 
@@ -234,7 +270,7 @@ export default function TerritoryDetailPage() {
                   name="region"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select region" />
                       </SelectTrigger>
@@ -252,7 +288,7 @@ export default function TerritoryDetailPage() {
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>

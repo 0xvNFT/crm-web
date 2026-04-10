@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, MapPin } from 'lucide-react'
 import { useVisits, useVisitSearch } from '@/api/endpoints/visits'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
+import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -22,7 +23,9 @@ const VISIT_FILTERS: FilterDef[] = [
   { param: 'status', label: 'Status', configKey: 'visit.status' },
 ]
 
-const columns: Column<PharmaFieldVisit>[] = [
+const FILTER_KEYS = ['visitType', 'status']
+
+const ALL_COLUMNS: Column<PharmaFieldVisit>[] = [
   { header: 'Visit #', accessor: 'visitNumber', sortable: true },
   {
     header: 'Subject',
@@ -35,40 +38,34 @@ const columns: Column<PharmaFieldVisit>[] = [
       </div>
     ),
   },
-  { header: 'Account', accessor: (row) => row.account?.name ?? '—' },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
   {
     header: 'Rep',
-    accessor: (row) => (row.assignedRep as { fullName?: string } | undefined)?.fullName ?? '—',
+    accessor: (row) => row.assignedRepName ?? '—',
   },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={(row.status ?? 'UNKNOWN').toUpperCase()} />,
+    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
   },
   { header: 'Scheduled', accessor: (row) => formatDate(row.scheduledStart), sortable: false },
 ]
 
 export default function VisitListPage() {
   const navigate = useNavigate()
-  const { isRep } = useRole()
-  const { page, goToPage } = usePagination()
+  const { isRep, isManager } = useRole()
+  const { title, emptyTitle, emptyDescription } = useScopedLabel('Visits')
+  const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Rep')
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery = useVisits(page, 20, filters)
   const searchQuery = useVisitSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
-  }
-
-  function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
-  }
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError = isSearching ? searchQuery.isError : listQuery.isError
@@ -78,13 +75,13 @@ export default function VisitListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Visits"
+        title={title}
         description="Field visit records and check-in/check-out activity"
         actions={
           isRep ? (
@@ -125,8 +122,8 @@ export default function VisitListPage() {
               }
             : {
                 icon: MapPin,
-                title: 'No visits yet',
-                description: 'Schedule your first field visit to get started.',
+                title: emptyTitle,
+                description: emptyDescription,
                 // action: isRep ? (
                 //   <Button size="sm" onClick={() => navigate('/visits/new')}>
                 //     <Plus className="h-4 w-4 mr-1.5" />

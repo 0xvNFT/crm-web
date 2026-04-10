@@ -58,7 +58,7 @@ export function ContactOpportunitiesSection({ contactId }: ContactOpportunitiesS
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{opp.salesStage ? formatLabel(opp.salesStage) : '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{formatDate(opp.estCloseDate)}</td>
                   <td className="px-4 py-3">
-                    {opp.status ? <StatusBadge status={opp.status.toUpperCase()} /> : '—'}
+                    {opp.status ? <StatusBadge status={opp.status} /> : '—'}
                   </td>
                   <td className="px-4 py-3 text-right font-medium text-foreground hidden sm:table-cell">
                     {opp.estRevenue != null ? formatCurrency(opp.estRevenue) : '—'}

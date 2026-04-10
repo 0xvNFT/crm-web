@@ -51,7 +51,9 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const variant = STATUS_MAP[status] ?? 'default'
+  const normalized = status.toUpperCase().replace(/ /g, '_')
+  const variant = STATUS_MAP[normalized] ?? 'default'
+  const label = status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
   return (
     <span
       className={cn(
@@ -60,7 +62,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         className
       )}
     >
-      {status.charAt(0) + status.slice(1).toLowerCase().replace(/_/g, ' ')}
+      {label}
     </span>
   )
 }

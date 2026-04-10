@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useCreateQuote } from '@/api/endpoints/quotes'
 import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useContactSearch } from '@/api/endpoints/contacts'
+import { useOpportunitySearch } from '@/api/endpoints/opportunities'
 import { useAuth } from '@/hooks/useAuth'
 import { quoteSchema, type QuoteFormData } from '@/schemas/quotes'
 import { QuoteLineItemsField } from './components/QuoteLineItemsField'
@@ -27,11 +28,14 @@ export default function QuoteFormPage() {
   const [cachedAccounts, setCachedAccounts] = useState<PharmaAccount[]>([])
   const [contactQuery, setContactQuery] = useState('')
   const [cachedContacts, setCachedContacts] = useState<PharmaContact[]>([])
+  const [opportunityQuery, setOpportunityQuery] = useState('')
 
   const debouncedAccountQuery = useDebounce(accountQuery, 300)
   const debouncedContactQuery = useDebounce(contactQuery, 300)
+  const debouncedOpportunityQuery = useDebounce(opportunityQuery, 300)
   const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
   const { data: contactResults, isLoading: isSearchingContacts } = useContactSearch(debouncedContactQuery)
+  const { data: opportunityResults, isLoading: isSearchingOpportunities } = useOpportunitySearch(debouncedOpportunityQuery)
 
   const mergedAccounts = [
     ...cachedAccounts,
@@ -54,6 +58,10 @@ export default function QuoteFormPage() {
       sublabel: c.contactType ?? undefined,
     }))
 
+  const opportunityOptions = (opportunityResults ?? [])
+    .filter((o) => o.id)
+    .map((o) => ({ value: o.id!, label: o.topic ?? o.id! }))
+
   const { mutate: createQuote, isPending } = useCreateQuote()
 
   const {
@@ -66,6 +74,7 @@ export default function QuoteFormPage() {
     defaultValues: {
       accountId: '',
       contactId: '',
+      opportunityId: '',
       validFrom: '',
       validUntil: '',
       items: [{ productId: '', quantity: 1, discountPercent: 0, notes: '' }],
@@ -83,6 +92,7 @@ export default function QuoteFormPage() {
       ...data,
       repId: user!.userId,
       contactId: data.contactId || undefined,
+      opportunityId: data.opportunityId || undefined,
       notes: data.notes || undefined,
       items: data.items.map((item) => ({ ...item, discountPercent: item.discountPercent ?? 0 })),
     }
@@ -167,6 +177,26 @@ export default function QuoteFormPage() {
                   searchPlaceholder="Type contact name..."
                   onSearchChange={setContactQuery}
                   isLoading={isSearchingContacts}
+                />
+              )}
+            />
+          </div>
+
+          {/* Opportunity (optional) */}
+          <div className="space-y-1">
+            <Label>Opportunity (optional)</Label>
+            <Controller
+              name="opportunityId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={opportunityOptions}
+                  placeholder="Search opportunities…"
+                  searchPlaceholder="Type opportunity name…"
+                  onSearchChange={setOpportunityQuery}
+                  isLoading={isSearchingOpportunities}
                 />
               )}
             />

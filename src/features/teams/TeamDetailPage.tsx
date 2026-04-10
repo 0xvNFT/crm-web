@@ -5,6 +5,7 @@ import { useTeam, useTeamMembers, useDeactivateTeam, useReactivateTeam, useAddTe
 import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -62,7 +63,7 @@ function ActiveBadge({ isActive }: { isActive?: boolean }) {
 export default function TeamDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const [showDeactivate, setShowDeactivate] = useState(false)
   const [showAddMember, setShowAddMember] = useState(false)
@@ -81,7 +82,7 @@ export default function TeamDetailPage() {
   const { mutate: addMember, isPending: isAddingMember } = useAddTeamMember(id ?? '')
   const { mutate: removeMember, isPending: isRemovingMember } = useRemoveTeamMember(id ?? '')
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !team) return <ErrorMessage message="Team not found." />
 
   function handleSelectUser(user: TenantUserSummary) {
@@ -122,16 +123,16 @@ export default function TeamDetailPage() {
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {team.teamType && <span>{team.teamType}</span>}
-            {team.administrator?.fullName && (
+            {team.administratorName && (
               <>
                 {team.teamType && <span>·</span>}
-                <span>{team.administrator.fullName}</span>
+                <span>{team.administratorName}</span>
               </>
             )}
           </div>
         </div>
 
-        {isManager && (
+        {isManager && !isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={() => navigate(`/teams/${id}/edit`)}>
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
@@ -157,7 +158,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Add Member inline form */}
-      {showAddMember && isManager && (
+      {showAddMember && isManager && !isReadOnly && (
         <div className="rounded-xl border bg-background p-5 space-y-3">
           <h2 className="text-sm font-semibold text-foreground">Add Member</h2>
           <div className="max-w-md space-y-2">
@@ -211,7 +212,7 @@ export default function TeamDetailPage() {
         <DetailField label="Name" value={team.name} />
         <DetailField label="Type" value={team.teamType} />
         <DetailField label="Email" value={team.emailAddress} />
-        <DetailField label="Administrator" value={team.administrator?.fullName} />
+        <DetailField label="Administrator" value={team.administratorName} />
         <DetailField label="Created" value={formatDate(team.createdAt)} />
         <DetailField label="Last Updated" value={formatDate(team.updatedAt)} />
         <div className="space-y-0.5">
@@ -250,7 +251,7 @@ export default function TeamDetailPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground">{formatDate(member.joinedAt)}</span>
-                  {isManager && team.isActive && (
+                  {isManager && !isReadOnly && team.isActive && (
                     <Button
                       variant="ghost"
                       size="icon"

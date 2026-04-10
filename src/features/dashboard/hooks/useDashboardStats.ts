@@ -14,22 +14,22 @@ function fetchCount(url: string, params?: Record<string, string>) {
 export function useDashboardStats() {
   const accounts = useQuery({
     queryKey: ['dashboard', 'stat', 'accounts'],
-    queryFn: () => fetchCount('/api/pharma/accounts'),
+    queryFn: () => fetchCount('/api/v1/pharma/accounts'),
   })
 
   const leads = useQuery({
     queryKey: ['dashboard', 'stat', 'leads'],
-    queryFn: () => fetchCount('/api/pharma/leads'),
+    queryFn: () => fetchCount('/api/v1/pharma/leads'),
   })
 
   const pendingOrders = useQuery({
     queryKey: ['dashboard', 'stat', 'orders-pending'],
-    queryFn: () => fetchCount('/api/pharma/orders', { status: 'PENDING_APPROVAL' }),
+    queryFn: () => fetchCount('/api/v1/pharma/orders', { status: 'PENDING_APPROVAL' }),
   })
 
   const activities = useQuery({
     queryKey: ['dashboard', 'stat', 'activities'],
-    queryFn: () => fetchCount('/api/pharma/activities'),
+    queryFn: () => fetchCount('/api/v1/pharma/activities'),
   })
 
   return { accounts, leads, pendingOrders, activities }

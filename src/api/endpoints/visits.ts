@@ -8,6 +8,10 @@ import type {
   CheckInRequest,
   CheckOutRequest,
   SignatureRequest,
+  VisitProductInfo,
+  VisitMaterialInfo,
+  AddVisitProductRequest,
+  AddVisitMaterialRequest,
 } from '@/api/app-types'
 
 // ─── Queries ───────────────────────────────────────────────────────────────────
@@ -18,7 +22,7 @@ export function useVisits(page = 0, size = 20, filters: Record<string, string> =
     queryKey: ['visits', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaFieldVisit>('/api/pharma/visits', {
+        .get<PagePharmaFieldVisit>('/api/v1/pharma/visits', {
           params: { page, size, sort: 'scheduledStart,desc', ...cleanFilters },
         })
         .then((r) => r.data),
@@ -30,7 +34,7 @@ export function useVisit(id: string) {
   return useQuery({
     queryKey: ['visits', id],
     queryFn: () =>
-      client.get<PharmaFieldVisit>(`/api/pharma/visits/${id}`).then((r) => r.data),
+      client.get<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -38,11 +42,25 @@ export function useVisit(id: string) {
 export function useVisitSearch(query: string) {
   return useQuery({
     queryKey: ['visits', 'search', query],
+    queryFn: ({ signal }) =>
+      client
+        .get<PagePharmaFieldVisit>('/api/v1/pharma/visits/search', { params: { q: query }, signal })
+        .then((r) => r.data.content ?? []),
+    enabled: query.trim().length >= 2,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useVisitsByOpportunity(opportunityId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['visits', 'by-opportunity', opportunityId, { page, size }],
     queryFn: () =>
       client
-        .get<PharmaFieldVisit[]>('/api/pharma/visits/search', { params: { q: query } })
+        .get<PagePharmaFieldVisit>(`/api/v1/pharma/visits/by-opportunity/${opportunityId}`, {
+          params: { page, size, sort: 'scheduledStart,desc' },
+        })
         .then((r) => r.data),
-    enabled: query.trim().length >= 2,
+    enabled: !!opportunityId,
     placeholderData: (prev) => prev,
   })
 }
@@ -52,7 +70,7 @@ export function useVisitsByContact(contactId: string, page = 0, size = 10) {
     queryKey: ['visits', 'by-contact', contactId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaFieldVisit>(`/api/pharma/visits/by-contact/${contactId}`, {
+        .get<PagePharmaFieldVisit>(`/api/v1/pharma/visits/by-contact/${contactId}`, {
           params: { page, size, sort: 'scheduledStart,desc' },
         })
         .then((r) => r.data),
@@ -66,7 +84,7 @@ export function useVisitsByAccount(accountId: string, page = 0, size = 10) {
     queryKey: ['visits', 'by-account', accountId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaFieldVisit>(`/api/pharma/visits/by-account/${accountId}`, {
+        .get<PagePharmaFieldVisit>(`/api/v1/pharma/visits/by-account/${accountId}`, {
           params: { page, size, sort: 'scheduledStart,desc' },
         })
         .then((r) => r.data),
@@ -80,7 +98,7 @@ export function useVisitsPendingReview(page = 0, size = 20) {
     queryKey: ['visits', 'pending-review', { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaFieldVisit>('/api/pharma/visits/pending-review', {
+        .get<PagePharmaFieldVisit>('/api/v1/pharma/visits/pending-review', {
           params: { page, size, sort: 'scheduledStart,desc' },
         })
         .then((r) => r.data),
@@ -94,7 +112,7 @@ export function useScheduleVisit() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: ScheduleVisitRequest) =>
-      client.post<PharmaFieldVisit>('/api/pharma/visits', data).then((r) => r.data),
+      client.post<PharmaFieldVisit>('/api/v1/pharma/visits', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['visits'] }),
   })
 }
@@ -105,7 +123,7 @@ export function useUpdateVisit(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateVisitRequest) =>
-      client.put<PharmaFieldVisit>(`/api/pharma/visits/${id}`, data).then((r) => r.data),
+      client.put<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['visits', id] })
       qc.invalidateQueries({ queryKey: ['visits', 'list'] })
@@ -119,7 +137,7 @@ export function useSubmitVisit() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) =>
-      client.post<PharmaFieldVisit>(`/api/pharma/visits/${id}/submit`).then((r) => r.data),
+      client.post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/submit`).then((r) => r.data),
     onSuccess: (_data, id) => qc.invalidateQueries({ queryKey: ['visits', id] }),
   })
 }
@@ -128,7 +146,7 @@ export function useApproveVisit() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) =>
-      client.post<PharmaFieldVisit>(`/api/pharma/visits/${id}/approve`).then((r) => r.data),
+      client.post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/approve`).then((r) => r.data),
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ['visits', id] })
       qc.invalidateQueries({ queryKey: ['visits', 'pending-review'] })
@@ -141,7 +159,7 @@ export function useRejectVisit() {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       client
-        .post<PharmaFieldVisit>(`/api/pharma/visits/${id}/reject`, { reason })
+        .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/reject`, { reason })
         .then((r) => r.data),
     onSuccess: (_data, { id }) => {
       qc.invalidateQueries({ queryKey: ['visits', id] })
@@ -155,7 +173,7 @@ export function useCheckInVisit() {
   return useMutation({
     mutationFn: ({ id, ...payload }: { id: string } & CheckInRequest) =>
       client
-        .post<PharmaFieldVisit>(`/api/pharma/visits/${id}/check-in`, payload)
+        .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/check-in`, payload)
         .then((r) => r.data),
     onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
   })
@@ -166,18 +184,78 @@ export function useCheckOutVisit() {
   return useMutation({
     mutationFn: ({ id, ...payload }: { id: string } & CheckOutRequest) =>
       client
-        .post<PharmaFieldVisit>(`/api/pharma/visits/${id}/check-out`, payload)
+        .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/check-out`, payload)
         .then((r) => r.data),
     onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
   })
 }
+
+// ─── Visit Products ───────────────────────────────────────────────────────────
+
+export function useVisitProducts(visitId: string) {
+  return useQuery({
+    queryKey: ['visits', visitId, 'products'],
+    queryFn: () =>
+      client.get<VisitProductInfo[]>(`/api/v1/pharma/visits/${visitId}/products`).then((r) => r.data),
+    enabled: !!visitId,
+  })
+}
+
+export function useAddVisitProduct(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddVisitProductRequest) =>
+      client.post<VisitProductInfo>(`/api/v1/pharma/visits/${visitId}/products`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'products'] }),
+  })
+}
+
+export function useRemoveVisitProduct(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (productId: string) =>
+      client.delete(`/api/v1/pharma/visits/${visitId}/products/${productId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'products'] }),
+  })
+}
+
+// ─── Visit Materials ──────────────────────────────────────────────────────────
+
+export function useVisitMaterials(visitId: string) {
+  return useQuery({
+    queryKey: ['visits', visitId, 'materials'],
+    queryFn: () =>
+      client.get<VisitMaterialInfo[]>(`/api/v1/pharma/visits/${visitId}/materials`).then((r) => r.data),
+    enabled: !!visitId,
+  })
+}
+
+export function useAddVisitMaterial(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddVisitMaterialRequest) =>
+      client.post<VisitMaterialInfo>(`/api/v1/pharma/visits/${visitId}/materials`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'materials'] }),
+  })
+}
+
+export function useRemoveVisitMaterial(visitId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (materialId: string) =>
+      client.delete(`/api/v1/pharma/visits/${visitId}/materials/${materialId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits', visitId, 'materials'] }),
+  })
+}
+
+// ─── Signature ────────────────────────────────────────────────────────────────
 
 export function useCaptureSignature() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: ({ id, ...payload }: { id: string } & SignatureRequest) =>
       client
-        .post<PharmaFieldVisit>(`/api/pharma/visits/${id}/signature`, payload)
+        .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/signature`, payload)
         .then((r) => r.data),
     onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
   })

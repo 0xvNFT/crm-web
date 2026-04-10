@@ -3,12 +3,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Building2 } from 'lucide-react'
 import { useAccounts, useAccountSearch } from '@/api/endpoints/accounts'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -31,13 +31,14 @@ const columns: Column<PharmaAccount>[] = [
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 
+const FILTER_KEYS = ['accountType', 'status']
+
 export default function AccountListPage() {
   const navigate = useNavigate()
-  const { isManager } = useRole()
-  const { page, goToPage } = usePagination()
+  const { isReadOnly } = useRole()
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [filters, setFilters] = useState<Record<string, string>>({})
 
   const isSearching = debouncedQuery.trim().length >= 2
 
@@ -45,13 +46,11 @@ export default function AccountListPage() {
   const searchQuery = useAccountSearch(debouncedQuery)
 
   function handleFilterChange(param: string, value: string) {
-    setFilters((prev) => ({ ...prev, [param]: value }))
-    goToPage(0)
+    setFilter(param, value)
   }
 
   function handleFilterClear() {
-    setFilters({})
-    goToPage(0)
+    clearFilters()
   }
 
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
@@ -62,7 +61,7 @@ export default function AccountListPage() {
     : (listQuery.data?.content ?? [])
   const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
-  if (isLoading && !isSearching) return <LoadingSpinner />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} />
 
   return (
@@ -70,7 +69,7 @@ export default function AccountListPage() {
       <PageHeader
         title="Accounts"
         description="Manage your pharmaceutical accounts"
-        actions={isManager ? (
+        actions={!isReadOnly ? (
           <Button size="sm" onClick={() => navigate('/accounts/new')}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Account

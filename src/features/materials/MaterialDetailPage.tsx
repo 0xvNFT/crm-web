@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMaterial, useUpdateMaterial, useApproveMaterial, useArchiveMaterial } from '@/api/endpoints/materials'
 import type { UpdateMaterialRequest } from '@/api/app-types'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -46,7 +46,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
   const [editing, setEditing] = useState(false)
   const [showApprove, setShowApprove] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
@@ -60,13 +60,13 @@ export default function MaterialDetailPage() {
     resolver: zodResolver(materialEditSchema),
   })
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !material) return <ErrorMessage message="Material not found." />
 
   const status = material.status?.toLowerCase() ?? ''
-  const canEdit = isManager && (status === 'draft' || status === 'pending_approval')
-  const canApprove = isManager && status === 'pending_approval'
-  const canArchive = isManager && status === 'approved'
+  const canEdit = isManager && !isReadOnly && (status === 'draft' || status === 'pending_approval')
+  const canApprove = isManager && !isReadOnly && status === 'pending_approval'
+  const canArchive = isManager && !isReadOnly && status === 'approved'
 
   function startEdit() {
     reset({
@@ -92,10 +92,22 @@ export default function MaterialDetailPage() {
   }
 
   function onSubmit(data: MaterialEditFormData) {
-    // Object.fromEntries loses static type info — cast required
-    const payload = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
-    ) as unknown as UpdateMaterialRequest
+    // Build typed payload — strip empty strings
+    const payload: UpdateMaterialRequest = {
+      ...(data.title          ? { title:          data.title }          : {}),
+      ...(data.description    ? { description:    data.description }    : {}),
+      ...(data.fileName       ? { fileName:       data.fileName }       : {}),
+      ...(data.fileType       ? { fileType:       data.fileType }       : {}),
+      ...(data.category       ? { category:       data.category }       : {}),
+      ...(data.subCategory    ? { subCategory:    data.subCategory }    : {}),
+      ...(data.versionNumber  ? { versionNumber:  data.versionNumber }  : {}),
+      ...(data.keywords       ? { keywords:       data.keywords }       : {}),
+      ...(data.languageCode   ? { languageCode:   data.languageCode }   : {}),
+      ...(data.storageUrl     ? { storageUrl:     data.storageUrl }     : {}),
+      ...(data.publishDate    ? { publishDate:    data.publishDate }    : {}),
+      ...(data.expirationDate ? { expirationDate: data.expirationDate } : {}),
+      ...(data.status         ? { status:         data.status }         : {}),
+    }
     updateMaterial(payload, {
       onSuccess: () => {
         toast('Material updated', { variant: 'success' })
@@ -115,7 +127,7 @@ export default function MaterialDetailPage() {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{material.title}</h1>
-            {material.status && <StatusBadge status={material.status.toUpperCase()} />}
+            {material.status && <StatusBadge status={material.status} />}
             {material.isCurrent && (
               <span className="inline-flex items-center rounded-full bg-green-50 border border-green-200 px-2.5 py-0.5 text-xs font-semibold text-green-700">
                 Current Version
@@ -263,7 +275,7 @@ export default function MaterialDetailPage() {
           <DetailSection title="Availability">
             <DetailField label="Publish Date" value={formatDate(material.publishDate)} />
             <DetailField label="Expiration Date" value={formatDate(material.expirationDate)} />
-            <DetailField label="Owner" value={(material.owner as { fullName?: string } | undefined)?.fullName} />
+            <DetailField label="Owner" value={material.ownerName} />
           </DetailSection>
 
           {material.storageUrl && (

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, FileText } from 'lucide-react'
-import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice } from '@/api/endpoints/orders'
+import { ArrowLeft, Pencil, FileText, FileCheck2, Truck, PackageCheck } from 'lucide-react'
+import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice, useShipOrder, useDeliverOrder } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -37,26 +37,33 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly, isCsr } = useRole()
+  const canFulfill = (isManager || isCsr) && !isReadOnly
 
   const { data: order, isLoading, isError } = useOrder(id ?? '')
   const { mutate: approveOrder, isPending: isApproving } = useApproveOrder(id ?? '')
   const { mutate: rejectOrder, isPending: isRejecting } = useRejectOrder(id ?? '')
   const { mutate: generateInvoice, isPending: isGenerating } = useGenerateInvoice(id ?? '')
+  const { mutate: shipOrder, isPending: isShipping } = useShipOrder(id ?? '')
+  const { mutate: deliverOrder, isPending: isDelivering } = useDeliverOrder(id ?? '')
 
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
   const [showGenerateInvoice, setShowGenerateInvoice] = useState(false)
+  const [showShip, setShowShip] = useState(false)
+  const [showDeliver, setShowDeliver] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !order) return <ErrorMessage message="Order not found." />
 
   const isPending = order.status === 'pending' || order.status === 'submitted'
-  const canAct = isManager && isPending
-  const canEdit = order.status === 'draft' || order.status === 'pending'
-  const canGenerateInvoice = isManager && (
+  const canAct = isManager && isPending && !isReadOnly
+  const canEdit = (order.status === 'draft' || order.status === 'pending') && !isReadOnly
+  const canGenerateInvoice = isManager && !isReadOnly && (
     order.status === 'processing' || order.approvalStatus === 'approved'
   )
+  const canShip    = canFulfill && order.status === 'processing'
+  const canDeliver = canFulfill && order.status === 'shipped'
 
   return (
     <div className="space-y-4">
@@ -70,8 +77,8 @@ export default function OrderDetailPage() {
             <h1 className="text-2xl font-semibold">{order.orderNumber}</h1>
             {order.status && <StatusBadge status={order.status} />}
           </div>
-          {order.account?.name && (
-            <p className="mt-1 text-sm text-muted-foreground">{order.account.name}</p>
+          {order.accountName && (
+            <p className="mt-1 text-sm text-muted-foreground">{order.accountName}</p>
           )}
         </div>
         <div className="flex gap-2 shrink-0 flex-wrap justify-end">
@@ -79,6 +86,18 @@ export default function OrderDetailPage() {
             <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${id}/edit`)}>
               <Pencil className="h-4 w-4 mr-2" />
               Edit
+            </Button>
+          )}
+          {canShip && (
+            <Button size="sm" variant="outline" onClick={() => setShowShip(true)} disabled={isShipping}>
+              <Truck className="h-4 w-4 mr-2" />
+              Mark as Shipped
+            </Button>
+          )}
+          {canDeliver && (
+            <Button size="sm" onClick={() => setShowDeliver(true)} disabled={isDelivering}>
+              <PackageCheck className="h-4 w-4 mr-2" />
+              Mark as Delivered
             </Button>
           )}
           {canGenerateInvoice && (
@@ -106,13 +125,26 @@ export default function OrderDetailPage() {
         <DetailRow label="Status"        value={order.status ? <StatusBadge status={order.status} /> : '—'} />
         <DetailRow label="Order Date"    value={order.orderDate ? formatDate(order.orderDate) : null} />
         <DetailRow label="Delivery Date" value={order.deliveryDate ? formatDate(order.deliveryDate) : null} />
+        {order.sourceQuoteId && (
+          <DetailRow
+            label="Source Quote"
+            value={
+              <button
+                className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                onClick={() => navigate(`/quotes/${order.sourceQuoteId}`)}
+              >
+                <FileCheck2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                {order.sourceQuoteNumber ?? 'View Quote'}
+              </button>
+            }
+          />
+        )}
         {order.notes && <DetailRow label="Notes" value={order.notes} />}
       </Section>
 
       {/* Account */}
       <Section title="Account">
-        <DetailRow label="Name"         value={order.account?.name} />
-        <DetailRow label="Account Type" value={order.account?.accountType} />
+        <DetailRow label="Name"         value={order.accountName} />
       </Section>
 
       {/* Line Items */}
@@ -134,8 +166,8 @@ export default function OrderDetailPage() {
               <tbody>
                 {order.items.map((item, i) => (
                   <tr key={item.id ?? i} className="border-b last:border-0">
-                    <td className="py-2">{item.product?.name ?? '—'}</td>
-                    <td className="py-2 pl-4 text-muted-foreground">{item.batch?.batchNumber ?? '—'}</td>
+                    <td className="py-2">{item.productName ?? '—'}</td>
+                    <td className="py-2 pl-4 text-muted-foreground">{item.batchNumber ?? '—'}</td>
                     <td className="py-2 text-right">{item.quantity ?? '—'}</td>
                     <td className="py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
                     <td className="py-2 text-right">{item.discountPercent != null ? `${item.discountPercent}%` : '—'}</td>
@@ -159,7 +191,7 @@ export default function OrderDetailPage() {
       {/* Approval */}
       <Section title="Approval">
         <DetailRow label="Approval Status" value={order.approvalStatus} />
-        <DetailRow label="Approved By"     value={(order.approvedBy as { fullName?: string } | undefined)?.fullName} />
+        <DetailRow label="Approved By"     value={order.approvedByName} />
         <DetailRow label="Approved At"     value={order.approvedAt ? formatDate(order.approvedAt) : null} />
       </Section>
 
@@ -168,6 +200,50 @@ export default function OrderDetailPage() {
         <DetailRow label="Created" value={order.createdAt ? formatDate(order.createdAt) : null} />
         <DetailRow label="Updated" value={order.updatedAt ? formatDate(order.updatedAt) : null} />
       </Section>
+
+      {/* Ship dialog */}
+      <ConfirmDialog
+        open={showShip}
+        onCancel={() => setShowShip(false)}
+        onConfirm={() =>
+          shipOrder(undefined, {
+            onSuccess: () => {
+              toast('Order marked as shipped', { variant: 'success' })
+              setShowShip(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowShip(false)
+            },
+          })
+        }
+        title="Mark as Shipped?"
+        description="This will update the order status to Shipped."
+        confirmLabel="Mark as Shipped"
+        isPending={isShipping}
+      />
+
+      {/* Deliver dialog */}
+      <ConfirmDialog
+        open={showDeliver}
+        onCancel={() => setShowDeliver(false)}
+        onConfirm={() =>
+          deliverOrder(undefined, {
+            onSuccess: () => {
+              toast('Order marked as delivered', { variant: 'success' })
+              setShowDeliver(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowDeliver(false)
+            },
+          })
+        }
+        title="Mark as Delivered?"
+        description="This will update the order status to Delivered."
+        confirmLabel="Mark as Delivered"
+        isPending={isDelivering}
+      />
 
       {/* Generate Invoice dialog */}
       <ConfirmDialog

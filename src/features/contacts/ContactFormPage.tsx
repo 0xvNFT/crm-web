@@ -1,40 +1,37 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { PhAddressFields } from '@/components/shared/PhAddressFields'
 import { useCreateContact } from '@/api/endpoints/contacts'
-import { useAccounts } from '@/api/endpoints/accounts'
+import { useAccountSearch } from '@/api/endpoints/accounts'
 import type { CreateContactRequest } from '@/api/app-types'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { contactSchema, type ContactFormData } from '@/schemas/contacts'
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
 export default function ContactFormPage() {
   const navigate = useNavigate()
   const { mutate: createContact, isPending } = useCreateContact()
 
-  // Fetch accounts for the picker — size=100 is enough for a dropdown
-  const { data: accountsPage, isLoading: accountsLoading } = useAccounts(0, 100)
-  const accounts = accountsPage?.content ?? []
+  const [accountQuery, setAccountQuery] = useState('')
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const accountOptions: ComboboxOption[] = (accountResults ?? [])
+    .filter((a) => a.id && a.name)
+    .map((a) => ({ value: a.id!, label: `${a.name} — ${a.accountType ?? ''}`.trim() }))
 
   const contactTypeOptions = useConfigOptions('contact.type')
   const SALUTATIONS = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Prof.']
@@ -47,6 +44,7 @@ export default function ContactFormPage() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -59,14 +57,39 @@ export default function ContactFormPage() {
   function onSubmit(data: ContactFormData) {
     const { consentConfirmedStatus, consentConfirmedDate, ...rest } = data
 
-    // Map form field names → request DTO field names, strip empty strings
-    const payload = Object.fromEntries(
-      Object.entries({
-        ...rest,
-        ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus } : {}),
-        ...(consentConfirmedDate ? { consentDate: consentConfirmedDate } : {}),
-      }).filter(([, v]) => v !== '' && v !== undefined)
-    ) as unknown as CreateContactRequest
+    // Build typed payload — required fields set directly, optional fields conditionally spread
+    const payload: CreateContactRequest = {
+      accountId:   rest.accountId,
+      firstName:   rest.firstName,
+      lastName:    rest.lastName,
+      contactType: rest.contactType,
+      ...(rest.middleName        ? { middleName:        rest.middleName }        : {}),
+      ...(rest.salutation        ? { salutation:        rest.salutation }        : {}),
+      ...(rest.title             ? { title:             rest.title }             : {}),
+      ...(rest.specialty         ? { specialty:         rest.specialty }         : {}),
+      ...(rest.email             ? { email:             rest.email }             : {}),
+      ...(rest.phone             ? { phone:             rest.phone }             : {}),
+      ...(rest.mobile            ? { mobile:            rest.mobile }            : {}),
+      ...(rest.customerClass     ? { customerClass:     rest.customerClass }     : {}),
+      ...(rest.adoptionStage     ? { adoptionStage:     rest.adoptionStage }     : {}),
+      ...(rest.leadSource        ? { leadSource:        rest.leadSource }        : {}),
+      ...(rest.preferredContactMethod ? { preferredContactMethod: rest.preferredContactMethod } : {}),
+      ...(rest.preferredContactTime   ? { preferredContactTime:   rest.preferredContactTime }   : {}),
+      ...(rest.prcNumber         ? { prcNumber:         rest.prcNumber }         : {}),
+      ...(rest.npiNumber         ? { npiNumber:         rest.npiNumber }         : {}),
+      ...(rest.deaNumber         ? { deaNumber:         rest.deaNumber }         : {}),
+      ...(rest.stateLicenseNumber ? { stateLicenseNumber: rest.stateLicenseNumber } : {}),
+      ...(rest.addressStreet     ? { addressStreet:     rest.addressStreet }     : {}),
+      ...(rest.addressRegion     ? { addressRegion:     rest.addressRegion }     : {}),
+      ...(rest.addressProvince   ? { addressProvince:   rest.addressProvince }   : {}),
+      ...(rest.addressCity       ? { addressCity:       rest.addressCity }       : {}),
+      ...(rest.addressBarangay   ? { addressBarangay:   rest.addressBarangay }   : {}),
+      ...(rest.addressPostalCode ? { addressPostalCode: rest.addressPostalCode } : {}),
+      ...(rest.notes             ? { notes:             rest.notes }             : {}),
+      ...(rest.prescribingAuthority !== undefined ? { prescribingAuthority: rest.prescribingAuthority } : {}),
+      ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus }     : {}),
+      ...(consentConfirmedDate   ? { consentDate:   consentConfirmedDate }       : {}),
+    }
 
     createContact(payload, {
       onSuccess: (contact) => {
@@ -94,18 +117,14 @@ export default function ContactFormPage() {
               name="accountId"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} disabled={accountsLoading}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={accountsLoading ? 'Loading accounts…' : 'Select account'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accounts.map((a) => (
-                      <SelectItem key={a.id} value={a.id ?? ''}>
-                        {a.name} — {a.accountType}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={accountOptions}
+                  placeholder="Search accounts…"
+                  onSearchChange={setAccountQuery}
+                  isLoading={isSearchingAccounts}
+                />
               )}
             />
           </FormRow>
@@ -288,15 +307,7 @@ export default function ContactFormPage() {
           <FormRow label="Street" error={errors.addressStreet?.message}>
             <Input {...register('addressStreet')} />
           </FormRow>
-          <FormRow label="Barangay" error={errors.addressBarangay?.message}>
-            <Input {...register('addressBarangay')} />
-          </FormRow>
-          <FormRow label="City" error={errors.addressCity?.message}>
-            <Input {...register('addressCity')} />
-          </FormRow>
-          <FormRow label="Province" error={errors.addressProvince?.message}>
-            <Input {...register('addressProvince')} />
-          </FormRow>
+          <PhAddressFields control={control} setValue={setValue} errors={errors} />
           <FormRow label="Postal Code" error={errors.addressPostalCode?.message}>
             <Input {...register('addressPostalCode')} />
           </FormRow>
@@ -317,7 +328,7 @@ export default function ContactFormPage() {
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending || accountsLoading}>
+          <Button type="submit" disabled={isPending}>
             {isPending ? 'Creating…' : 'Create Contact'}
           </Button>
         </div>

@@ -81,13 +81,14 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
 
   const { register, control, handleSubmit, watch, formState: { errors } } =
     useForm<CoachingNoteFormData | CoachingNoteEditFormData>({
+      // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
       resolver: zodResolver(schema) as Resolver<CoachingNoteFormData | CoachingNoteEditFormData>,
       defaultValues: isEdit && note ? {
         noteTitle:         note.noteTitle ?? '',
-        feedbackType:      note.feedbackType ?? '',
+        feedbackType:      note.feedbackType ?? undefined,
         detailedFeedback:  note.detailedFeedback ?? '',
         summaryOfFeedback: note.summaryOfFeedback ?? '',
-        reviewedModule:    note.reviewedModule ?? '',
+        reviewedModule:    note.reviewedModule ?? undefined,
         moduleProgressPct: note.moduleProgressPct ?? undefined,
         followUpRequired:  note.followUpRequired ?? false,
         followUpDate:      note.followUpDate ?? '',
@@ -102,8 +103,13 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
   const followUpRequired = watch('followUpRequired')
 
   function onSubmit(data: CoachingNoteFormData | CoachingNoteEditFormData) {
+    // Strip empty strings from optional uuid/string fields before sending to API
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== '')
+    ) as typeof data
+
     if (isEdit) {
-      updateNote(data as CoachingNoteEditFormData, {
+      updateNote(cleaned as CoachingNoteEditFormData, {
         onSuccess: () => {
           toast('Coaching note updated', { variant: 'success' })
           navigate(`/coaching/${id}`)
@@ -111,7 +117,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createNote(data as CoachingNoteFormData, {
+      createNote(cleaned as CoachingNoteFormData, {
         onSuccess: (created) => {
           toast('Coaching note created', { variant: 'success' })
           navigate(`/coaching/${created.id}`)
@@ -143,7 +149,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
               name="feedbackType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type…" /></SelectTrigger>
                   <SelectContent>
                     {feedbackTypeOptions.map((opt) => (
@@ -197,7 +203,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
               name="reviewedModule"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select module…" /></SelectTrigger>
                   <SelectContent>
                     {reviewedModuleOptions.map((opt) => (

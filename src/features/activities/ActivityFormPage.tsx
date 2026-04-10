@@ -17,19 +17,11 @@ import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FormSection } from '@/components/shared/FormSection'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { PharmaActivity } from '@/api/app-types'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import type { PharmaActivity, CreateActivityRequest, UpdateActivityRequest } from '@/api/app-types'
 
 // Rendered only after data + config are ready — defaultValues are stable on first useForm call
 function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit: boolean }) {
@@ -55,21 +47,22 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
 
   // Combobox needs a label fallback since options are only fetched on search
   const selectedOwnerOption: ComboboxOption | undefined = isEdit
-    ? (activity?.assignedUser
-        ? { value: activity.assignedUser.id!, label: activity.assignedUser.fullName ?? activity.assignedUser.email ?? '' }
+    ? (activity?.assignedUserId
+        ? { value: activity.assignedUserId, label: activity.assignedUserName ?? '' }
         : undefined)
     : (user?.userId
         ? { value: user.userId, label: user.fullName ?? user.email ?? '' }
         : undefined)
 
   const { register, handleSubmit, control, watch, formState: { errors } } = useForm<ActivityFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(activitySchema) as Resolver<ActivityFormData>,
     defaultValues: isEdit && activity ? {
       subject:          activity.subject ?? '',
-      activityType:     activity.activityType ?? '',
-      assignedUserId:   activity.assignedUser?.id ?? '',
-      status:           activity.status ?? '',
-      priority:         activity.priority ?? '',
+      activityType:     activity.activityType ?? undefined,
+      assignedUserId:   activity.assignedUserId ?? undefined,
+      status:           activity.status ?? undefined,
+      priority:         activity.priority ?? undefined,
       dueDate:          activity.dueDate ?? '',
       durationMinutes:  activity.durationMinutes != null ? Number(activity.durationMinutes) : undefined,
       outcome:          activity.outcome ?? '',
@@ -87,7 +80,12 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
 
   function onSubmit(data: ActivityFormData) {
     if (isEdit) {
-      updateActivity(data, {
+      // Strip empty strings — backend rejects "" for optional fields
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod activitySchema
+      const payload: UpdateActivityRequest = Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+      ) as UpdateActivityRequest
+      updateActivity(payload, {
         onSuccess: () => {
           toast('Activity updated', { variant: 'success' })
           navigate(`/activities/${id}`)
@@ -95,7 +93,8 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createActivity(data, {
+      // Why: Object.fromEntries not needed for create — data matches schema shape directly
+      createActivity(data as CreateActivityRequest, {
         onSuccess: (created) => {
           toast('Activity created', { variant: 'success' })
           navigate(`/activities/${created.id}`)
@@ -127,7 +126,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="activityType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     {activityTypeOptions.map((opt) => (
@@ -143,7 +142,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="status"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                   <SelectContent>
                     {statusOptions.map((opt) => (
@@ -159,7 +158,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               name="priority"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
                   <SelectContent>
                     {priorityOptions.map((opt) => (
@@ -185,7 +184,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
               control={control}
               render={({ field }) => (
                 <Combobox
-                  value={field.value ?? ''}
+                  value={field.value ?? undefined}
                   onChange={field.onChange}
                   options={ownerOptions}
                   selectedOption={selectedOwnerOption}

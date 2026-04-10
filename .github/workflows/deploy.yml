@@ -33,6 +33,8 @@ jobs:
         env:
           # VITE_* vars are baked into the bundle at build time — .env.production is gitignored.
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_REGISTRATION_ENABLED: ${{ secrets.VITE_REGISTRATION_ENABLED }}
+          VITE_BILLING_ENABLED: ${{ secrets.VITE_BILLING_ENABLED }}
 
       - name: Ensure deploy directory is writable
         uses: appleboy/ssh-action@v1.0.3

@@ -10,30 +10,46 @@ import type { components } from './types'
 export type CrmConfig = Record<string, string[]>
 
 // ─── Core entities ────────────────────────────────────────────────────────────
-export type PharmaAccount            = components['schemas']['PharmaAccount']
-export type PharmaContact            = components['schemas']['PharmaContact']
-export type PharmaLead               = components['schemas']['PharmaLead']
-export type PharmaOrder              = components['schemas']['PharmaOrder']
-export type PharmaOrderItem          = components['schemas']['PharmaOrderItem']
-export type PharmaQuote              = components['schemas']['PharmaQuote']
-export type PharmaQuoteItem          = components['schemas']['PharmaQuoteItem']
-export type PharmaActivity           = components['schemas']['PharmaActivity']
-export type PharmaFieldVisit         = components['schemas']['PharmaFieldVisit']
-export type PharmaTerritory          = components['schemas']['PharmaTerritory']
-export type PharmaTeam               = components['schemas']['PharmaTeam']
+export type PharmaAccount            = components['schemas']['PharmaAccountResponse']
+export type PharmaContact            = components['schemas']['PharmaContactResponse']
+export type PharmaContactResponse    = components['schemas']['PharmaContactResponse']
+export type PharmaLead               = components['schemas']['PharmaLeadResponse']
+export type PharmaLeadResponse       = components['schemas']['PharmaLeadResponse']
+export type PharmaOrder              = components['schemas']['PharmaOrderResponse']
+export type PharmaOrderItem          = components['schemas']['OrderItemResponse']
+export type PharmaQuote              = components['schemas']['PharmaQuoteResponse']
+export type PharmaQuoteItem          = components['schemas']['QuoteItemResponse']
+export type PharmaActivity           = components['schemas']['PharmaActivityResponse']
+export type PharmaFieldVisit         = components['schemas']['PharmaFieldVisitResponse']
+export type PharmaFieldVisitResponse = components['schemas']['PharmaFieldVisitResponse']
+export type PharmaTerritory          = components['schemas']['PharmaTerritoryResponse']
+export type PharmaTerritoryResponse  = components['schemas']['PharmaTerritoryResponse']
+export type PharmaTeam               = components['schemas']['PharmaTeamResponse']
 export type PharmaTeamMember         = components['schemas']['TeamMemberResponse']
 export type PharmaProduct            = components['schemas']['PharmaProduct']
 export type PharmaProductBatch       = components['schemas']['PharmaProductBatch']
-export type PharmaPriceHistory       = components['schemas']['PharmaPriceHistory']
-export type PharmaOpportunity        = components['schemas']['PharmaOpportunity']
-export type PharmaInvoice            = components['schemas']['PharmaInvoice']
-export type PharmaInvoiceItem        = components['schemas']['PharmaInvoiceItem']
-export type PharmaMaterial           = components['schemas']['PharmaMaterial']
-export type PharmaCoachingNote       = components['schemas']['PharmaCoachingNote']
+export type PharmaPriceHistory       = components['schemas']['PharmaPriceHistoryResponse']
+export type PharmaOpportunity        = components['schemas']['PharmaOpportunityResponse']
+export type PharmaInvoice            = components['schemas']['PharmaInvoiceResponse']
+export type PharmaInvoiceItem        = components['schemas']['InvoiceItemResponse']
+export type PharmaMaterial           = components['schemas']['PharmaMaterialResponse']
+export type PharmaCoachingNote       = components['schemas']['PharmaCoachingNoteResponse']
 export type PharmaVisitAudit         = components['schemas']['PharmaVisitAudit']
-export type PharmaAccountTerritory   = components['schemas']['PharmaAccountTerritory']
-export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliation']
+export type PharmaAccountTerritory   = components['schemas']['PharmaAccountTerritoryResponse']
+export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliationResponse']
 export type LeadConversionResult     = components['schemas']['LeadConversionResult']
+
+// ─── Territory lifecycle types ────────────────────────────────────────────────
+export type SecondaryRepInfo         = components['schemas']['SecondaryRepInfo']
+export type TerritoryRepInfo         = components['schemas']['TerritoryRepInfo']
+export type ProductFocusInfo         = components['schemas']['ProductFocusInfo']
+export type AddProductFocusRequest   = components['schemas']['AddProductFocusRequest']
+
+// ─── Visit lifecycle types ────────────────────────────────────────────────────
+export type VisitProductInfo         = components['schemas']['VisitProductInfo']
+export type VisitMaterialInfo        = components['schemas']['VisitMaterialInfo']
+export type AddVisitProductRequest   = components['schemas']['AddVisitProductRequest']
+export type AddVisitMaterialRequest  = components['schemas']['AddVisitMaterialRequest']
 export type User                     = components['schemas']['User']
 export type Notification             = components['schemas']['Notification']
 export type TenantUserSummary        = components['schemas']['TenantUserSummary']
@@ -42,20 +58,20 @@ export type UpdateStaffRequest       = components['schemas']['UpdateStaffRequest
 export type PageUser                 = components['schemas']['PageUser']
 
 // ─── Paginated results (Spring Page<T>) ───────────────────────────────────────
-export type PagePharmaAccount      = components['schemas']['PagePharmaAccount']
-export type PagePharmaContact      = components['schemas']['PagePharmaContact']
-export type PagePharmaLead         = components['schemas']['PagePharmaLead']
-export type PagePharmaOrder        = components['schemas']['PagePharmaOrder']
-export type PagePharmaQuote        = components['schemas']['PagePharmaQuote']
-export type PagePharmaActivity     = components['schemas']['PagePharmaActivity']
-export type PagePharmaFieldVisit   = components['schemas']['PagePharmaFieldVisit']
-export type PagePharmaTerritory    = components['schemas']['PagePharmaTerritory']
-export type PagePharmaTeam         = components['schemas']['PagePharmaTeam']
+export type PagePharmaAccount      = components['schemas']['PagePharmaAccountResponse']
+export type PagePharmaContact      = components['schemas']['PagePharmaContactResponse']
+export type PagePharmaLead         = components['schemas']['PagePharmaLeadResponse']
+export type PagePharmaOrder        = components['schemas']['PagePharmaOrderResponse']
+export type PagePharmaQuote        = components['schemas']['PagePharmaQuoteResponse']
+export type PagePharmaActivity     = components['schemas']['PagePharmaActivityResponse']
+export type PagePharmaFieldVisit   = components['schemas']['PagePharmaFieldVisitResponse']
+export type PagePharmaTerritory    = components['schemas']['PagePharmaTerritoryResponse']
+export type PagePharmaTeam         = components['schemas']['PagePharmaTeamResponse']
 export type PagePharmaProduct      = components['schemas']['PagePharmaProduct']
-export type PagePharmaOpportunity  = components['schemas']['PagePharmaOpportunity']
-export type PagePharmaInvoice      = components['schemas']['PagePharmaInvoice']
-export type PagePharmaMaterial     = components['schemas']['PagePharmaMaterial']
-export type PagePharmaCoachingNote = components['schemas']['PagePharmaCoachingNote']
+export type PagePharmaOpportunity  = components['schemas']['PagePharmaOpportunityResponse']
+export type PagePharmaInvoice      = components['schemas']['PagePharmaInvoiceResponse']
+export type PagePharmaMaterial     = components['schemas']['PagePharmaMaterialResponse']
+export type PagePharmaCoachingNote = components['schemas']['PagePharmaCoachingNoteResponse']
 export type PagePharmaVisitAudit   = components['schemas']['PagePharmaVisitAudit']
 export type PageNotification       = components['schemas']['PageNotification']
 export type PageApprovalRule       = components['schemas']['PageApprovalRule']
@@ -84,13 +100,19 @@ export interface KpiPeriod {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
+// Role type — use this everywhere, never raw string.
+// TypeScript will catch typos like 'FEILD_REP' at compile time.
+export const ROLES = ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] as const
+export type Role = typeof ROLES[number]
+
 // Manually defined — backend login returns token=null in body (it's in the httpOnly cookie)
 export interface AuthUser {
   userId: string
   tenantId: string
   email: string
   fullName: string
-  roles: string[]
+  roles: Role[]
+  mustChangePassword?: boolean
 }
 
 // ─── Auth request types — all sourced from generated spec, never manually defined ──
@@ -209,7 +231,7 @@ export type ConvertLeadRequest    = components['schemas']['ConvertLeadRequest']
 
 // ─── Shared request types ────────────────────────────────────────────────────
 export type ReasonRequest         = components['schemas']['ReasonRequest']          // { reason } — order/quote/visit reject
-export type StageRequest          = components['schemas']['StageRequest']           // { stage } — opportunity advance
+export type StageRequest          = { stage: string }                              // { stage } — opportunity advance; widened from enum literal (config-driven)
 
 // ─── Visit request types ──────────────────────────────────────────────────────
 // Widen config-driven union literals to string

@@ -14,7 +14,7 @@ export function useOpportunities(page = 0, size = 20, filters: Record<string, st
     queryKey: ['opportunities', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
-        .get<PagePharmaOpportunity>('/api/pharma/opportunities', {
+        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities', {
           params: { page, size, sort: 'createdAt,desc', ...cleanFilters },
         })
         .then((r) => r.data),
@@ -25,10 +25,10 @@ export function useOpportunities(page = 0, size = 20, filters: Record<string, st
 export function useOpportunitySearch(q: string) {
   return useQuery({
     queryKey: ['opportunities', 'search', q],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       client
-        .get<PharmaOpportunity[]>('/api/pharma/opportunities/search', { params: { q } })
-        .then((r) => r.data),
+        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities/search', { params: { q }, signal })
+        .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
@@ -38,7 +38,7 @@ export function useOpportunity(id: string) {
   return useQuery({
     queryKey: ['opportunities', id],
     queryFn: () =>
-      client.get<PharmaOpportunity>(`/api/pharma/opportunities/${id}`).then((r) => r.data),
+      client.get<PharmaOpportunity>(`/api/v1/pharma/opportunities/${id}`).then((r) => r.data),
     enabled: !!id,
   })
 }
@@ -48,7 +48,7 @@ export function useOpportunitiesByContact(contactId: string, page = 0, size = 10
     queryKey: ['opportunities', 'by-contact', contactId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaOpportunity>('/api/pharma/opportunities', {
+        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities', {
           params: { page, size, sort: 'createdAt,desc', contactId },
         })
         .then((r) => r.data),
@@ -62,7 +62,7 @@ export function useOpportunitiesByAccount(accountId: string, page = 0, size = 10
     queryKey: ['opportunities', 'by-account', accountId, { page, size }],
     queryFn: () =>
       client
-        .get<PagePharmaOpportunity>('/api/pharma/opportunities', {
+        .get<PagePharmaOpportunity>('/api/v1/pharma/opportunities', {
           params: { page, size, sort: 'createdAt,desc', accountId },
         })
         .then((r) => r.data),
@@ -75,7 +75,7 @@ export function useCreateOpportunity() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: CreateOpportunityRequest) =>
-      client.post<PharmaOpportunity>('/api/pharma/opportunities', data).then((r) => r.data),
+      client.post<PharmaOpportunity>('/api/v1/pharma/opportunities', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['opportunities', 'list'] }),
   })
 }
@@ -84,9 +84,9 @@ export function useUpdateOpportunity(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateOpportunityRequest) =>
-      client.put<PharmaOpportunity>(`/api/pharma/opportunities/${id}`, data).then((r) => r.data),
+      client.put<PharmaOpportunity>(`/api/v1/pharma/opportunities/${id}`, data).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities', id] })
+      qc.invalidateQueries({ queryKey: ['opportunities'] })
       qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
     },
   })
@@ -97,10 +97,10 @@ export function useAdvanceOpportunityStage(id: string) {
   return useMutation({
     mutationFn: (data: StageRequest) =>
       client
-        .post<PharmaOpportunity>(`/api/pharma/opportunities/${id}/stage`, data)
+        .post<PharmaOpportunity>(`/api/v1/pharma/opportunities/${id}/stage`, data)
         .then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities', id] })
+      qc.invalidateQueries({ queryKey: ['opportunities'] })
       qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
     },
   })

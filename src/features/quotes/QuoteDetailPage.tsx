@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Pencil, RefreshCw, TrendingUp } from 'lucide-react'
 import { useQuote, useApproveQuote, useRejectQuote, useConvertQuote } from '@/api/endpoints/quotes'
 import { useRole } from '@/hooks/useRole'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -40,7 +40,7 @@ function DetailField({ label, value }: { label: string; value?: string | number 
 export default function QuoteDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isManager } = useRole()
+  const { isManager, isReadOnly } = useRole()
 
   const { data: quote, isLoading, isError } = useQuote(id ?? '')
   const { mutate: approveQuote, isPending: isApproving } = useApproveQuote(id ?? '')
@@ -51,14 +51,14 @@ export default function QuoteDetailPage() {
   const [showReject, setShowReject] = useState(false)
   const [showConvert, setShowConvert] = useState(false)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
 
   const isSubmitted = quote.status === 'submitted' || quote.status === 'pending'
   const isApproved = quote.status === 'approved'
   const isDraft = quote.status === 'draft'
-  const canAct = isManager && isSubmitted
-  const canConvert = isApproved
+  const canAct = isManager && isSubmitted && !isReadOnly
+  const canConvert = isApproved && !isReadOnly
 
   return (
     <div className="space-y-4">
@@ -71,12 +71,12 @@ export default function QuoteDetailPage() {
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{quote.quoteNumber}</h1>
             {quote.status && <StatusBadge status={quote.status} />}
           </div>
-          {quote.account?.name && (
-            <p className="mt-1 text-sm text-muted-foreground">{quote.account.name}</p>
+          {quote.accountName && (
+            <p className="mt-1 text-sm text-muted-foreground">{quote.accountName}</p>
           )}
         </div>
         <div className="flex gap-2 shrink-0 flex-wrap justify-end">
-          {isDraft && (
+          {isDraft && !isReadOnly && (
             <Button variant="outline" size="sm" onClick={() => navigate(`/quotes/${id}/edit`)}>
               <Pencil className="h-4 w-4 mr-1.5" />
               Edit
@@ -106,11 +106,22 @@ export default function QuoteDetailPage() {
         <DetailField label="Status"       value={quote.status} />
         <DetailField label="Valid From"   value={quote.validFrom ? formatDate(quote.validFrom) : null} />
         <DetailField label="Valid Until"  value={quote.validUntil ? formatDate(quote.validUntil) : null} />
+        {quote.opportunityId && (
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium text-muted-foreground">Opportunity</p>
+            <button
+              className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+              onClick={() => navigate(`/opportunities/${quote.opportunityId}`)}
+            >
+              <TrendingUp className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {quote.opportunityName ?? 'View Opportunity'}
+            </button>
+          </div>
+        )}
       </DetailSection>
 
       <DetailSection title="Account">
-        <DetailField label="Account Name" value={quote.account?.name} />
-        <DetailField label="Account Type" value={quote.account?.accountType} />
+        <DetailField label="Account Name" value={quote.accountName} />
       </DetailSection>
 
       {/* Line Items */}
@@ -132,7 +143,7 @@ export default function QuoteDetailPage() {
               <tbody>
                 {quote.items.map((item, i) => (
                   <tr key={item.id ?? i} className="border-b last:border-0">
-                    <td className="py-2">{item.product?.name ?? '—'}</td>
+                    <td className="py-2">{item.productName ?? '—'}</td>
                     <td className="py-2 text-right">{item.quantity ?? '—'}</td>
                     <td className="py-2 text-right">{item.unitPrice != null ? formatCurrency(item.unitPrice) : '—'}</td>
                     <td className="py-2 text-right">{item.discountPercent != null ? `${item.discountPercent}%` : '—'}</td>

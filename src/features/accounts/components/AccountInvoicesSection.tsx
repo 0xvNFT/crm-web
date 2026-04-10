@@ -58,7 +58,7 @@ export function AccountInvoicesSection({ accountId }: AccountInvoicesSectionProp
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{formatDate(inv.invoiceDate)}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{formatDate(inv.dueDate)}</td>
                   <td className="px-4 py-3">
-                    {inv.status ? <StatusBadge status={inv.status.toUpperCase()} /> : '—'}
+                    {inv.status ? <StatusBadge status={inv.status} /> : '—'}
                   </td>
                   <td className="px-4 py-3 text-right font-medium text-foreground">
                     {inv.totalAmount != null ? formatCurrency(inv.totalAmount) : '—'}

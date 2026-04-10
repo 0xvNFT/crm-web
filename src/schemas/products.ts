@@ -1,17 +1,18 @@
 import { z } from 'zod'
+import { moneyRequired } from './primitives'
 
 export const productSchema = z.object({
-  ndcNumber: z.string().min(1, 'NDC number is required'),
-  name: z.string().min(1, 'Product name is required'),
-  genericName: z.string().optional(),
-  manufacturer: z.string().optional(),
-  strength: z.string().optional(),
-  dosageForm: z.string().optional(),
-  packageSize: z.string().optional(),
-  unitPrice: z.coerce.number<number>().min(0, 'Price must be 0 or greater'),
-  status: z.string().min(1, 'Status is required'),
+  ndcNumber:           z.string().trim().min(1, 'NDC number is required'),
+  name:                z.string().trim().min(1, 'Product name is required'),
+  genericName:         z.string().trim().optional(),
+  manufacturer:        z.string().trim().optional(),
+  strength:            z.string().trim().optional(),
+  dosageForm:          z.string().optional(),
+  packageSize:         z.string().trim().optional(),
+  unitPrice:           moneyRequired,
+  status:              z.string().min(1, 'Status is required'),
   controlledSubstance: z.boolean().optional(),
-  deaSchedule: z.string().optional(),
+  deaSchedule:         z.string().optional(),
 })
 
 export type ProductFormData = z.infer<typeof productSchema>

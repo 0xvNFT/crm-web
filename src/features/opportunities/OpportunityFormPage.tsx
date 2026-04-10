@@ -22,7 +22,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { PharmaOpportunity } from '@/api/app-types'
+import type { PharmaOpportunity, CreateOpportunityRequest, UpdateOpportunityRequest } from '@/api/app-types'
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -70,37 +70,38 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
     value: t.id!,
     label: t.territoryName ?? t.id!,
   }))
-  const selectedTerritoryOption: ComboboxOption | undefined = isEdit && opportunity?.territory
-    ? { value: opportunity.territory.id!, label: opportunity.territory.territoryName ?? '' }
+  const selectedTerritoryOption: ComboboxOption | undefined = isEdit && opportunity?.territoryId
+    ? { value: opportunity.territoryId, label: opportunity.territoryName ?? '' }
     : undefined
 
   // Combobox selectedOption — provides label before search runs in edit mode
-  const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.owner
-    ? { value: opportunity.owner.id!, label: opportunity.owner.fullName ?? opportunity.owner.email ?? '' }
+  const selectedOwnerOption: ComboboxOption | undefined = isEdit && opportunity?.ownerId
+    ? { value: opportunity.ownerId, label: opportunity.ownerName ?? '' }
     : undefined
   // Account is read-only in edit (backend rejects accountId changes) — show as Combobox for create only
-  const selectedAccountOption: ComboboxOption | undefined = isEdit && opportunity?.account
-    ? { value: opportunity.account.id!, label: opportunity.account.name ?? '' }
+  const selectedAccountOption: ComboboxOption | undefined = isEdit && opportunity?.accountId
+    ? { value: opportunity.accountId, label: opportunity.accountName ?? '' }
     : undefined
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<OpportunityFormData>({
+    // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(opportunityFormSchema) as Resolver<OpportunityFormData>,
     defaultValues: isEdit && opportunity ? {
       topic:            opportunity.topic ?? '',
       description:      opportunity.description ?? '',
-      accountId:        opportunity.account?.id ?? '',
-      ownerId:          opportunity.owner?.id ?? '',
-      territoryId:      opportunity.territory?.id ?? '',
-      salesStage:       opportunity.salesStage ?? '',
-      status:           opportunity.status ?? '',
-      forecastCategory: opportunity.forecastCategory ?? '',
+      accountId:        opportunity.accountId ?? '',
+      ownerId:          opportunity.ownerId ?? '',
+      territoryId:      opportunity.territoryId ?? '',
+      salesStage:       opportunity.salesStage ?? undefined,
+      status:           opportunity.status ?? undefined,
+      forecastCategory: opportunity.forecastCategory ?? undefined,
       estRevenue:       opportunity.estRevenue != null ? Number(opportunity.estRevenue) : undefined,
       probabilityPct:   opportunity.probabilityPct != null ? Number(opportunity.probabilityPct) : undefined,
       currency:         opportunity.currency ?? '',
       estCloseDate:     opportunity.estCloseDate ?? '',
       actualCloseDate:  opportunity.actualCloseDate ?? '',
-      leadSource:       opportunity.leadSource ?? '',
-      type:             opportunity.type ?? '',
+      leadSource:       opportunity.leadSource ?? undefined,
+      type:             opportunity.type ?? undefined,
       budgetConfirmed:  opportunity.budgetConfirmed ?? false,
     } : {
       budgetConfirmed: false,
@@ -109,7 +110,12 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
 
   function onSubmit(data: OpportunityFormData) {
     if (isEdit) {
-      updateOpportunity(data, {
+      // Strip empty strings — backend rejects "" for optional fields
+      // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod opportunitySchema
+      const payload: UpdateOpportunityRequest = Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== '' && v !== undefined)
+      ) as UpdateOpportunityRequest
+      updateOpportunity(payload, {
         onSuccess: () => {
           toast('Opportunity updated', { variant: 'success' })
           navigate(`/opportunities/${id}`)
@@ -117,7 +123,8 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
         onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
-      createOpportunity(data, {
+      // Why: data matches schema shape directly; widened union fields are string in CreateOpportunityRequest
+      createOpportunity(data as CreateOpportunityRequest, {
         onSuccess: (created) => {
           toast('Opportunity created', { variant: 'success' })
           navigate(`/opportunities/${created.id}`)
@@ -149,7 +156,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               name="type"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     {opportunityTypeOptions.map((opt) => (
@@ -166,7 +173,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               control={control}
               render={({ field }) => (
                 <Select
-                  value={field.value || undefined}
+                  value={field.value ?? undefined}
                   onValueChange={field.onChange}
                   disabled={isEdit}
                 >
@@ -187,7 +194,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               name="forecastCategory"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select forecast" /></SelectTrigger>
                   <SelectContent>
                     {forecastCategoryOptions.map((opt) => (
@@ -203,7 +210,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               name="status"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                   <SelectContent>
                     {opportunityStatusOptions.map((opt) => (
@@ -219,7 +226,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
               name="leadSource"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select lead source" /></SelectTrigger>
                   <SelectContent>
                     {leadSourceOptions.map((opt) => (
