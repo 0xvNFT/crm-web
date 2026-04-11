@@ -8,8 +8,9 @@ import { invoiceEditSchema, type InvoiceEditFormData } from '@/schemas/invoices'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { FormRow } from '@/components/shared/FormRow'
@@ -62,11 +63,11 @@ export function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormPro
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormRow label="Invoice Date" required error={errors.invoiceDate?.message}>
-            <Input type="date" {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
+            <DateInput {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
           </FormRow>
 
           <FormRow label="Due Date" required error={errors.dueDate?.message}>
-            <Input type="date" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
+            <DateInput {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
           </FormRow>
 
           <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
@@ -105,10 +106,7 @@ export function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormPro
           </FormRow>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input id="taxExempt" type="checkbox" className="h-4 w-4 rounded border-input" {...register('taxExempt')} />
-          <Label htmlFor="taxExempt" className="text-sm cursor-pointer">Tax Exempt</Label>
-        </div>
+        <CheckboxField label="Tax Exempt" id="taxExempt" {...register('taxExempt')} />
       </div>
 
       <div className="flex gap-3">

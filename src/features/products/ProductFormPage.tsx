@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -183,15 +184,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Regulatory</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex items-center gap-3">
-              <input
-                id="controlledSubstance"
-                type="checkbox"
-                {...register('controlledSubstance')}
-                className="h-4 w-4 rounded border-input"
-              />
-              <Label htmlFor="controlledSubstance">Controlled Substance</Label>
-            </div>
+            <CheckboxField label="Controlled Substance" id="controlledSubstance" {...register('controlledSubstance')} />
 
             <div className="space-y-1">
               <Label>DEA Schedule</Label>
