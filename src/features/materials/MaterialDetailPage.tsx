@@ -12,6 +12,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
 import { materialEditSchema, type MaterialEditFormData } from '@/schemas/materials'
@@ -231,10 +232,10 @@ export default function MaterialDetailPage() {
                 <Input {...register('storageUrl')} placeholder="https://…" />
               </FormRow>
               <FormRow label="Publish Date" error={errors.publishDate?.message}>
-                <Input {...register('publishDate')} type="date" />
+                <DateInput {...register('publishDate')} />
               </FormRow>
               <FormRow label="Expiration Date" error={errors.expirationDate?.message}>
-                <Input {...register('expirationDate')} type="date" />
+                <DateInput {...register('expirationDate')} />
               </FormRow>
               <FormRow label="Description" error={errors.description?.message} className="sm:col-span-2">
                 <Textarea {...register('description')} rows={3} />

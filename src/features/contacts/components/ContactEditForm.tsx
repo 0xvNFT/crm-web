@@ -7,9 +7,11 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useRole } from '@/hooks/useRole'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { parseApiError } from '@/utils/errors'
@@ -247,7 +249,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
           />
         </FormRow>
         <FormRow label="Consent Date" error={errors.consentConfirmedDate?.message}>
-          <Input {...register('consentConfirmedDate')} type="date" />
+          <DateInput {...register('consentConfirmedDate')} />
         </FormRow>
       </FormSection>
 
@@ -274,7 +276,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
           <Input {...register('prcNumber')} />
         </FormRow>
         <FormRow label="PRC Expiry Date" error={errors.prcExpiryDate?.message}>
-          <Input {...register('prcExpiryDate')} type="date" />
+          <DateInput {...register('prcExpiryDate')} />
         </FormRow>
         <FormRow label="NPI Number" error={errors.npiNumber?.message}>
           <Input {...register('npiNumber')} />
@@ -291,41 +293,9 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
         <FormRow label="Monthly Patient Volume" error={errors.patientVolumeMonthly?.message}>
           <Input {...register('patientVolumeMonthly')} type="number" min={0} />
         </FormRow>
-        <div className="flex flex-col gap-2 pt-1 sm:col-span-2">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="prescribingAuthority"
-              {...register('prescribingAuthority')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="prescribingAuthority" className="text-sm text-foreground cursor-pointer">
-              Prescribing Authority
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="doNotCall"
-              {...register('doNotCall')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="doNotCall" className="text-sm text-foreground cursor-pointer">
-              Do Not Call
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="emailOptOut"
-              {...register('emailOptOut')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="emailOptOut" className="text-sm text-foreground cursor-pointer">
-              Email Opt-Out
-            </Label>
-          </div>
-        </div>
+        <CheckboxField label="Prescribing Authority" id="prescribingAuthority" {...register('prescribingAuthority')} />
+        <CheckboxField label="Do Not Call" id="doNotCall" {...register('doNotCall')} />
+        <CheckboxField label="Email Opt-Out" id="emailOptOut" {...register('emailOptOut')} />
       </FormSection>
 
       <FormSection title="Address">

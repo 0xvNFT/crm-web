@@ -9,8 +9,9 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { affiliationSchema, type AffiliationFormData } from '@/schemas/contacts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { DateInput } from '@/components/ui/date-input'
 import { Textarea } from '@/components/ui/textarea'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
@@ -170,7 +171,7 @@ function AddAffiliationDialog({
               <Input {...register('consultationFee')} type="number" min={0} step={0.01} placeholder="0.00" />
             </FormRow>
             <FormRow label="Effective Until" error={errors.effectiveTo?.message}>
-              <Input {...register('effectiveTo')} type="date" />
+              <DateInput {...register('effectiveTo')} />
             </FormRow>
           </div>
 
@@ -178,17 +179,7 @@ function AddAffiliationDialog({
             <Textarea {...register('notes')} rows={2} placeholder="Any notes about this affiliation…" />
           </FormRow>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isPrimary"
-              {...register('isPrimary')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="isPrimary" className="text-sm text-foreground cursor-pointer">
-              Set as primary affiliation
-            </Label>
-          </div>
+          <CheckboxField label="Set as primary affiliation" id="isPrimary" {...register('isPrimary')} />
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={isPending}>

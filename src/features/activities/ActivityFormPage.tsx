@@ -12,7 +12,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { activitySchema, type ActivityFormData } from '@/schemas/activities'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Textarea } from '@/components/ui/textarea'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
@@ -170,7 +172,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
             />
           </FormRow>
           <FormRow label="Due Date" error={errors.dueDate?.message}>
-            <Input {...register('dueDate')} type="date" />
+            <DateInput {...register('dueDate')} />
           </FormRow>
           <FormRow label="Duration (minutes)" error={errors.durationMinutes?.message}>
             <Input {...register('durationMinutes')} type="number" min={0} placeholder="30" />
@@ -201,21 +203,11 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         <div className="rounded-xl border bg-background p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Follow-up</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex items-center gap-2 pt-1 sm:col-span-2">
-              <input
-                type="checkbox"
-                id="followUpRequired"
-                {...register('followUpRequired')}
-                className="h-4 w-4 rounded border-border accent-primary"
-              />
-              <label htmlFor="followUpRequired" className="text-sm text-foreground cursor-pointer">
-                Follow-up Required
-              </label>
-            </div>
+            <CheckboxField label="Follow-up Required" id="followUpRequired" className="sm:col-span-2" {...register('followUpRequired')} />
             {followUpRequired && (
               <>
                 <FormRow label="Follow-up Date" error={errors.followUpDate?.message}>
-                  <Input {...register('followUpDate')} type="date" />
+                  <DateInput {...register('followUpDate')} />
                 </FormRow>
                 <FormRow label="Follow-up Notes" error={errors.followUpNotes?.message} className="sm:col-span-2">
                   <Textarea {...register('followUpNotes')} rows={2} placeholder="Notes for the follow-up…" />

@@ -18,6 +18,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
@@ -174,6 +175,7 @@ export default function TerritoryDetailPage() {
             <DetailField label="Territory Code" value={territory.territoryCode} />
             <DetailField label="Territory Name" value={territory.territoryName} />
             <DetailField label="Region" value={territory.region} />
+            <DetailField label="Primary Rep" value={territory.primaryRepName ?? null} />
             <DetailField label="Description" value={territory.description} />
             <DetailField label="Effective From" value={formatDate(territory.effectiveFrom)} />
             <DetailField label="Created" value={formatDate(territory.createdAt)} />
@@ -302,7 +304,7 @@ export default function TerritoryDetailPage() {
                 />
               </FormRow>
               <FormRow label="Effective From" error={errors.effectiveFrom?.message}>
-                <Input {...register('effectiveFrom')} type="date" />
+                <DateInput {...register('effectiveFrom')} />
               </FormRow>
               <FormRow label="Target Revenue (Annual)" error={errors.targetRevenueAnnual?.message}>
                 <Input {...register('targetRevenueAnnual')} type="number" min="0" step="0.01" placeholder="0.00" />

@@ -13,6 +13,7 @@ import { QuoteLineItemsField } from './components/QuoteLineItemsField'
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -166,9 +167,8 @@ function QuoteEditForm({ quoteId, defaultValues, initialAccountName, initialCont
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <Label htmlFor="validFrom">Valid From *</Label>
-            <Input
+            <DateInput
               id="validFrom"
-              type="date"
               {...register('validFrom')}
               className={errors.validFrom ? 'border-destructive' : ''}
             />
@@ -179,9 +179,8 @@ function QuoteEditForm({ quoteId, defaultValues, initialAccountName, initialCont
 
           <div className="space-y-1">
             <Label htmlFor="validUntil">Valid Until *</Label>
-            <Input
+            <DateInput
               id="validUntil"
-              type="date"
               {...register('validUntil')}
               className={errors.validUntil ? 'border-destructive' : ''}
             />

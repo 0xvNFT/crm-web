@@ -13,8 +13,9 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -161,11 +162,11 @@ export function InvoiceCreateForm() {
           </FormRow>
 
           <FormRow label="Invoice Date" required error={errors.invoiceDate?.message}>
-            <Input id="invoiceDate" type="date" {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
+            <DateInput id="invoiceDate" {...register('invoiceDate')} className={errors.invoiceDate ? 'border-destructive' : ''} />
           </FormRow>
 
           <FormRow label="Due Date" required error={errors.dueDate?.message}>
-            <Input id="dueDate" type="date" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
+            <DateInput id="dueDate" {...register('dueDate')} className={errors.dueDate ? 'border-destructive' : ''} />
           </FormRow>
 
           <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
@@ -203,10 +204,7 @@ export function InvoiceCreateForm() {
           </FormRow>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input id="taxExempt" type="checkbox" className="h-4 w-4 rounded border-input" {...register('taxExempt')} />
-          <Label htmlFor="taxExempt" className="text-sm cursor-pointer">Tax Exempt</Label>
-        </div>
+        <CheckboxField label="Tax Exempt" id="taxExempt" {...register('taxExempt')} />
       </div>
 
       <div className="rounded-xl border bg-background p-5 space-y-4">

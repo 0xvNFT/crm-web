@@ -9,6 +9,7 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
@@ -124,7 +125,7 @@ export default function TerritoryFormPage() {
             />
           </FormRow>
           <FormRow label="Effective From" error={errors.effectiveFrom?.message}>
-            <Input {...register('effectiveFrom')} type="date" />
+            <DateInput {...register('effectiveFrom')} />
           </FormRow>
           <div className="sm:col-span-2">
             <FormRow label="Description" error={errors.description?.message}>

@@ -9,8 +9,9 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { DateInput } from '@/components/ui/date-input'
 import { Textarea } from '@/components/ui/textarea'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox } from '@/components/ui/combobox'
@@ -161,7 +162,7 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
             />
           </FormRow>
           <FormRow label="Date Provided" error={(errors as Record<string, { message?: string }>).dateProvided?.message}>
-            <Input {...register('dateProvided')} type="date" />
+            <DateInput {...register('dateProvided')} />
           </FormRow>
 
           {!isEdit && (
@@ -233,20 +234,10 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
         </FormSection>
 
         <FormSection title="Follow-up">
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="followUpRequired"
-              {...register('followUpRequired')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="followUpRequired" className="text-sm text-foreground cursor-pointer">
-              Follow-up Required
-            </Label>
-          </div>
+          <CheckboxField label="Follow-up Required" id="followUpRequired" {...register('followUpRequired')} />
           {followUpRequired && (
             <FormRow label="Follow-up Date" error={(errors as Record<string, { message?: string }>).followUpDate?.message}>
-              <Input {...register('followUpDate')} type="date" />
+              <DateInput {...register('followUpDate')} />
             </FormRow>
           )}
         </FormSection>

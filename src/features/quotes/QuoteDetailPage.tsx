@@ -122,6 +122,7 @@ export default function QuoteDetailPage() {
 
       <DetailSection title="Account">
         <DetailField label="Account Name" value={quote.accountName} />
+        <DetailField label="Owner" value={quote.assignedRepName ?? null} />
       </DetailSection>
 
       {/* Line Items */}

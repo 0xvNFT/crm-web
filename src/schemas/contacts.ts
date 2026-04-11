@@ -26,6 +26,8 @@ export const contactSchema = z.object({
   preferredContactTime: z.string().trim().optional(),
   leadSource: z.string().optional(),
   status: z.string().optional(),
+  doNotCall: z.boolean().optional(),
+  emailOptOut: z.boolean().optional(),
   consentConfirmedStatus: z.string().optional(),
   consentConfirmedDate: dateField,
   addressStreet: z.string().trim().optional(),

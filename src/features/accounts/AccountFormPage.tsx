@@ -9,8 +9,8 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
@@ -206,17 +206,7 @@ export default function AccountFormPage() {
           <FormRow label="Tax ID" error={errors.taxId?.message}>
             <Input {...register('taxId')} />
           </FormRow>
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="isSupplier"
-              {...register('isSupplier')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="isSupplier" className="text-sm text-foreground cursor-pointer">
-              Is Supplier
-            </Label>
-          </div>
+          <CheckboxField label="Is Supplier" id="isSupplier" {...register('isSupplier')} />
         </FormSection>
 
         <FormSection title="Addresses">
@@ -235,17 +225,7 @@ export default function AccountFormPage() {
           <FormRow label="State License Number" error={errors.stateLicenseNumber?.message}>
             <Input {...register('stateLicenseNumber')} />
           </FormRow>
-          <div className="flex items-center gap-2 pt-1 sm:col-span-2">
-            <input
-              type="checkbox"
-              id="controlledSubstanceApproved"
-              {...register('controlledSubstanceApproved')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="controlledSubstanceApproved" className="text-sm text-foreground cursor-pointer">
-              Controlled Substance Approved
-            </Label>
-          </div>
+          <CheckboxField label="Controlled Substance Approved" id="controlledSubstanceApproved" className="sm:col-span-2" {...register('controlledSubstanceApproved')} />
         </FormSection>
 
         {/* Sticky footer */}

@@ -11,10 +11,12 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { Textarea } from '@/components/ui/textarea'
+import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -51,6 +53,8 @@ export default function ContactFormPage() {
     defaultValues: {
       prescribingAuthority: false,
       adoptionStage: 'unaware',
+      doNotCall: false,
+      emailOptOut: false,
     },
   })
 
@@ -89,6 +93,8 @@ export default function ContactFormPage() {
       ...(rest.prescribingAuthority !== undefined ? { prescribingAuthority: rest.prescribingAuthority } : {}),
       ...(consentConfirmedStatus ? { consentStatus: consentConfirmedStatus }     : {}),
       ...(consentConfirmedDate   ? { consentDate:   consentConfirmedDate }       : {}),
+      ...(rest.doNotCall   !== undefined ? { doNotCall:   rest.doNotCall }   : {}),
+      ...(rest.emailOptOut !== undefined ? { emailOptOut: rest.emailOptOut } : {}),
     }
 
     createContact(payload, {
@@ -253,17 +259,12 @@ export default function ContactFormPage() {
           <FormRow label="PRC Number" error={errors.prcNumber?.message}>
             <Input {...register('prcNumber')} />
           </FormRow>
-          <div className="flex items-center gap-2 pt-1 sm:col-span-2">
-            <input
-              type="checkbox"
-              id="prescribingAuthority"
-              {...register('prescribingAuthority')}
-              className="h-4 w-4 rounded border-border accent-primary"
-            />
-            <Label htmlFor="prescribingAuthority" className="text-sm text-foreground cursor-pointer">
-              Prescribing Authority
-            </Label>
-          </div>
+          <CheckboxField
+            label="Prescribing Authority"
+            id="prescribingAuthority"
+            className="sm:col-span-2"
+            {...register('prescribingAuthority')}
+          />
         </FormSection>
 
         {/* Licensing */}
@@ -298,8 +299,18 @@ export default function ContactFormPage() {
             />
           </FormRow>
           <FormRow label="Consent Date" error={errors.consentConfirmedDate?.message}>
-            <Input {...register('consentConfirmedDate')} type="date" />
+            <DateInput {...register('consentConfirmedDate')} />
           </FormRow>
+          <CheckboxField
+            label="Do Not Call"
+            id="doNotCall"
+            {...register('doNotCall')}
+          />
+          <CheckboxField
+            label="Email Opt-Out"
+            id="emailOptOut"
+            {...register('emailOptOut')}
+          />
         </FormSection>
 
         {/* Address */}
