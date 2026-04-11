@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import { cn } from '@/lib/utils'
 import { ChevronDown, X } from 'lucide-react'
 
@@ -38,8 +38,10 @@ export function Combobox({
 }: ComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [activeIndex, setActiveIndex] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const listboxId = useId()
 
   // Fall back to selectedOption when the options list hasn't been populated yet (edit mode)
   const selected = options.find((o) => o.value === value) ?? (value ? selectedOption : undefined)
@@ -50,6 +52,7 @@ export function Combobox({
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false)
         setSearch('')
+        setActiveIndex(-1)
       }
     }
     document.addEventListener('mousedown', handleClick)
@@ -68,6 +71,7 @@ export function Combobox({
     onChange(option.value)
     setOpen(false)
     setSearch('')
+    setActiveIndex(-1)
     onSearchChange?.('')
   }
 
@@ -80,6 +84,25 @@ export function Combobox({
   function handleSearchChange(q: string) {
     setSearch(q)
     onSearchChange?.(q)
+    setActiveIndex(-1)
+  }
+
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!open) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.min(i + 1, options.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.max(i - 1, 0))
+    } else if (e.key === 'Enter' && activeIndex >= 0 && options[activeIndex]) {
+      e.preventDefault()
+      handleSelect(options[activeIndex])
+    } else if (e.key === 'Escape') {
+      setOpen(false)
+      setSearch('')
+      setActiveIndex(-1)
+    }
   }
 
   return (
@@ -89,6 +112,9 @@ export function Combobox({
         type="button"
         onClick={handleOpen}
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={open ? listboxId : undefined}
         className={cn(
           'flex h-9 w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm ring-offset-background',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -106,9 +132,10 @@ export function Combobox({
             <X
               className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground"
               onClick={handleClear}
+              aria-hidden="true"
             />
           )}
-          <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', open && 'rotate-180')} />
+          <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', open && 'rotate-180')} aria-hidden="true" />
         </span>
       </button>
 
@@ -120,26 +147,48 @@ export function Combobox({
               ref={inputRef}
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               placeholder={searchPlaceholder}
+              aria-label={searchPlaceholder}
+              aria-autocomplete="list"
+              aria-controls={listboxId}
+              aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined}
               className="w-full rounded-sm border-0 bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-muted-foreground"
             />
           </div>
-          <ul className="max-h-52 overflow-y-auto p-1">
+          <ul
+            id={listboxId}
+            role="listbox"
+            className="max-h-52 overflow-y-auto p-1"
+          >
             {isLoading ? (
-              <li className="px-2 py-3 text-center text-xs text-muted-foreground">Loading...</li>
+              <li role="option" aria-selected={false} aria-disabled="true" className="px-2 py-3 text-center text-xs text-muted-foreground">
+                Loading...
+              </li>
             ) : options.length === 0 ? (
-              <li className="px-2 py-3 text-center text-xs text-muted-foreground">
+              <li role="option" aria-selected={false} aria-disabled="true" className="px-2 py-3 text-center text-xs text-muted-foreground">
                 {search.length >= 2 ? 'No results found.' : 'Type to search...'}
               </li>
             ) : (
-              options.map((option) => (
+              options.map((option, index) => (
                 <li
                   key={option.value}
+                  id={`${listboxId}-option-${index}`}
+                  role="option"
+                  aria-selected={option.value === value}
                   onClick={() => handleSelect(option)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleSelect(option)
+                    }
+                  }}
+                  tabIndex={activeIndex === index ? 0 : -1}
                   className={cn(
                     'flex flex-col rounded-sm px-2 py-1.5 text-sm cursor-pointer',
                     'hover:bg-accent hover:text-accent-foreground',
-                    option.value === value && 'bg-accent text-accent-foreground font-medium'
+                    option.value === value && 'bg-accent text-accent-foreground font-medium',
+                    activeIndex === index && 'ring-1 ring-ring'
                   )}
                 >
                   <span>{option.label}</span>
