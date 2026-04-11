@@ -7,7 +7,6 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { editStaffSchema, type EditStaffFormData } from '@/schemas/admin'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
@@ -15,6 +14,7 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog'
+import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { User } from '@/api/app-types'
@@ -100,29 +100,20 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">
-                First Name <span className="text-destructive">*</span>
-              </Label>
-              <Input {...register('firstName')} />
-              {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">
-                Last Name <span className="text-destructive">*</span>
-              </Label>
-              <Input {...register('lastName')} />
-              {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
-            </div>
+            <FormRow label="First Name" required fieldId="firstName" error={errors.firstName?.message}>
+              <Input id="firstName" {...register('firstName')} />
+            </FormRow>
+            <FormRow label="Last Name" required fieldId="lastName" error={errors.lastName?.message}>
+              <Input id="lastName" {...register('lastName')} />
+            </FormRow>
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-xs font-medium text-muted-foreground">Role</Label>
+          <FormRow label="Role" error={errors.role?.message}>
             <Controller
               name="role"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                   <SelectContent>
                     {roleOptions.map((opt) => (
@@ -132,33 +123,28 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
                 </Select>
               )}
             />
+          </FormRow>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormRow label="Job Title" fieldId="jobTitle">
+              <Input id="jobTitle" {...register('jobTitle')} placeholder="e.g. Sales Rep" />
+            </FormRow>
+            <FormRow label="Department" fieldId="department">
+              <Input id="department" {...register('department')} placeholder="e.g. Field Force" />
+            </FormRow>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Job Title</Label>
-              <Input {...register('jobTitle')} placeholder="e.g. Sales Rep" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Department</Label>
-              <Input {...register('department')} placeholder="e.g. Field Force" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Work Phone</Label>
-              <Input {...register('phoneWork')} placeholder="+63 2 8xxx xxxx" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Mobile</Label>
-              <Input {...register('phoneMobile')} placeholder="+63 9xx xxx xxxx" />
-            </div>
+            <FormRow label="Work Phone" fieldId="phoneWork">
+              <Input id="phoneWork" {...register('phoneWork')} placeholder="+63 2 8xxx xxxx" />
+            </FormRow>
+            <FormRow label="Mobile" fieldId="phoneMobile">
+              <Input id="phoneMobile" {...register('phoneMobile')} placeholder="+63 9xx xxx xxxx" />
+            </FormRow>
           </div>
 
           {/* Reports To — builds the manager hierarchy */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium text-muted-foreground">Reports To</Label>
+          <FormRow label="Reports To" error={errors.managerId?.message}>
             <Controller
               name="managerId"
               control={control}
@@ -175,10 +161,10 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
                 />
               )}
             />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground mt-1">
               Sets who this person reports to. MANAGERs only see team data once this is set.
             </p>
-          </div>
+          </FormRow>
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={isPending}>

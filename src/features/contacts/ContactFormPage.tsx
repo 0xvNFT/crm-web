@@ -143,7 +143,7 @@ export default function ContactFormPage() {
               name="salutation"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
                     {SALUTATIONS.map((s) => (
@@ -171,7 +171,7 @@ export default function ContactFormPage() {
               name="contactType"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     {contactTypeOptions.map((opt) => (
@@ -190,7 +190,7 @@ export default function ContactFormPage() {
               name="leadSource"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
                   <SelectContent>
                     {leadSourceOptions.map((opt) => (
@@ -229,7 +229,7 @@ export default function ContactFormPage() {
               name="customerClass"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
                     {customerClassOptions.map((opt) => (
@@ -245,7 +245,7 @@ export default function ContactFormPage() {
               name="adoptionStage"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
                   <SelectContent>
                     {adoptionStageOptions.map((opt) => (
@@ -287,7 +287,7 @@ export default function ContactFormPage() {
               name="consentConfirmedStatus"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                   <SelectContent>
                     {consentStatusOptions.map((opt) => (

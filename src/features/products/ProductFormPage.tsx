@@ -8,10 +8,10 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { productSchema, type ProductFormData } from '@/schemas/products'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CheckboxField } from '@/components/shared/CheckboxField'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormRow } from '@/components/shared/FormRow'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { CreateProductRequest, UpdateProductRequest, PharmaProduct } from '@/api/app-types'
@@ -107,65 +107,52 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Info</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <Label htmlFor="name">Product Name *</Label>
-              <Input id="name" {...register('name')} className={errors.name ? 'border-destructive' : ''} />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-            </div>
+            <FormRow label="Product Name" required fieldId="name" error={errors.name?.message}>
+              <Input id="name" {...register('name')} />
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="genericName">Generic Name</Label>
+            <FormRow label="Generic Name" fieldId="genericName">
               <Input id="genericName" {...register('genericName')} />
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="ndcNumber">NDC Number *</Label>
-              <Input id="ndcNumber" {...register('ndcNumber')} className={errors.ndcNumber ? 'border-destructive' : ''} />
-              {errors.ndcNumber && <p className="text-xs text-destructive">{errors.ndcNumber.message}</p>}
-            </div>
+            <FormRow label="NDC Number" required fieldId="ndcNumber" error={errors.ndcNumber?.message}>
+              <Input id="ndcNumber" {...register('ndcNumber')} />
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="manufacturer">Manufacturer</Label>
+            <FormRow label="Manufacturer" fieldId="manufacturer">
               <Input id="manufacturer" {...register('manufacturer')} />
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="strength">Strength</Label>
+            <FormRow label="Strength" fieldId="strength">
               <Input id="strength" placeholder="e.g. 500mg" {...register('strength')} />
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="dosageForm">Dosage Form</Label>
+            <FormRow label="Dosage Form" fieldId="dosageForm">
               <Input id="dosageForm" placeholder="e.g. Tablet, Capsule" {...register('dosageForm')} />
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="packageSize">Package Size</Label>
+            <FormRow label="Package Size" fieldId="packageSize">
               <Input id="packageSize" placeholder="e.g. 30 tablets" {...register('packageSize')} />
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label htmlFor="unitPrice">Unit Price (₱) *</Label>
+            <FormRow label="Unit Price (₱)" required fieldId="unitPrice" error={errors.unitPrice?.message}>
               <Input
                 id="unitPrice"
                 type="number"
                 min={0}
                 step={0.01}
                 {...register('unitPrice')}
-                className={errors.unitPrice ? 'border-destructive' : ''}
               />
-              {errors.unitPrice && <p className="text-xs text-destructive">{errors.unitPrice.message}</p>}
-            </div>
+            </FormRow>
 
-            <div className="space-y-1">
-              <Label>Status *</Label>
+            <FormRow label="Status" required error={errors.status?.message}>
               <Controller
                 name="status"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                     <SelectTrigger className={errors.status ? 'border-destructive' : ''}>
-                      <SelectValue placeholder="Select status..." />
+                      <SelectValue placeholder="Select status…" />
                     </SelectTrigger>
                     <SelectContent>
                       {statusOptions.map((opt) => (
@@ -175,8 +162,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
                   </Select>
                 )}
               />
-              {errors.status && <p className="text-xs text-destructive">{errors.status.message}</p>}
-            </div>
+            </FormRow>
           </div>
         </div>
 
@@ -186,13 +172,12 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <CheckboxField label="Controlled Substance" id="controlledSubstance" {...register('controlledSubstance')} />
 
-            <div className="space-y-1">
-              <Label>DEA Schedule</Label>
+            <FormRow label="DEA Schedule" error={errors.deaSchedule?.message}>
               <Controller
                 name="deaSchedule"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select schedule…" />
                     </SelectTrigger>
@@ -204,13 +189,13 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
                   </Select>
                 )}
               />
-            </div>
+            </FormRow>
           </div>
         </div>
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isPending}>
-            {isPending ? (isEdit ? 'Saving...' : 'Creating...') : (isEdit ? 'Save Changes' : 'Create Product')}
+            {isPending ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save Changes' : 'Create Product')}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>
             Cancel
@@ -227,7 +212,7 @@ export default function ProductFormPage() {
   const { data: existing, isLoading: isLoadingProduct } = useProduct(id ?? '')
   const { isLoading: isLoadingConfig } = useConfig()
 
-  if (isLoadingConfig || (isEdit && isLoadingProduct)) return <LoadingSpinner />
+  if (isLoadingConfig || (isEdit && isLoadingProduct)) return <FormPageSkeleton />
 
   return <ProductForm existing={existing} isEdit={isEdit} />
 }

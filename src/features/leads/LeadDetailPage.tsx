@@ -72,7 +72,7 @@ export default function LeadDetailPage() {
         <div className="flex items-center gap-2">
           {!isReadOnly && (
             <Button variant="outline" size="sm" onClick={() => navigate(`/leads/${id}/edit`)}>
-              <Pencil className="h-4 w-4 mr-2" />
+              <Pencil className="h-4 w-4 mr-1.5" />
               Edit
             </Button>
           )}

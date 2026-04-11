@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 
@@ -207,7 +207,7 @@ export default function LeadFormPage() {
   const { data: lead, isLoading: isLoadingLead } = useLead(id ?? '')
   const { isLoading: isLoadingConfig } = useConfig()
 
-  if (isLoadingConfig || (isEdit && isLoadingLead)) return <LoadingSpinner />
+  if (isLoadingConfig || (isEdit && isLoadingLead)) return <FormPageSkeleton />
 
   return <LeadForm lead={lead} isEdit={isEdit} prefill={prefill} />
 }
