@@ -5,13 +5,13 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { inviteStaffSchema, type InviteStaffFormData } from '@/schemas/admin'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog'
+import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 
@@ -56,34 +56,19 @@ export function InviteDialog({ open, onClose }: InviteDialogProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">
-                First Name <span className="text-destructive">*</span>
-              </Label>
-              <Input {...register('firstName')} autoFocus />
-              {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">
-                Last Name <span className="text-destructive">*</span>
-              </Label>
-              <Input {...register('lastName')} />
-              {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
-            </div>
+            <FormRow label="First Name" required fieldId="firstName" error={errors.firstName?.message}>
+              <Input id="firstName" {...register('firstName')} autoFocus />
+            </FormRow>
+            <FormRow label="Last Name" required fieldId="lastName" error={errors.lastName?.message}>
+              <Input id="lastName" {...register('lastName')} />
+            </FormRow>
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-xs font-medium text-muted-foreground">
-              Email <span className="text-destructive">*</span>
-            </Label>
-            <Input {...register('email')} type="email" />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
+          <FormRow label="Email" required fieldId="email" error={errors.email?.message}>
+            <Input id="email" {...register('email')} type="email" />
+          </FormRow>
 
-          <div className="space-y-1">
-            <Label className="text-xs font-medium text-muted-foreground">
-              Role <span className="text-destructive">*</span>
-            </Label>
+          <FormRow label="Role" required error={errors.role?.message}>
             <Controller
               name="role"
               control={control}
@@ -98,18 +83,15 @@ export function InviteDialog({ open, onClose }: InviteDialogProps) {
                 </Select>
               )}
             />
-            {errors.role && <p className="text-xs text-destructive">{errors.role.message}</p>}
-          </div>
+          </FormRow>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Job Title</Label>
-              <Input {...register('jobTitle')} placeholder="e.g. Sales Rep" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-muted-foreground">Department</Label>
-              <Input {...register('department')} placeholder="e.g. Field Force" />
-            </div>
+            <FormRow label="Job Title" fieldId="jobTitle">
+              <Input id="jobTitle" {...register('jobTitle')} placeholder="e.g. Sales Rep" />
+            </FormRow>
+            <FormRow label="Department" fieldId="department">
+              <Input id="department" {...register('department')} placeholder="e.g. Field Force" />
+            </FormRow>
           </div>
 
           <DialogFooter className="pt-2">

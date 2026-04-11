@@ -48,7 +48,7 @@ const ALL_COLUMNS: Column<ActivityRow>[] = [
   },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} />,
+    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
   },
   {
     header: 'Assigned To',

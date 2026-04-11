@@ -10,20 +10,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { createTeamSchema, updateTeamSchema, type UpdateTeamFormData } from '@/schemas/teams'
 import type { PharmaTeam } from '@/api/app-types'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import { FormSection } from '@/components/shared/FormSection'
 
 // Rendered only after data is ready — defaultValues are stable on first useForm call
 function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
@@ -134,7 +126,7 @@ export default function TeamFormPage() {
   const isEdit = !!id
   const { data: team, isLoading: isLoadingTeam } = useTeam(id ?? '')
 
-  if (isEdit && isLoadingTeam) return <LoadingSpinner />
+  if (isEdit && isLoadingTeam) return <FormPageSkeleton />
 
   return <TeamForm team={team} isEdit={isEdit} />
 }

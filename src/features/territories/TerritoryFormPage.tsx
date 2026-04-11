@@ -18,15 +18,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { createTerritorySchema, type CreateTerritoryFormData } from '@/schemas/territories'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import { FormSection } from '@/components/shared/FormSection'
 
 export default function TerritoryFormPage() {
   const navigate = useNavigate()
@@ -93,7 +85,7 @@ export default function TerritoryFormPage() {
               name="region"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select region" />
                   </SelectTrigger>
@@ -111,7 +103,7 @@ export default function TerritoryFormPage() {
               name="status"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || 'active'} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>

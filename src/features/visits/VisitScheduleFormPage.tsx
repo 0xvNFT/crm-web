@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useScheduleVisit } from '@/api/endpoints/visits'
-import { useAccounts } from '@/api/endpoints/accounts'
+import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useOpportunitySearch } from '@/api/endpoints/opportunities'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -19,23 +19,18 @@ import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { scheduleVisitSchema, type ScheduleVisitFormData } from '@/schemas/visits'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import { FormSection } from '@/components/shared/FormSection'
 
 export default function VisitScheduleFormPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { mutate: scheduleVisit, isPending } = useScheduleVisit()
-  const { data: accountsPage } = useAccounts(0, 100)
-  const accounts = accountsPage?.content ?? []
   const visitTypeOptions = useConfigOptions('visit.type')
+
+  const [accountQuery, setAccountQuery] = useState('')
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
+  const accountOptions: ComboboxOption[] = (accountResults ?? []).map((a) => ({ value: a.id!, label: a.name ?? '' }))
 
   const [oppQuery, setOppQuery] = useState('')
   const debouncedOppQuery = useDebounce(oppQuery, 300)
@@ -94,18 +89,15 @@ export default function VisitScheduleFormPage() {
               name="accountId"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select account…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accounts.map((a) => (
-                      <SelectItem key={a.id} value={a.id ?? ''}>
-                        {a.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={accountOptions}
+                  placeholder="Search accounts…"
+                  onSearchChange={setAccountQuery}
+                  isLoading={isSearchingAccounts}
+                  error={!!errors.accountId}
+                />
               )}
             />
           </FormRow>

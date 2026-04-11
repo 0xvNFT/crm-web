@@ -20,19 +20,11 @@ import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { PharmaOpportunity, CreateOpportunityRequest, UpdateOpportunityRequest } from '@/api/app-types'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import { FormSection } from '@/components/shared/FormSection'
 
 // Rendered only after data + config are ready — defaultValues are stable on first useForm call
 function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportunity; isEdit: boolean }) {
@@ -339,7 +331,7 @@ export default function OpportunityFormPage() {
   const { data: opportunity, isLoading: isLoadingOpportunity } = useOpportunity(id ?? '')
   const { isLoading: isLoadingConfig } = useConfig()
 
-  if (isLoadingConfig || (isEdit && isLoadingOpportunity)) return <LoadingSpinner />
+  if (isLoadingConfig || (isEdit && isLoadingOpportunity)) return <FormPageSkeleton />
 
   return <OpportunityForm opportunity={opportunity} isEdit={isEdit} />
 }

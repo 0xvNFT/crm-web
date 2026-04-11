@@ -16,21 +16,13 @@ import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { coachingNoteSchema, coachingNoteEditSchema, type CoachingNoteFormData, type CoachingNoteEditFormData } from '@/schemas/coaching'
 import type { PharmaCoachingNote } from '@/api/app-types'
 import { useState } from 'react'
-
-function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
+import { FormSection } from '@/components/shared/FormSection'
 
 // ─── Staff combobox with search ───────────────────────────────────────────────
 function StaffCombobox({
@@ -262,7 +254,7 @@ export default function CoachingFormPage() {
   const isEdit = !!id
   const { data: note, isLoading } = useCoachingNote(id ?? '')
 
-  if (isEdit && isLoading) return <LoadingSpinner />
+  if (isEdit && isLoading) return <FormPageSkeleton />
 
   return <CoachingForm note={note} isEdit={isEdit} />
 }

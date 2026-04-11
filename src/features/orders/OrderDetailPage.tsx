@@ -84,25 +84,25 @@ export default function OrderDetailPage() {
         <div className="flex gap-2 shrink-0 flex-wrap justify-end">
           {canEdit && (
             <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${id}/edit`)}>
-              <Pencil className="h-4 w-4 mr-2" />
+              <Pencil className="h-4 w-4 mr-1.5" />
               Edit
             </Button>
           )}
           {canShip && (
             <Button size="sm" variant="outline" onClick={() => setShowShip(true)} disabled={isShipping}>
-              <Truck className="h-4 w-4 mr-2" />
+              <Truck className="h-4 w-4 mr-1.5" />
               Mark as Shipped
             </Button>
           )}
           {canDeliver && (
             <Button size="sm" onClick={() => setShowDeliver(true)} disabled={isDelivering}>
-              <PackageCheck className="h-4 w-4 mr-2" />
+              <PackageCheck className="h-4 w-4 mr-1.5" />
               Mark as Delivered
             </Button>
           )}
           {canGenerateInvoice && (
             <Button size="sm" onClick={() => setShowGenerateInvoice(true)} disabled={isGenerating}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="h-4 w-4 mr-1.5" />
               Generate Invoice
             </Button>
           )}

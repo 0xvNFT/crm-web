@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -199,7 +199,7 @@ export default function OrderEditPage() {
 
   const { data: order, isLoading, isError } = useOrder(id ?? '')
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <FormPageSkeleton />
   if (isError || !order) return <ErrorMessage message="Order not found." />
 
   if (!EDITABLE_STATUSES.includes(order.status ?? '')) {

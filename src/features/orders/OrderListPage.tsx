@@ -27,7 +27,7 @@ const FILTER_KEYS = ['status']
 const ALL_COLUMNS: Column<PharmaOrder>[] = [
   { header: 'Order #',  accessor: 'orderNumber',  sortable: true, cell: (row) => row.orderNumber ?? '—' },
   { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
-  { header: 'Status',   accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
+  { header: 'Status',   accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
   { header: 'Total',    accessor: (row) => formatCurrency(row.totalAmount ?? 0) },
   { header: 'Owner',    accessor: (row) => row.createdByName ?? '—' },
   { header: 'Created',  accessor: (row) => formatDate(row.createdAt) },
@@ -69,7 +69,7 @@ export default function OrderListPage() {
         actions={
           !isReadOnly ? (
             <Button onClick={() => navigate('/orders/new')}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-1.5" />
               New Order
             </Button>
           ) : undefined

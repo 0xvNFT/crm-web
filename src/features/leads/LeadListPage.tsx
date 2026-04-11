@@ -28,7 +28,7 @@ const FILTER_KEYS = ['leadStatus', 'rating']
 const ALL_COLUMNS: Column<PharmaLead>[] = [
   { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
   { header: 'Company', accessor: (row) => row.companyName },
-  { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'UNKNOWN'} /> },
+  { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'unknown'} /> },
   { header: 'Rating', accessor: (row) => row.rating ?? '—' },
   { header: 'Owner', accessor: (row) => row.assignedUserName ?? '—' },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
@@ -71,7 +71,7 @@ export default function LeadListPage() {
         />
         {!isReadOnly && (
           <Button onClick={() => navigate('/leads/new')}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-1.5" />
             New Lead
           </Button>
         )}

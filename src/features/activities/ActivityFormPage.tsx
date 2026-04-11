@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormSection } from '@/components/shared/FormSection'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { PharmaActivity, CreateActivityRequest, UpdateActivityRequest } from '@/api/app-types'
@@ -241,7 +241,7 @@ export default function ActivityFormPage() {
   const { data: activity, isLoading: isLoadingActivity } = useActivity(id ?? '')
   const { isLoading: isLoadingConfig } = useConfig()
 
-  if (isLoadingConfig || (isEdit && isLoadingActivity)) return <LoadingSpinner />
+  if (isLoadingConfig || (isEdit && isLoadingActivity)) return <FormPageSkeleton />
 
   return <ActivityForm activity={activity} isEdit={isEdit} />
 }

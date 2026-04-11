@@ -27,7 +27,7 @@ const columns: Column<PharmaAccount>[] = [
   { header: 'Name', accessor: 'name', sortable: true, cell: (row) => row.name ?? '—' },
   { header: 'Type', accessor: 'accountType', sortable: true, cell: (row) => formatLabel(row.accountType) },
   { header: 'Phone', accessor: 'phoneMain', cell: (row) => row.phoneMain ?? '—' },
-  { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? 'UNKNOWN'} /> },
+  { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 

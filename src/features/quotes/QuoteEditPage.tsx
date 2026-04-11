@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -258,7 +258,7 @@ export default function QuoteEditPage() {
     }
   }, [quote, id, navigate])
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <FormPageSkeleton />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
 
   const defaultValues: QuoteFormData = {
