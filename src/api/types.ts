@@ -2989,26 +2989,19 @@ export interface components {
             /** @description Set to true to remove this user's manager assignment. */
             clearManager?: boolean;
         };
-        Role: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            description?: string;
-            permissions?: string;
-        };
-        User: {
-            /** Format: uuid */
-            tenantId?: string;
+        StaffResponse: {
             /** Format: uuid */
             id?: string;
             email?: string;
             firstName?: string;
             lastName?: string;
+            fullName?: string;
             status?: string;
             emailVerified?: boolean;
-            manager?: components["schemas"]["User"];
+            mustChangePassword?: boolean;
+            /** Format: uuid */
+            managerId?: string;
+            managerName?: string;
             jobTitle?: string;
             department?: string;
             phoneWork?: string;
@@ -3016,19 +3009,15 @@ export interface components {
             isFieldRep?: boolean;
             /** Format: uuid */
             homeTerritory?: string;
-            mustChangePassword?: boolean;
-            /** Format: date-time */
-            lastLoginAt?: string;
             timeZone?: string;
             preferredLanguage?: string;
-            roles?: components["schemas"]["Role"][];
-            /** Format: int64 */
-            version?: number;
+            /** Format: date-time */
+            lastLoginAt?: string;
+            roles?: string[];
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
-            fullName?: string;
         };
         UpdateTerritoryRequest: {
             territoryCode?: string;
@@ -3274,6 +3263,17 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        Role: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            description?: string;
+            permissions?: string;
         };
         TerritoryProductFocus: {
             /** Format: uuid */
@@ -3286,6 +3286,8 @@ export interface components {
             notes?: string;
             /** Format: date-time */
             assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
         };
         TerritorySecondaryRep: {
             /** Format: uuid */
@@ -3295,6 +3297,40 @@ export interface components {
             user?: components["schemas"]["User"];
             /** Format: date-time */
             assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        User: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            status?: string;
+            emailVerified?: boolean;
+            manager?: components["schemas"]["User"];
+            jobTitle?: string;
+            department?: string;
+            phoneWork?: string;
+            phoneMobile?: string;
+            isFieldRep?: boolean;
+            /** Format: uuid */
+            homeTerritory?: string;
+            mustChangePassword?: boolean;
+            /** Format: date-time */
+            lastLoginAt?: string;
+            timeZone?: string;
+            preferredLanguage?: string;
+            roles?: components["schemas"]["Role"][];
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            fullName?: string;
         };
         UpdateQuoteRequest: {
             /** Format: date */
@@ -3381,6 +3417,26 @@ export interface components {
             /** @enum {string} */
             deaSchedule?: "I" | "II" | "III" | "IV" | "V";
             requiresRefrigeration?: boolean;
+        };
+        PharmaProductResponse: {
+            /** Format: uuid */
+            id?: string;
+            ndcNumber?: string;
+            name?: string;
+            genericName?: string;
+            manufacturer?: string;
+            strength?: string;
+            dosageForm?: string;
+            packageSize?: string;
+            unitPrice?: number;
+            status?: string;
+            controlledSubstance?: boolean;
+            deaSchedule?: string;
+            requiresRefrigeration?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
         };
         UpdateOrderRequest: {
             /** @description ISO-8601 datetime, e.g. "2026-04-01T00:00" or "2026-04-01T00:00:00Z" */
@@ -4082,259 +4138,21 @@ export interface components {
             recommendations?: string;
             signatureConfidencePct?: number;
         };
-        PharmaAccount: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            accountType?: string;
-            parentAccount?: components["schemas"]["PharmaAccount"];
-            owner?: components["schemas"]["User"];
-            website?: string;
-            phoneMain?: string;
-            emailGeneral?: string;
-            billingAddress?: string;
-            shippingAddress?: string;
-            taxId?: string;
-            creditLimit?: number;
-            paymentTerms?: string;
-            /** Format: int32 */
-            employees?: number;
-            annualRevenue?: number;
-            isSupplier?: boolean;
-            deaNumber?: string;
-            stateLicenseNumber?: string;
-            controlledSubstanceApproved?: boolean;
-            customerCode?: string;
-            productPortfolio?: Record<string, never>;
-            primaryCustomerClass?: string;
-            /** Format: int32 */
-            totalHcpCount?: number;
-            /** Format: int32 */
-            advocateHcpCount?: number;
-            /** Format: int32 */
-            userHcpCount?: number;
-            status?: string;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaContact: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            account?: components["schemas"]["PharmaAccount"];
-            owner?: components["schemas"]["User"];
-            salutation?: string;
-            firstName: string;
-            middleName?: string;
-            lastName: string;
-            title?: string;
-            email?: string;
-            phone?: string;
-            mobile?: string;
-            faxNumber?: string;
-            contactType: string;
-            specialty?: string;
-            prcNumber?: string;
-            /** Format: date */
-            prcExpiryDate?: string;
-            npiNumber?: string;
-            deaNumber?: string;
-            stateLicenseNumber?: string;
-            prescribingAuthority?: boolean;
-            customerClass?: string;
-            adoptionStage?: string;
-            customerType?: string;
-            professionalSociety?: string;
-            productPortfolio?: Record<string, never>;
-            addressStreet?: string;
-            addressRegion?: string;
-            addressProvince?: string;
-            addressCity?: string;
-            addressBarangay?: string;
-            addressPostalCode?: string;
-            addressCountry?: string;
-            /** Format: int32 */
-            yearsOfExperience?: number;
-            /** Format: int32 */
-            patientVolumeMonthly?: number;
-            preferredContactMethod?: string;
-            preferredContactTime?: string;
-            leadSource?: string;
-            consentConfirmedStatus?: string;
-            /** Format: date */
-            consentConfirmedDate?: string;
-            doNotCall?: boolean;
-            emailOptOut?: boolean;
-            contactCode?: string;
-            status?: string;
-            notes?: string;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-            fullName?: string;
-            healthcareProfessional?: boolean;
-        };
-        PharmaFieldVisit: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            visitNumber?: string;
-            subject?: string;
-            visitType?: string;
-            status?: string;
-            priority?: string;
-            account?: components["schemas"]["PharmaAccount"];
-            contact?: components["schemas"]["PharmaContact"];
-            territory?: components["schemas"]["PharmaTerritory"];
-            assignedRep?: components["schemas"]["User"];
-            /** Format: date-time */
-            scheduledStart?: string;
-            /** Format: date-time */
-            scheduledEnd?: string;
-            /** Format: date-time */
-            actualStart?: string;
-            /** Format: date-time */
-            actualEnd?: string;
-            /** Format: int32 */
-            durationMinutes?: number;
-            locationName?: string;
-            gpsLatitude?: number;
-            gpsLongitude?: number;
-            locationVerified?: boolean;
-            /** Format: date-time */
-            checkInTime?: string;
-            /** Format: date-time */
-            checkOutTime?: string;
-            callObjectives?: string;
-            productsDiscussed?: components["schemas"]["VisitProduct"][];
-            materialsUsed?: components["schemas"]["VisitMaterial"][];
-            samplesDropped?: boolean;
-            sampleTransactionIds?: Record<string, never>;
-            outcome?: string;
-            sentiment?: string;
-            keyDiscussionPoints?: string;
-            objectionsRaised?: string;
-            customerFeedback?: string;
-            signatureRequired?: boolean;
-            signatureCaptured?: boolean;
-            signatureImageUrl?: string;
-            /** Format: date-time */
-            signatureCapturedAt?: string;
-            signatureCapturedByName?: string;
-            signatureCapturedByTitle?: string;
-            nextBestAction?: string;
-            /** Format: date */
-            nextVisitDate?: string;
-            followUpRequired?: boolean;
-            followUpNotes?: string;
-            parentVisit?: components["schemas"]["PharmaFieldVisit"];
-            /** Format: uuid */
-            caseId?: string;
-            /** Format: uuid */
-            expenseReportId?: string;
-            opportunity?: components["schemas"]["PharmaOpportunity"];
-            /** Format: int32 */
-            visitQualityScore?: number;
-            complianceVerified?: boolean;
-            submissionStatus?: string;
-            /** Format: date-time */
-            submittedAt?: string;
-            reviewedBy?: components["schemas"]["User"];
-            /** Format: date-time */
-            reviewedAt?: string;
-            rejectionReason?: string;
-            notes?: string;
-            isPrivate?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaMaterial: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            title: string;
-            description?: string;
-            fileName: string;
-            fileType?: string;
-            status?: string;
-            category?: string;
-            subCategory?: string;
-            versionNumber?: string;
-            isCurrent?: boolean;
-            owner?: components["schemas"]["User"];
-            keywords?: string;
-            languageCode?: string;
-            storageUrl?: string;
-            /** Format: date */
-            publishDate?: string;
-            /** Format: date */
-            expirationDate?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaOpportunity: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            topic: string;
-            description?: string;
-            account: components["schemas"]["PharmaAccount"];
-            contact?: components["schemas"]["PharmaContact"];
-            owner: components["schemas"]["User"];
-            territory?: components["schemas"]["PharmaTerritory"];
-            salesStage?: string;
-            status?: string;
-            estRevenue?: number;
-            /** Format: int32 */
-            probabilityPct?: number;
-            currency?: string;
-            /** Format: date */
-            estCloseDate?: string;
-            /** Format: date */
-            actualCloseDate?: string;
-            forecastCategory?: string;
-            leadSource?: string;
-            type?: string;
-            budgetConfirmed?: boolean;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaVisitAudit: {
-            /** Format: uuid */
-            tenantId?: string;
+        PharmaVisitAuditResponse: {
             /** Format: uuid */
             id?: string;
             auditName?: string;
             /** Format: date */
             auditDate?: string;
-            auditor?: components["schemas"]["User"];
-            visit?: components["schemas"]["PharmaFieldVisit"];
-            salesRep?: components["schemas"]["User"];
+            /** Format: uuid */
+            auditorId?: string;
+            auditorName?: string;
+            /** Format: uuid */
+            visitId?: string;
+            visitNumber?: string;
+            /** Format: uuid */
+            salesRepId?: string;
+            salesRepName?: string;
             signatureVerificationPhotoUrl?: string;
             verificationStatus?: string;
             signatureMatchConfidencePct?: number;
@@ -4353,25 +4171,6 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
-        };
-        VisitMaterial: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            material?: components["schemas"]["PharmaMaterial"];
-            /** Format: int32 */
-            quantity?: number;
-            notes?: string;
-        };
-        VisitProduct: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            product?: components["schemas"]["PharmaProduct"];
-            discussed?: boolean;
-            notes?: string;
         };
         OverrideRequest: {
             override?: boolean;
@@ -4699,6 +4498,108 @@ export interface components {
             contact?: components["schemas"]["PharmaContact"];
             opportunity?: components["schemas"]["PharmaOpportunity"];
         };
+        PharmaAccount: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            accountType?: string;
+            parentAccount?: components["schemas"]["PharmaAccount"];
+            owner?: components["schemas"]["User"];
+            website?: string;
+            phoneMain?: string;
+            emailGeneral?: string;
+            billingAddress?: string;
+            shippingAddress?: string;
+            taxId?: string;
+            creditLimit?: number;
+            paymentTerms?: string;
+            /** Format: int32 */
+            employees?: number;
+            annualRevenue?: number;
+            isSupplier?: boolean;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            controlledSubstanceApproved?: boolean;
+            customerCode?: string;
+            productPortfolio?: Record<string, never>;
+            primaryCustomerClass?: string;
+            /** Format: int32 */
+            totalHcpCount?: number;
+            /** Format: int32 */
+            advocateHcpCount?: number;
+            /** Format: int32 */
+            userHcpCount?: number;
+            status?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaContact: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            account?: components["schemas"]["PharmaAccount"];
+            owner?: components["schemas"]["User"];
+            salutation?: string;
+            firstName: string;
+            middleName?: string;
+            lastName: string;
+            title?: string;
+            email?: string;
+            phone?: string;
+            mobile?: string;
+            faxNumber?: string;
+            contactType: string;
+            specialty?: string;
+            prcNumber?: string;
+            /** Format: date */
+            prcExpiryDate?: string;
+            npiNumber?: string;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            prescribingAuthority?: boolean;
+            customerClass?: string;
+            adoptionStage?: string;
+            customerType?: string;
+            professionalSociety?: string;
+            productPortfolio?: Record<string, never>;
+            addressStreet?: string;
+            addressRegion?: string;
+            addressProvince?: string;
+            addressCity?: string;
+            addressBarangay?: string;
+            addressPostalCode?: string;
+            addressCountry?: string;
+            /** Format: int32 */
+            yearsOfExperience?: number;
+            /** Format: int32 */
+            patientVolumeMonthly?: number;
+            preferredContactMethod?: string;
+            preferredContactTime?: string;
+            leadSource?: string;
+            consentConfirmedStatus?: string;
+            /** Format: date */
+            consentConfirmedDate?: string;
+            doNotCall?: boolean;
+            emailOptOut?: boolean;
+            contactCode?: string;
+            status?: string;
+            notes?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            fullName?: string;
+            healthcareProfessional?: boolean;
+        };
         PharmaLead: {
             /** Format: uuid */
             tenantId?: string;
@@ -4733,6 +4634,38 @@ export interface components {
             createdAt?: string;
             /** Format: int64 */
             version?: number;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaOpportunity: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            topic: string;
+            description?: string;
+            account: components["schemas"]["PharmaAccount"];
+            contact?: components["schemas"]["PharmaContact"];
+            owner: components["schemas"]["User"];
+            territory?: components["schemas"]["PharmaTerritory"];
+            salesStage?: string;
+            status?: string;
+            estRevenue?: number;
+            /** Format: int32 */
+            probabilityPct?: number;
+            currency?: string;
+            /** Format: date */
+            estCloseDate?: string;
+            /** Format: date */
+            actualCloseDate?: string;
+            forecastCategory?: string;
+            leadSource?: string;
+            type?: string;
+            budgetConfirmed?: boolean;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
         };
@@ -4990,16 +4923,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisitResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5019,39 +4952,39 @@ export interface components {
             sorted?: boolean;
             unsorted?: boolean;
         };
-        PagePharmaVisitAudit: {
+        PagePharmaVisitAuditResponse: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-            /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["PharmaVisitAudit"][];
-            /** Format: int32 */
-            number?: number;
-            sort?: components["schemas"]["SortObject"];
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["PharmaVisitAuditResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
-        PageUser: {
+        PageStaffResponse: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-            /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["User"][];
-            /** Format: int32 */
-            number?: number;
-            sort?: components["schemas"]["SortObject"];
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["StaffResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5060,16 +4993,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritoryResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5086,16 +5019,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeamResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5175,16 +5108,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RepTarget"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5193,43 +5126,43 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
-        PagePharmaProduct: {
+        PagePharmaProductResponse: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-            /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["PharmaProduct"][];
-            /** Format: int32 */
-            number?: number;
-            sort?: components["schemas"]["SortObject"];
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["PharmaProductResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
-        PharmaProductBatch: {
-            /** Format: uuid */
-            tenantId?: string;
+        PharmaProductBatchResponse: {
             /** Format: uuid */
             id?: string;
-            product?: components["schemas"]["PharmaProduct"];
+            /** Format: uuid */
+            productId?: string;
+            productName?: string;
             batchNumber?: string;
             lotNumber?: string;
             manufacturer?: string;
@@ -5255,27 +5188,24 @@ export interface components {
             regulatoryNotes?: string;
             /** Format: date-time */
             createdAt?: string;
-            /** Format: int64 */
-            version?: number;
             /** Format: date-time */
             updatedAt?: string;
-            expired?: boolean;
         };
         PagePharmaOrderResponse: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrderResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5284,16 +5214,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5302,16 +5232,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterialResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5320,16 +5250,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLeadResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5338,16 +5268,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoiceResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5356,16 +5286,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContactResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5374,16 +5304,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5392,16 +5322,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5410,16 +5340,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccountResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5447,16 +5377,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5465,16 +5395,16 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -5552,7 +5482,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"];
+                    "*/*": components["schemas"]["StaffResponse"];
                 };
             };
         };
@@ -5578,7 +5508,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"];
+                    "*/*": components["schemas"]["StaffResponse"];
                 };
             };
         };
@@ -5812,7 +5742,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"];
+                    "*/*": components["schemas"]["PharmaProductResponse"];
                 };
             };
         };
@@ -5838,7 +5768,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"];
+                    "*/*": components["schemas"]["PharmaProductResponse"];
                 };
             };
         };
@@ -6780,7 +6710,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaVisitAudit"];
+                    "*/*": components["schemas"]["PharmaVisitAuditResponse"];
                 };
             };
         };
@@ -6806,7 +6736,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaVisitAudit"];
+                    "*/*": components["schemas"]["PharmaVisitAuditResponse"];
                 };
             };
         };
@@ -6832,7 +6762,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaVisitAudit"];
+                    "*/*": components["schemas"]["PharmaVisitAuditResponse"];
                 };
             };
         };
@@ -6854,7 +6784,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageUser"];
+                    "*/*": components["schemas"]["PageStaffResponse"];
                 };
             };
         };
@@ -6878,7 +6808,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"];
+                    "*/*": components["schemas"]["StaffResponse"];
                 };
             };
         };
@@ -6924,7 +6854,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"];
+                    "*/*": components["schemas"]["StaffResponse"];
                 };
             };
         };
@@ -6946,7 +6876,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"];
+                    "*/*": components["schemas"]["StaffResponse"];
                 };
             };
         };
@@ -7464,7 +7394,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaProduct"];
+                    "*/*": components["schemas"]["PagePharmaProductResponse"];
                 };
             };
         };
@@ -7488,7 +7418,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"];
+                    "*/*": components["schemas"]["PharmaProductResponse"];
                 };
             };
         };
@@ -8838,7 +8768,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaVisitAudit"];
+                    "*/*": components["schemas"]["PharmaVisitAuditResponse"];
                 };
             };
         };
@@ -8860,7 +8790,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaVisitAudit"];
+                    "*/*": components["schemas"]["PagePharmaVisitAuditResponse"];
                 };
             };
         };
@@ -8884,7 +8814,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaVisitAudit"];
+                    "*/*": components["schemas"]["PagePharmaVisitAuditResponse"];
                 };
             };
         };
@@ -8908,7 +8838,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaVisitAudit"];
+                    "*/*": components["schemas"]["PagePharmaVisitAuditResponse"];
                 };
             };
         };
@@ -8930,7 +8860,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["User"][];
+                    "*/*": components["schemas"]["StaffResponse"][];
                 };
             };
         };
@@ -9430,7 +9360,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProductBatch"][];
+                    "*/*": components["schemas"]["PharmaProductBatchResponse"][];
                 };
             };
         };
@@ -9453,7 +9383,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PagePharmaProduct"];
+                    "*/*": components["schemas"]["PagePharmaProductResponse"];
                 };
             };
         };
@@ -9475,7 +9405,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"];
+                    "*/*": components["schemas"]["PharmaProductResponse"];
                 };
             };
         };
@@ -9495,7 +9425,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PharmaProduct"][];
+                    "*/*": components["schemas"]["PharmaProductResponse"][];
                 };
             };
         };

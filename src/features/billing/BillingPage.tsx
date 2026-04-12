@@ -196,6 +196,7 @@ export default function BillingPage() {
         cancelUrl:  `${window.location.origin}/billing`,
       },
       {
+        // eslint-disable-next-line no-restricted-syntax -- external Stripe URL, navigate() only works for internal routes
         onSuccess: (url) => { window.location.href = url },
         onError:   (err) => toast('Checkout failed', { variant: 'destructive', description: parseApiError(err) }),
       },
@@ -206,6 +207,7 @@ export default function BillingPage() {
     portal.mutate(
       { returnUrl: `${window.location.origin}/billing` },
       {
+        // eslint-disable-next-line no-restricted-syntax -- external Stripe URL, navigate() only works for internal routes
         onSuccess: (url) => { window.location.href = url },
         onError:   (err) => toast('Could not open billing portal', { variant: 'destructive', description: parseApiError(err) }),
       },
