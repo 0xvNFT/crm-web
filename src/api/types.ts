@@ -337,24 +337,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/plans/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a single plan by ID */
-        get: operations["getPlan"];
-        /** Update a plan — partial update, all fields optional. Use to set stripePriceId after Stripe product creation. */
-        put: operations["updatePlan"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/pharma/visits": {
         parameters: {
             query?: never;
@@ -1404,57 +1386,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/billing/webhook": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Receive billing webhook event from payment provider (Stripe/PayMongo) */
-        post: operations["handleWebhook"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/billing/portal": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a Stripe Customer Portal session — returns { portalUrl } for self-service billing management */
-        post: operations["createPortal"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/billing/checkout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a Stripe Checkout session — returns { checkoutUrl } to redirect browser to */
-        post: operations["createCheckout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/auth/reset-password": {
         parameters: {
             query?: never;
@@ -1493,26 +1424,6 @@ export interface paths {
          * @description Sends a new verification email. Returns 200 regardless of whether the email exists to prevent account enumeration. Rate-limited per IP.
          */
         post: operations["resendVerification"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Register a new tenant with an admin user
-         * @description Creates tenant + admin account and sends a verification email. User must verify email before logging in. Rate-limited to 3 attempts per 15 minutes per IP.
-         */
-        post: operations["register"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1619,76 +1530,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/tenants": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all tenants with plan and subscription status */
-        get: operations["listTenants"];
-        put?: never;
-        /** Create a new tenant and assign a plan */
-        post: operations["createTenant"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/tenants/{id}/suspend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Suspend a tenant (sets status to suspended) */
-        post: operations["suspendTenant"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/tenants/{id}/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reactivate a suspended tenant */
-        post: operations["reactivateTenant"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/plans": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all available plans */
-        get: operations["listPlans"];
-        put?: never;
-        /** Create a new plan in the system catalogue */
-        post: operations["createPlan"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/pharma/territories/{id}/assign-rep/{repId}": {
         parameters: {
             query?: never;
@@ -1704,6 +1545,22 @@ export interface paths {
         head?: never;
         /** Assign a primary rep to a territory */
         patch: operations["assignRep"];
+        trace?: never;
+    };
+    "/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/pharma/visits/search": {
@@ -2845,40 +2702,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/billing/subscription": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get current subscription status for the authenticated tenant */
-        get: operations["getSubscription"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/billing/plans": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all active plans — tenant-facing, for upgrade/plan selection UI */
-        get: operations["getActivePlans"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/auth/verify": {
         parameters: {
             query?: never;
@@ -2911,23 +2734,6 @@ export interface paths {
          * @description Returns userId, tenantId, email, fullName, and roles from the JWT. Returns 401 if not authenticated. Used for session restoration on page refresh.
          */
         get: operations["me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/tenants/{id}/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all users belonging to a specific tenant */
-        get: operations["listTenantUsers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3210,6 +3016,7 @@ export interface components {
             isFieldRep?: boolean;
             /** Format: uuid */
             homeTerritory?: string;
+            mustChangePassword?: boolean;
             /** Format: date-time */
             lastLoginAt?: string;
             timeZone?: string;
@@ -4210,34 +4017,6 @@ export interface components {
             firstName: string;
             lastName: string;
         };
-        UpdatePlanRequest: {
-            name?: string;
-            priceMonthlyUsd?: number;
-            /** Format: int32 */
-            maxUsers?: number;
-            /** Format: int32 */
-            maxRecords?: number;
-            features?: string[];
-            isActive?: boolean;
-            stripePriceId?: string;
-        };
-        PlanResponse: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            vertical?: string;
-            tier?: string;
-            priceMonthlyUsd?: number;
-            /** Format: int32 */
-            maxUsers?: number;
-            /** Format: int32 */
-            maxRecords?: number;
-            features?: string[];
-            isActive?: boolean;
-            stripePriceId?: string;
-            /** Format: date-time */
-            createdAt?: string;
-        };
         ScheduleVisitRequest: {
             /** Format: uuid */
             repId: string;
@@ -5180,30 +4959,12 @@ export interface components {
             stateLicenseNumber?: string;
             controlledSubstanceApproved?: boolean;
         };
-        PortalRequest: {
-            returnUrl: string;
-        };
-        CheckoutRequest: {
-            /** Format: uuid */
-            planId: string;
-            successUrl: string;
-            cancelUrl: string;
-        };
         ResetPasswordRequest: {
             token: string;
             newPassword: string;
         };
         EmailOnlyRequest: {
             email: string;
-        };
-        RegisterRequest: {
-            tenantName: string;
-            tenantSlug: string;
-            vertical: string;
-            firstName: string;
-            lastName: string;
-            email: string;
-            password: string;
         };
         LoginRequest: {
             email: string;
@@ -5217,43 +4978,6 @@ export interface components {
             token: string;
             newPassword: string;
         };
-        CreateTenantRequest: {
-            name: string;
-            slug: string;
-            vertical: string;
-            /** Format: uuid */
-            planId: string;
-            billingEmail?: string;
-            dataRegion?: string;
-            adminEmail?: string;
-            adminPassword?: string;
-        };
-        TenantSummary: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            slug?: string;
-            vertical?: string;
-            status?: string;
-            dataRegion?: string;
-            /** Format: uuid */
-            planId?: string;
-            planName?: string;
-            subscriptionStatus?: string;
-            /** Format: date-time */
-            createdAt?: string;
-        };
-        CreatePlanRequest: {
-            name: string;
-            vertical: string;
-            tier: string;
-            priceMonthlyUsd: number;
-            /** Format: int32 */
-            maxUsers: number;
-            /** Format: int32 */
-            maxRecords: number;
-            features?: string[];
-        };
         Pageable: {
             /** Format: int32 */
             page?: number;
@@ -5262,18 +4986,18 @@ export interface components {
             sort?: string[];
         };
         PagePharmaFieldVisitResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaFieldVisitResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -5287,8 +5011,8 @@ export interface components {
             pageSize?: number;
             /** Format: int32 */
             pageNumber?: number;
-            unpaged?: boolean;
             paged?: boolean;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -5296,54 +5020,54 @@ export interface components {
             unsorted?: boolean;
         };
         PagePharmaVisitAudit: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaVisitAudit"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageUser: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["User"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaTerritoryResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTerritoryResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -5358,18 +5082,18 @@ export interface components {
             assignedAt?: string;
         };
         PagePharmaTeamResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeamResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -5447,54 +5171,54 @@ export interface components {
             completedCount?: number;
         };
         PageRepTarget: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RepTarget"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaQuoteResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaQuoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaProduct: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaProduct"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -5538,162 +5262,162 @@ export interface components {
             expired?: boolean;
         };
         PagePharmaOrderResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOrderResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaOpportunityResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaOpportunityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaMaterialResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaMaterialResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaLeadResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaLeadResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaInvoiceResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaInvoiceResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaContactResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaContactResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaCoachingNoteResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaCoachingNoteResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaActivityResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaActivityResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PagePharmaAccountResponse: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaAccountResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -5719,72 +5443,40 @@ export interface components {
             createdAt?: string;
         };
         PageNotification: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Notification"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageApprovalRule: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ApprovalRule"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
-        };
-        Subscription: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            planId?: string;
-            status?: string;
-            /** Format: date-time */
-            currentPeriodStart?: string;
-            /** Format: date-time */
-            currentPeriodEnd?: string;
-            stripeSubscriptionId?: string;
-            stripeCustomerId?: string;
-            stripePriceId?: string;
-            /** Format: date-time */
-            canceledAt?: string;
-            /** Format: date-time */
-            trialEnd?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        TenantUserSummary: {
-            /** Format: uuid */
-            id?: string;
-            email?: string;
-            firstName?: string;
-            lastName?: string;
-            status?: string;
         };
     };
     responses: never;
@@ -6771,54 +6463,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": Record<string, never>;
-                };
-            };
-        };
-    };
-    getPlan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PlanResponse"];
-                };
-            };
-        };
-    };
-    updatePlan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePlanRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PlanResponse"];
                 };
             };
         };
@@ -8781,87 +8425,6 @@ export interface operations {
             };
         };
     };
-    handleWebhook: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Billing-Signature"?: string;
-                "Stripe-Signature"?: string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": string;
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
-    createPortal: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PortalRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
-    createCheckout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CheckoutRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
     resetPasswordForm: {
         parameters: {
             query?: {
@@ -8918,30 +8481,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["EmailOnlyRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": Record<string, never>;
-                };
-            };
-        };
-    };
-    register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterRequest"];
             };
         };
         responses: {
@@ -9072,134 +8611,6 @@ export interface operations {
             };
         };
     };
-    listTenants: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSummary"][];
-                };
-            };
-        };
-    };
-    createTenant: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateTenantRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSummary"];
-                };
-            };
-        };
-    };
-    suspendTenant: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    reactivateTenant: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listPlans: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PlanResponse"][];
-                };
-            };
-        };
-    };
-    createPlan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreatePlanRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PlanResponse"];
-                };
-            };
-        };
-    };
     assignRep: {
         parameters: {
             query?: never;
@@ -9219,6 +8630,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PharmaTerritoryResponse"];
+                };
+            };
+        };
+    };
+    ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: string;
+                    };
                 };
             };
         };
@@ -10747,46 +10180,6 @@ export interface operations {
             };
         };
     };
-    getSubscription: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Subscription"];
-                };
-            };
-        };
-    };
-    getActivePlans: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PlanResponse"][];
-                };
-            };
-        };
-    };
     verifyEmail: {
         parameters: {
             query: {
@@ -10825,28 +10218,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": Record<string, never>;
-                };
-            };
-        };
-    };
-    listTenantUsers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantUserSummary"][];
                 };
             };
         };

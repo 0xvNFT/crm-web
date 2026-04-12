@@ -51,11 +51,32 @@ export type VisitMaterialInfo        = components['schemas']['VisitMaterialInfo'
 export type AddVisitProductRequest   = components['schemas']['AddVisitProductRequest']
 export type AddVisitMaterialRequest  = components['schemas']['AddVisitMaterialRequest']
 export type User                     = components['schemas']['User']
+// PageUser content typed as User[] so the roles object shape flows through list/search results
+export type PageUser                 = Omit<components['schemas']['PageUser'], 'content'> & { content?: User[] }
 export type Notification             = components['schemas']['Notification']
-export type TenantUserSummary        = components['schemas']['TenantUserSummary']
-export type CreateStaffRequest       = components['schemas']['CreateStaffRequest']
-export type UpdateStaffRequest       = components['schemas']['UpdateStaffRequest']
-export type PageUser                 = components['schemas']['PageUser']
+export type CreateStaffRequest       = Omit<components['schemas']['CreateStaffRequest'], 'role'> & { role: string }
+export type UpdateStaffRequest       = Omit<components['schemas']['UpdateStaffRequest'], 'role'> & { role?: string }
+
+// ─── Frontend-owned staff interface — normalized from raw User entity ──────────
+// Backend returns User JPA entity from /api/v1/pharma/users with roles as Role objects ({ name, id, ... }).
+// StaffMember normalizes this at the API boundary so components never read .roles[0].name directly.
+// When backend ships a proper StaffResponse DTO, only mapStaffMember needs updating.
+export interface StaffMember {
+  id: string
+  firstName: string
+  lastName: string
+  fullName: string
+  email: string
+  role: string        // normalized from roles[0].name
+  jobTitle?: string
+  department?: string
+  phoneWork?: string
+  phoneMobile?: string
+  status?: string
+  emailVerified?: boolean
+  createdAt?: string
+  manager?: { id?: string; fullName?: string; firstName?: string; lastName?: string }
+}
 
 // ─── Paginated results (Spring Page<T>) ───────────────────────────────────────
 export type PagePharmaAccount      = components['schemas']['PagePharmaAccountResponse']
@@ -115,9 +136,22 @@ export interface AuthUser {
   mustChangePassword?: boolean
 }
 
-// ─── Auth request types — all sourced from generated spec, never manually defined ──
+// ─── Auth request types ───────────────────────────────────────────────────────
+// ─── RegisterRequest — defined manually ──────────────────────────────────────
+// POST /api/v1/auth/register is @Hidden when APP_REGISTRATION_ENABLED=false (dedicated deployments).
+// gen:types against a registration-disabled instance will omit this schema — keep it here so
+// the codebase compiles regardless of deployment mode.
+// Only active when VITE_REGISTRATION_ENABLED=true.
+export interface RegisterRequest {
+  tenantName: string
+  tenantSlug: string
+  vertical: string
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+}
 export type LoginRequest          = components['schemas']['LoginRequest']           // { email, password }
-export type RegisterRequest       = components['schemas']['RegisterRequest']         // { tenantName, tenantSlug, vertical, firstName, lastName, email, password }
 export type ResetPasswordRequest  = components['schemas']['ResetPasswordRequest']   // { token, newPassword }
 export type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']  // { currentPassword, newPassword }
 export type UpdateProfileRequest  = components['schemas']['UpdateProfileRequest']   // { firstName, lastName }
@@ -242,14 +276,51 @@ export type CheckOutRequest       = Omit<components['schemas']['CheckOutRequest'
 export type UpdateVisitRequest    = Omit<components['schemas']['UpdateVisitRequest'], 'visitType' | 'priority' | 'sentiment'> & { visitType?: string; priority?: string; sentiment?: string }
 export type SignatureRequest      = components['schemas']['SignatureRequest']       // { signatureImageUrl, capturedByName?, capturedByTitle? }
 
-// ─── Admin (SUPER_ADMIN only — /api/admin/**) ────────────────────────────────
-export type PlanResponse      = components['schemas']['PlanResponse']
-export type UpdatePlanRequest = components['schemas']['UpdatePlanRequest']
+// ─── Admin (SUPER_ADMIN only — /api/v1/admin/**) ─────────────────────────────
+// These schemas are @Hidden in backend Swagger — excluded from gen:types output.
+// Defined manually so crm-web type-checks regardless of deployment mode.
+// Callers must handle 404 gracefully — treat as "feature not available in this deployment".
+export interface PlanResponse {
+  id?: string
+  name?: string
+  description?: string
+  tier?: string
+  priceMonthly?: number
+  priceMonthlyUsd?: number
+  priceAnnual?: number
+  maxUsers?: number
+  maxRecords?: number
+  features?: string[]
+  active?: boolean
+  isActive?: boolean
+}
+export interface UpdatePlanRequest {
+  name?: string
+  description?: string
+  priceMonthly?: number
+  priceAnnual?: number
+  maxUsers?: number
+  features?: string[]
+  active?: boolean
+}
 
-// ─── Billing ─────────────────────────────────────────────────────────────────
-export type BillingSubscription  = components['schemas']['Subscription']
-export type CheckoutRequest      = components['schemas']['CheckoutRequest']   // { planId, successUrl, cancelUrl }
-export type PortalRequest        = components['schemas']['PortalRequest']     // { returnUrl }
+// ─── Billing (/api/v1/billing/**) ────────────────────────────────────────────
+// @Hidden in Swagger — defined manually. Returns 404 when billing is disabled for this deployment.
+// Treat 404 as "feature not available" — not an error.
+export interface BillingSubscription {
+  id?: string
+  planId?: string
+  planName?: string
+  status?: string
+  currentPeriodStart?: string
+  currentPeriodEnd?: string
+  cancelAtPeriodEnd?: boolean
+  canceledAt?: string
+  trialEnd?: string
+  stripeSubscriptionId?: string
+}
+export interface CheckoutRequest { planId: string; successUrl: string; cancelUrl: string }
+export interface PortalRequest   { returnUrl: string }
 
 // ─── API errors ───────────────────────────────────────────────────────────────
 export interface ApiError {

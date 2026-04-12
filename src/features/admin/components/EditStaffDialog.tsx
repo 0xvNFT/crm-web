@@ -17,10 +17,10 @@ import {
 import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { User } from '@/api/app-types'
+import type { StaffMember } from '@/api/app-types'
 
 interface EditStaffDialogProps {
-  user: User | null
+  user: StaffMember | null
   onClose: () => void
 }
 
@@ -37,8 +37,8 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
   const managerOptions: ComboboxOption[] = (managerResults ?? [])
     .filter((u) => u.id !== user?.id) // cannot report to yourself
     .map((u) => ({
-      value: u.id!,
-      label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+      value: u.id,
+      label: u.fullName,
     }))
 
   // Pre-populate the combobox label if the user already has a manager set
@@ -50,9 +50,9 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<EditStaffFormData>({
     resolver: zodResolver(editStaffSchema),
     defaultValues: user ? {
-      role:        (user.roles?.[0]?.name as EditStaffFormData['role']) ?? undefined,
-      firstName:   user.firstName ?? '',
-      lastName:    user.lastName ?? '',
+      role:        user.role || undefined,
+      firstName:   user.firstName,
+      lastName:    user.lastName,
       jobTitle:    user.jobTitle ?? '',
       department:  user.department ?? '',
       phoneWork:   user.phoneWork ?? '',

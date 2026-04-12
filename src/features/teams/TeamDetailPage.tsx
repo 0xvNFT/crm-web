@@ -16,7 +16,7 @@ import { formatDate } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
-import type { TenantUserSummary } from '@/api/app-types'
+import type { StaffMember } from '@/api/app-types'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -68,7 +68,7 @@ export default function TeamDetailPage() {
   const [showDeactivate, setShowDeactivate] = useState(false)
   const [showAddMember, setShowAddMember] = useState(false)
   const [userQuery, setUserQuery] = useState('')
-  const [selectedUser, setSelectedUser] = useState<TenantUserSummary | null>(null)
+  const [selectedUser, setSelectedUser] = useState<StaffMember | null>(null)
   const [removingUserId, setRemovingUserId] = useState<string | null>(null)
   const [showReactivate, setShowReactivate] = useState(false)
 
@@ -85,7 +85,7 @@ export default function TeamDetailPage() {
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !team) return <ErrorMessage message="Team not found." />
 
-  function handleSelectUser(user: TenantUserSummary) {
+  function handleSelectUser(user: StaffMember) {
     setSelectedUser(user)
     setUserQuery(`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim())
   }

@@ -325,7 +325,7 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          {import.meta.env.VITE_BILLING_ENABLED !== 'false' && (
+          {import.meta.env.VITE_BILLING_ENABLED === 'true' && (
             <Route
               path="/billing"
               element={

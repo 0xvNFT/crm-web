@@ -6,10 +6,15 @@ import type { BillingSubscription, CheckoutRequest, PortalRequest, PlanResponse 
 export function useListPlans() {
   return useQuery({
     queryKey: ['billing', 'plans'],
-    // Uses tenant-facing endpoint — NOT /api/admin/plans (SUPER_ADMIN only)
     queryFn: () =>
-      client.get<PlanResponse[]>('/api/v1/billing/plans').then((r) => r.data),
-    staleTime: 5 * 60 * 1000, // plans rarely change
+      client.get<PlanResponse[]>('/api/v1/billing/plans')
+        .then((r) => r.data)
+        .catch((err: unknown) => {
+          // 404 = billing not available in this deployment — not an error
+          if (axios.isAxiosError(err) && err.response?.status === 404) return null
+          throw err
+        }),
+    staleTime: 5 * 60 * 1000,
   })
 }
 

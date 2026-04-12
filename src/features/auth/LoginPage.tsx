@@ -131,7 +131,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {import.meta.env.VITE_REGISTRATION_ENABLED !== 'false' && (
+        {import.meta.env.VITE_REGISTRATION_ENABLED === 'true' && (
           <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
             <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">

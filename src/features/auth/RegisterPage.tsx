@@ -1,14 +1,57 @@
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CheckCircle } from 'lucide-react'
 import { registerSchema, type RegisterFormData } from '@/schemas/auth'
 import { useRegister } from '@/api/endpoints/auth'
 import { parseApiError } from '@/utils/errors'
 import { AuthLayout } from './components/AuthLayout'
 import { FormField } from './components/FormField'
 import { Button } from '@/components/ui/button'
-import { CheckCircle } from 'lucide-react'
+
+// VITE_REGISTRATION_ENABLED=true  -> self-registration enabled, full form shown
+// VITE_REGISTRATION_ENABLED=false -> tenant provisioning is managed externally, show notice
+const registrationEnabled = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
+
+function RegistrationDisabled() {
+  return (
+    <AuthLayout>
+      <div className="space-y-4 text-center">
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold tracking-tight">Registration unavailable</h2>
+          <p className="text-sm text-muted-foreground">
+            New company accounts are set up by our team. Please contact your administrator.
+          </p>
+        </div>
+        <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
+          Back to sign in
+        </Link>
+      </div>
+    </AuthLayout>
+  )
+}
+
+function RegistrationSuccess() {
+  return (
+    <AuthLayout>
+      <div className="space-y-4 text-center">
+        <div className="flex justify-center">
+          <CheckCircle className="h-12 w-12 text-primary" strokeWidth={1.5} />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold tracking-tight">Check your email</h2>
+          <p className="text-sm text-muted-foreground">
+            We sent a verification link to your address. Click it to activate your account, then sign in.
+          </p>
+        </div>
+        <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
+          Back to sign in
+        </Link>
+      </div>
+    </AuthLayout>
+  )
+}
 
 export default function RegisterPage() {
   const [done, setDone] = useState(false)
@@ -21,6 +64,9 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   })
+
+  if (!registrationEnabled) return <RegistrationDisabled />
+  if (done) return <RegistrationSuccess />
 
   async function onSubmit(data: RegisterFormData) {
     try {
@@ -35,29 +81,8 @@ export default function RegisterPage() {
       })
       setDone(true)
     } catch {
-      // error shown via mutation.error
+      // error shown via mutation.error below
     }
-  }
-
-  if (done) {
-    return (
-      <AuthLayout>
-        <div className="space-y-4 text-center">
-          <div className="flex justify-center">
-            <CheckCircle className="h-12 w-12 text-primary" strokeWidth={1.5} />
-          </div>
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold tracking-tight">Check your email</h2>
-            <p className="text-sm text-muted-foreground">
-              We sent a verification link to your address. Click it to activate your account, then sign in.
-            </p>
-          </div>
-          <Link to="/login" className="text-sm text-primary font-medium hover:underline underline-offset-4">
-            Back to sign in
-          </Link>
-        </div>
-      </AuthLayout>
-    )
   }
 
   return (

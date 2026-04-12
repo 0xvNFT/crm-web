@@ -25,7 +25,7 @@ import type { InvoiceAgingSummary } from '@/api/app-types'
 // Brackets: e.g. "0-30 days", "31-60 days", "61-90 days", "90+ days"
 // Only used here — not on dashboard — so defined inline.
 
-function formatCurrency(value: number) {
+function formatAgingCurrency(value: number) {
   if (value >= 1_000_000) return `₱${(value / 1_000_000).toFixed(1)}M`
   if (value >= 1_000) return `₱${(value / 1_000).toFixed(0)}K`
   return `₱${value.toFixed(0)}`
@@ -65,14 +65,14 @@ function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps)
               tickLine={false}
             />
             <YAxis
-              tickFormatter={formatCurrency}
+              tickFormatter={formatAgingCurrency}
               tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
               axisLine={false}
               tickLine={false}
               width={64}
             />
             <Tooltip
-              formatter={(value) => [formatCurrency(Number(value)), 'Balance Due']}
+              formatter={(value) => [formatAgingCurrency(Number(value)), 'Balance Due']}
               contentStyle={{
                 fontSize: 12,
                 borderRadius: '8px',
@@ -84,7 +84,7 @@ function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps)
             />
             <Bar
               dataKey="totalBalanceDue"
-              fill="hsl(var(--color-destructive) / 0.7)"
+              fill="var(--color-destructive)"
               radius={[4, 4, 0, 0]}
               maxBarSize={48}
             />
@@ -99,7 +99,7 @@ function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps)
             <div key={row.bracket} className="space-y-0.5">
               <p className="text-xs text-muted-foreground">{row.bracket}</p>
               <p className="text-sm font-medium text-foreground">
-                {formatCurrency(row.totalBalanceDue ?? 0)}
+                {formatAgingCurrency(row.totalBalanceDue ?? 0)}
                 <span className="ml-1 text-xs text-muted-foreground">
                   ({row.invoiceCount} inv.)
                 </span>
