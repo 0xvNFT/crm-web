@@ -12,6 +12,8 @@ const STATUS_MAP: Record<string, StatusVariant> = {
   COMPLETED: 'success',
   VERIFIED: 'success',
   PAID: 'success',
+  WON: 'success',
+  CLOSED_WON: 'success',
   // Warning / in-progress
   PENDING: 'warning',
   PENDING_APPROVAL: 'warning',
@@ -23,18 +25,33 @@ const STATUS_MAP: Record<string, StatusVariant> = {
   IN_PROCESS: 'warning',
   ASSIGNED: 'warning',
   OVERDUE: 'warning',
+  SCHEDULED: 'warning',
+  PROCESSING: 'warning',
+  SUBMITTED: 'warning',
+  OPEN: 'warning',
   // Negative
   REJECTED: 'destructive',
   UNQUALIFIED: 'destructive',
   EXPIRED: 'destructive',
   CANCELLED: 'destructive',
+  CANCELED: 'destructive',
   LOST: 'destructive',
+  CLOSED_LOST: 'destructive',
   INACTIVE: 'destructive',
-  // Neutral
+  VOID: 'destructive',
+  // Neutral / initial state
   NEW: 'default',
   DRAFT: 'secondary',
   UNAWARE: 'secondary',
   AWARE: 'secondary',
+  ARCHIVED: 'secondary',
+  PROSPECTING: 'secondary',
+  PLANNED: 'secondary',
+  AVAILABLE: 'success',
+  QUARANTINED: 'warning',
+  DEPLETED: 'destructive',
+  TRIALING: 'warning',
+  PAST_DUE: 'destructive',
 }
 
 const VARIANT_CLASSES: Record<StatusVariant, string> = {
