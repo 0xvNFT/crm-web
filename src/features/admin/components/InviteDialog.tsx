@@ -73,7 +73,7 @@ export function InviteDialog({ open, onClose }: InviteDialogProps) {
               name="role"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                   <SelectContent>
                     {roleOptions.map((opt) => (

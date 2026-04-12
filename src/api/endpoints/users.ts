@@ -1,6 +1,36 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { User, PageUser, CreateStaffRequest, UpdateStaffRequest } from '@/api/app-types'
+import type { User, PageUser, StaffMember, CreateStaffRequest, UpdateStaffRequest } from '@/api/app-types'
+
+// ─── Normalizer ───────────────────────────────────────────────────────────────
+// Backend returns raw User JPA entity — roles is Role[] (objects with .name).
+// /api/auth/me returns roles as string[]; /api/pharma/users returns Role objects.
+// When backend ships a proper StaffResponse DTO (roles: string[]), only update here.
+export function mapStaffMember(raw: User): StaffMember {
+  const roleObj = raw.roles?.[0]
+  const role = typeof roleObj === 'string' ? roleObj : (roleObj?.name ?? '')
+  return {
+    id:           raw.id ?? '',
+    firstName:    raw.firstName ?? '',
+    lastName:     raw.lastName ?? '',
+    fullName:     raw.fullName ?? `${raw.firstName ?? ''} ${raw.lastName ?? ''}`.trim(),
+    email:        raw.email ?? '',
+    role,
+    jobTitle:     raw.jobTitle,
+    department:   raw.department,
+    phoneWork:    raw.phoneWork,
+    phoneMobile:  raw.phoneMobile,
+    status:       raw.status,
+    emailVerified: raw.emailVerified,
+    createdAt:    raw.createdAt,
+    manager:      raw.manager ? {
+      id:        raw.manager.id,
+      fullName:  raw.manager.fullName,
+      firstName: raw.manager.firstName,
+      lastName:  raw.manager.lastName,
+    } : undefined,
+  }
+}
 
 export function useStaff(page = 0, size = 20) {
   return useQuery({
@@ -8,7 +38,10 @@ export function useStaff(page = 0, size = 20) {
     queryFn: () =>
       client
         .get<PageUser>('/api/v1/pharma/users', { params: { page, size, sort: 'createdAt,desc' } })
-        .then((r) => r.data),
+        .then((r) => ({
+          ...r.data,
+          content: (r.data.content ?? []).map(mapStaffMember),
+        })),
     placeholderData: (prev) => prev,
   })
 }
@@ -19,7 +52,7 @@ export function useStaffSearch(q: string) {
     queryFn: ({ signal }) =>
       client
         .get<PageUser>('/api/v1/pharma/users/search', { params: { q }, signal })
-        .then((r) => r.data.content ?? []),
+        .then((r) => (r.data.content ?? []).map(mapStaffMember)),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })

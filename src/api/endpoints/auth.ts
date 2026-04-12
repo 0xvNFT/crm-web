@@ -34,6 +34,8 @@ export function useLogout() {
   })
 }
 
+// Only active when VITE_REGISTRATION_ENABLED=true.
+// POST /api/v1/auth/register is hidden (APP_REGISTRATION_ENABLED=false) in deployments where tenant provisioning is managed externally.
 export function useRegister() {
   return useMutation({
     mutationFn: (payload: RegisterRequest) =>

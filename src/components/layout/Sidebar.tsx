@@ -63,7 +63,7 @@ const NAV_MANAGER: NavItem[] = [
   { to: '/reports/kpi', label: 'KPI Reports', icon: Target,        roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
 ]
 
-const billingEnabled = import.meta.env.VITE_BILLING_ENABLED !== 'false'
+const billingEnabled = import.meta.env.VITE_BILLING_ENABLED === 'true'
 
 const NAV_ADMIN: NavItem[] = [
   { to: '/admin',   label: 'Admin',   icon: Settings,   roles: ['ADMIN'] },

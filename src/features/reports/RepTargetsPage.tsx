@@ -120,7 +120,7 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
 
       <Button type="submit" size="sm" disabled={isPending}>
         <Plus className="h-4 w-4 mr-1.5" />
-        {isPending ? 'Saving...' : 'Set Target'}
+        {isPending ? 'Saving…' : 'Set Target'}
       </Button>
     </form>
   )

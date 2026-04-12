@@ -7,7 +7,7 @@ import {
   useReactivateStaff,
   useResendInvite,
 } from '@/api/endpoints/users'
-import { usePagination } from '@/hooks/usePagination'
+import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
@@ -18,18 +18,18 @@ import { Button } from '@/components/ui/button'
 import { Pagination } from '@/components/shared/Pagination'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
-import type { User } from '@/api/app-types'
+import type { StaffMember } from '@/api/app-types'
 import { InviteDialog } from './components/InviteDialog'
 import { EditStaffDialog } from './components/EditStaffDialog'
 import { StaffTable } from './components/StaffTable'
 
-type ConfirmAction = { type: 'deactivate' | 'reactivate'; user: User }
+type ConfirmAction = { type: 'deactivate' | 'reactivate'; user: StaffMember }
 
 export default function AdminPage() {
-  const { page, goToPage } = usePagination()
+  const { page, goToPage } = useListParams([])
   const [query, setQuery]           = useState('')
   const [showInvite, setShowInvite] = useState(false)
-  const [editUser, setEditUser]     = useState<User | null>(null)
+  const [editUser, setEditUser]     = useState<StaffMember | null>(null)
   const [confirm, setConfirm]       = useState<ConfirmAction | null>(null)
 
   const debouncedQuery = useDebounce(query, 300)
@@ -45,7 +45,7 @@ export default function AdminPage() {
   const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
   const isError   = isSearching ? searchQuery.isError   : listQuery.isError
   const error     = isSearching ? searchQuery.error     : listQuery.error
-  const users: User[] = isSearching
+  const users: StaffMember[] = isSearching
     ? (searchQuery.data ?? [])
     : (listQuery.data?.content ?? [])
 
@@ -66,7 +66,7 @@ export default function AdminPage() {
     }
   }
 
-  function handleResendInvite(user: User) {
+  function handleResendInvite(user: StaffMember) {
     if (!user.id) return
     resendInvite(user.id, {
       onSuccess: () => toast('Invite resent', { variant: 'success' }),

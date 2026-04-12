@@ -2,7 +2,7 @@ import { MailCheck, UserX, UserCheck, Pencil } from 'lucide-react'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatLabel } from '@/utils/formatters'
-import type { User } from '@/api/app-types'
+import type { StaffMember } from '@/api/app-types'
 
 function roleLabel(roleName: string | undefined) {
   if (!roleName) return '—'
@@ -15,12 +15,12 @@ function roleLabel(roleName: string | undefined) {
 }
 
 interface StaffTableProps {
-  users: User[]
+  users: StaffMember[]
   emptyMessage: string
-  onEdit: (user: User) => void
-  onDeactivate: (user: User) => void
-  onReactivate: (user: User) => void
-  onResendInvite: (user: User) => void
+  onEdit: (user: StaffMember) => void
+  onDeactivate: (user: StaffMember) => void
+  onReactivate: (user: StaffMember) => void
+  onResendInvite: (user: StaffMember) => void
 }
 
 export function StaffTable({
@@ -67,7 +67,7 @@ export function StaffTable({
                 <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{user.email}</td>
                 <td className="px-4 py-3">
                   <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                    {roleLabel(user.roles?.[0]?.name)}
+                    {roleLabel(user.role)}
                   </span>
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
@@ -88,18 +88,18 @@ export function StaffTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(user)}
-                      title="Edit"
+                      aria-label="Edit"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
                     </Button>
                     {isPendingInvite && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onResendInvite(user)}
-                        title="Resend invite"
+                        aria-label="Resend invite"
                       >
-                        <MailCheck className="h-3.5 w-3.5" />
+                        <MailCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
                       </Button>
                     )}
                     {!isPendingInvite && isActive && (
@@ -108,9 +108,9 @@ export function StaffTable({
                         size="sm"
                         onClick={() => onDeactivate(user)}
                         className="text-destructive hover:text-destructive"
-                        title="Deactivate"
+                        aria-label="Deactivate"
                       >
-                        <UserX className="h-3.5 w-3.5" />
+                        <UserX className="h-3.5 w-3.5" strokeWidth={1.5} />
                       </Button>
                     )}
                     {!isPendingInvite && !isActive && (
@@ -119,9 +119,9 @@ export function StaffTable({
                         size="sm"
                         onClick={() => onReactivate(user)}
                         className="text-primary hover:text-primary"
-                        title="Reactivate"
+                        aria-label="Reactivate"
                       >
-                        <UserCheck className="h-3.5 w-3.5" />
+                        <UserCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
                       </Button>
                     )}
                   </div>
