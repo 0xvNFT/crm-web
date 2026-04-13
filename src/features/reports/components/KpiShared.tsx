@@ -62,10 +62,10 @@ export function KpiSection({ title, icon: Icon, children, isLoading }: KpiSectio
 interface PeriodSelectorProps {
   year: number
   month: number
-  quarter: number
   onYearChange: (y: number) => void
   onMonthChange: (m: number) => void
-  onQuarterChange: (q: number) => void
+  quarter?: number
+  onQuarterChange?: (q: number) => void
 }
 
 export function PeriodSelector({ year, month, quarter, onYearChange, onMonthChange, onQuarterChange }: PeriodSelectorProps) {
@@ -90,15 +90,17 @@ export function PeriodSelector({ year, month, quarter, onYearChange, onMonthChan
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Quarter</span>
-        <Select value={String(quarter)} onValueChange={(v) => onQuarterChange(Number(v))}>
-          <SelectTrigger className="h-8 w-28 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {QUARTERS.map((name, i) => <SelectItem key={i + 1} value={String(i + 1)}>{name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
+      {quarter !== undefined && onQuarterChange && (
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground">Quarter</span>
+          <Select value={String(quarter)} onValueChange={(v) => onQuarterChange(Number(v))}>
+            <SelectTrigger className="h-8 w-28 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {QUARTERS.map((name, i) => <SelectItem key={i + 1} value={String(i + 1)}>{name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   )
 }
