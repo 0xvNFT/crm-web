@@ -57,6 +57,26 @@ export function useTerritoryAccounts(id: string) {
   })
 }
 
+export function useAssignTerritoryAccount(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (accountId: string) =>
+      client
+        .post<PharmaAccountTerritory>(`/api/v1/pharma/territories/${territoryId}/accounts/${accountId}`)
+        .then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'accounts'] }),
+  })
+}
+
+export function useRemoveTerritoryAccount(territoryId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (assignmentId: string) =>
+      client.delete(`/api/v1/pharma/territories/account-assignments/${assignmentId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['territories', territoryId, 'accounts'] }),
+  })
+}
+
 // ─── All Reps (primary + secondary, role-labelled) ───────────────────────────
 
 export function useTerritoryReps(id: string) {
