@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Users2 } from 'lucide-react'
 import { useTeams, useTeamSearch } from '@/api/endpoints/teams'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -49,24 +48,15 @@ export default function TeamListPage() {
   const navigate = useNavigate()
   const { isManager, isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useTeams(page, 20, filters)
+  const listQuery   = useTeams(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaTeam>(goToPage)
   const searchQuery = useTeamSearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-  const data: PharmaTeam[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -87,10 +77,7 @@ export default function TeamListPage() {
       />
       <SearchInput
         value={query}
-        onChange={(v) => {
-          setQuery(v)
-          goToPage(0)
-        }}
+        onChange={setQuery}
         placeholder="Search teams…"
         className="max-w-sm"
       />
@@ -108,24 +95,10 @@ export default function TeamListPage() {
         onRowClick={(row) => navigate(`/teams/${row.id}`)}
         empty={
           isSearching
-            ? {
-                icon: Users2,
-                title: `No teams found for "${debouncedQuery}"`,
-                description: 'Try a different search term.',
-              }
-            : {
-                icon: Users2,
-                title: 'No teams yet',
-                description: 'Create your first team to organize your field reps.',
-                // action: isManager ? (
-                //   <Button size="sm" onClick={() => navigate('/teams/new')}>
-                //     <Plus className="h-4 w-4 mr-1.5" />
-                //     New Team
-                //   </Button>
-                // ) : undefined,
-              }
+            ? { icon: Users2, title: `No teams found for "${query}"`, description: 'Try a different search term.' }
+            : { icon: Users2, title: 'No teams yet', description: 'Create your first team to organize your field reps.' }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Users, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useLeads, useLeadSearch } from '@/api/endpoints/leads'
@@ -11,8 +10,8 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useListParams } from '@/hooks/useListParams'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate } from '@/utils/formatters'
@@ -40,24 +39,15 @@ export default function LeadListPage() {
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Leads')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
+
+  const listQuery   = useLeads(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaLead>(goToPage)
+  const searchQuery = useLeadSearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useLeads(page, 20, filters)
-  const searchQuery = useLeadSearch(debouncedQuery)
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-  const data: PharmaLead[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -78,7 +68,7 @@ export default function LeadListPage() {
       </div>
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search by name…"
         className="max-w-sm"
       />
@@ -95,10 +85,10 @@ export default function LeadListPage() {
         data={data}
         onRowClick={(row) => navigate(`/leads/${row.id}`)}
         empty={isSearching
-          ? { icon: Users, title: `No leads found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: Users, title: `No leads found for "${query}"`, description: 'Try a different search term.' }
           : { icon: Users, title: emptyTitle, description: emptyDescription }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

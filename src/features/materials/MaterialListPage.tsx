@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
-import { useMaterials } from '@/api/endpoints/materials'
+import { useMaterials, useMaterialSearch } from '@/api/endpoints/materials'
 import { useListParams } from '@/hooks/useListParams'
+import { useListSearch } from '@/hooks/useListSearch'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -9,6 +10,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { SearchInput } from '@/components/ui/search-input'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaMaterial } from '@/api/app-types'
 
@@ -34,14 +36,15 @@ const columns: Column<PharmaMaterial>[] = [
 export default function MaterialListPage() {
   const navigate = useNavigate()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaMaterial>(goToPage)
 
-  const { data, isLoading, isError, error } = useMaterials(page, 20, filters)
+  const listQuery   = useMaterials(page, 20, filters)
+  const searchQuery = useMaterialSearch(debouncedQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  if (isLoading) return <ListPageSkeleton />
-  if (isError) return <ErrorMessage error={error} />
+  if (isLoading && !isSearching) return <ListPageSkeleton />
+  if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
     <div className="space-y-4">
@@ -50,25 +53,36 @@ export default function MaterialListPage() {
         description="Sales and training materials library"
       />
 
-      <FilterBar
-        filters={MATERIAL_FILTERS}
-        values={filters}
-        onChange={handleFilterChange}
-        onClear={handleFilterClear}
+      <SearchInput
+        value={query}
+        onChange={setQuery}
+        placeholder="Search by title…"
+        className="max-w-sm"
       />
+
+      {!isSearching && (
+        <FilterBar
+          filters={MATERIAL_FILTERS}
+          values={filters}
+          onChange={(param, value) => setFilter(param, value)}
+          onClear={clearFilters}
+        />
+      )}
 
       <DataTable
         columns={columns}
-        data={data?.content ?? []}
+        data={data}
         onRowClick={(row) => navigate(`/materials/${row.id}`)}
-        empty={{
-          icon: FileText,
-          title: 'No materials found',
-          description: 'No materials match the current filters.',
-        }}
-        totalElements={data?.totalElements}
+        empty={isSearching
+          ? { icon: FileText, title: `No materials found for "${query}"`, description: 'Try a different search term.' }
+          : { icon: FileText, title: 'No materials found', description: 'No materials match the current filters.' }
+        }
+        totalElements={totalElements}
       />
-      <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
+
+      {!isSearching && (
+        <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+      )}
     </div>
   )
 }
