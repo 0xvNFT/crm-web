@@ -9,6 +9,7 @@ import type {
   KpiActivitySummaryRow,
   KpiDoctorCoverageRow,
   KpiTerritoryPerformanceRow,
+  KpiSalesPerformanceRow,
   KpiPeriod,
   MyDoctorsRow,
 } from '@/api/app-types'
@@ -85,6 +86,23 @@ export function useKpiTerritoryPerformance(period: Pick<KpiPeriod, 'year' | 'qua
         .get<KpiTerritoryPerformanceRow[]>('/api/v1/pharma/reporting/kpi/territory-performance', { params: period })
         .then((r) => r.data),
     enabled: !!period.quarter,
+  })
+}
+
+export interface SalesPerformanceParams {
+  year: number
+  month: number
+  repId?: string
+}
+
+export function useKpiSalesPerformance(params: SalesPerformanceParams) {
+  return useQuery({
+    queryKey: ['kpi', 'sales-performance', params],
+    queryFn: ({ signal }) =>
+      client
+        .get<KpiSalesPerformanceRow[]>('/api/v1/pharma/reporting/kpi/sales-performance', { params, signal })
+        .then((r) => r.data),
+    placeholderData: (prev) => prev,
   })
 }
 
