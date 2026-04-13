@@ -1,8 +1,8 @@
-# crm-web — Pharma Field Force CRM
+# Field Force CRM — Web
 
-Frontend web app for the Pharma Field Force Management CRM.
+Frontend for the Pharma Field Force Management CRM. Each company gets their own isolated workspace — reps, managers, and admins log in here daily to manage contacts, accounts, visits, leads, pipeline, orders, and more.
 
-**Stack:** React 19 · Vite 7 · TypeScript · Tailwind CSS v4 · React Query v5 · React Router v7 · Axios · Zod v4 · React Hook Form
+**Stack:** React 19 · Vite 7 · TypeScript · Tailwind CSS v4 · React Query v5 · React Router v7 · Axios · Zod v4 · React Hook Form · shadcn/ui
 
 ---
 
@@ -19,25 +19,14 @@ Frontend web app for the Pharma Field Force Management CRM.
 ## Setup
 
 ```bash
-# 1. Clone the repo
 git clone <repo-url>
 cd crm-web
-
-# 2. Switch to your branch
-git checkout dev-intern
-
-# 3. Install dependencies
 npm install
-
-# 4. Set up your environment file
 cp .env.example .env.development
-# The API URL is already filled in — no changes needed
-
-# 5. Start the dev server
 npm run dev
 ```
 
-Open `http://localhost:5173` — the login page should load. Auth is fully wired: you can register, verify email, log in, reset your password, and access the app immediately.
+Open `http://localhost:5173` — the login page should load.
 
 ---
 
@@ -47,25 +36,37 @@ Env files are **not committed**. Copy `.env.example` to get started.
 
 | File | Used when | Notes |
 |---|---|---|
-| `.env.development` | `npm run dev` | Create this from `.env.example` |
-| `.env.production` | `npm run build` | Set by the lead dev / CI |
+| `.env.development` | `npm run dev` | Create from `.env.example` |
+| `.env.production` | `npm run build` | Set by lead dev / CI |
 
 **Never hardcode the API URL.** Always use `import.meta.env.VITE_API_BASE_URL`.
 
+### Feature flags
+
+Some features are toggled per deployment via environment variables:
+
+```env
+VITE_REGISTRATION_ENABLED=true   # self-service company registration
+VITE_BILLING_ENABLED=true        # billing and plan management
+```
+
+`.env.development` always has both set to `true`. `.env.production` is set per deployment target.
+
 ---
 
-## Available Scripts
+## Scripts
 
 ```bash
 npm run dev          # Start dev server at localhost:5173
-npm run build        # Production build (runs typecheck first)
-npm run typecheck    # TypeScript check — run before every PR
+npm run build        # Production build
+npm run typecheck    # TypeScript check
 npm run lint         # ESLint
+npm run check        # typecheck + lint together
 npm run preview      # Preview the production build locally
-npm run gen:types    # Regenerate API types from live Swagger spec
+npm run gen:types    # Regenerate API types from live Swagger spec (requires local backend)
 ```
 
-**Run `npm run typecheck` before opening any PR.** Fix all errors — do not ignore them.
+**Run `npm run check` before every PR.** Fix all errors — do not ignore them.
 
 ---
 
@@ -74,95 +75,165 @@ npm run gen:types    # Regenerate API types from live Swagger spec
 ```
 src/
 ├── api/
-│   ├── client.ts          ← Axios instance — DO NOT TOUCH
+│   ├── client.ts          ← Axios instance
 │   ├── types.ts           ← Auto-generated from Swagger — never edit manually
-│   ├── app-types.ts       ← Type aliases you import in your code — DO NOT TOUCH
-│   └── endpoints/         ← One file per resource (your query hooks go here)
+│   ├── app-types.ts       ← Type aliases — import from here, not types.ts
+│   └── endpoints/         ← One file per resource
 ├── components/
-│   ├── layout/            ← AppShell, Sidebar, TopNav — DO NOT TOUCH
-│   └── shared/            ← DataTable, Pagination, StatusBadge, etc. — use, don't modify
-├── features/              ← YOUR WORK GOES HERE
-│   ├── auth/              ← Login, Register, ForgotPassword, ResetPassword, VerifyEmail — DO NOT TOUCH
-│   ├── accounts/          ← REFERENCE — copy this pattern for your feature
-│   └── [your-feature]/    ← Create your files here
-├── hooks/
-│   ├── useAuth.ts         ← Access the logged-in user
-│   └── usePagination.ts   ← Use for all list pages
-├── providers/             ← DO NOT TOUCH
-├── routes/                ← DO NOT TOUCH
-├── schemas/               ← Zod schemas for forms
+│   ├── ui/                ← Atoms: Button, Input, Select, DateInput, Combobox, …
+│   ├── layout/            ← AppShell, Sidebar, TopNav
+│   └── shared/            ← DataTable, Pagination, StatusBadge, FormRow, ConfirmDialog, …
+├── features/              ← One folder per domain feature
+│   ├── auth/              ← Pre-built — do not modify
+│   └── accounts/          ← Reference implementation
+├── hooks/                 ← useAuth, useRole, useListParams, useDebounce, useConfigOptions, …
+├── providers/
+├── routes/
+├── schemas/               ← Zod schemas — one file per feature
 └── utils/
-    ├── formatters.ts      ← Date, currency helpers
-    └── errors.ts          ← API error parsing
+    ├── formatters.ts
+    └── errors.ts
 ```
 
 ---
 
-## Files You Must NOT Touch
+## Key Rules
 
-Changes here break everyone's work. Talk to the lead dev first.
+### TypeScript
+- No `any` — use `unknown` + type narrowing
+- No `as SomeType` without a `// Why:` comment
+- Import types from `@/api/app-types` — never from `@/api/types` directly
 
-- `src/api/client.ts`
-- `src/api/types.ts`
-- `src/api/app-types.ts`
-- `src/features/auth/` — auth pages are pre-built, leave them alone
-- `src/providers/`
-- `src/routes/`
-- `src/components/layout/`
-- `src/index.css`
-- `vite.config.ts`, `tsconfig.app.json`, `package.json`
+### Components
+- Functional components only. One component per file.
+- Pages: `export default function FooPage()`. Shared components: named exports only.
+- Tailwind classes only — no inline `style={{}}`, no CSS modules
+
+### Forms
+- React Hook Form + Zod always together
+- Schema in `src/schemas/<feature>.ts`, never inline in a component
+- `<Controller>` for Select and Combobox — never `register()`
+- `<DateInput>` for date fields, `<CheckboxField>` for boolean fields — never raw `<input>`
+
+### Data Fetching
+- React Query for all server state — no `useEffect` + `useState` for API calls
+- `placeholderData: (prev) => prev` on every paginated/search query
+- Always handle loading and error states
+
+### Config-driven Dropdowns
+- Never hardcode enum values in dropdowns
+- Use `useConfigOptions('entity.field')` — values come from `GET /api/pharma/config`
 
 ---
 
-## Git Flow
+## Common Mistakes
 
-### Overview
+| Mistake | Fix |
+|---|---|
+| `keepPreviousData: true` | `placeholderData: (prev) => prev` |
+| `data.content` without `?.` | `data?.content ?? []` |
+| Relative imports (`../../api/client`) | `@/api/client` |
+| Importing from `@/api/types` | Import from `@/api/app-types` |
+| `<input type="date">` | `<DateInput>` from `@/components/ui/date-input` |
+| `<input type="checkbox">` | `<CheckboxField>` from `@/components/shared/CheckboxField` |
+| `history.back()` | `navigate(-1)` |
+| `window.location.href = '/path'` | `navigate('/path')` |
+| `user?.roles.includes('MANAGER')` | `const { isManager } = useRole()` |
+| Hardcoded dropdown options | `useConfigOptions('entity.field')` |
+| Named export on a page | `export default function MyPage()` |
+
+---
+
+## Shared Components
+
+### `DataTable<T>`
+
+```typescript
+import { DataTable, type Column } from '@/components/shared/DataTable'
+
+const columns: Column<MyType>[] = [
+  { header: 'Name', accessor: (row) => row.name ?? '—' },
+  { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
+]
+
+<DataTable columns={columns} data={data} onRowClick={(row) => navigate(`/entity/${row.id}`)} />
+```
+
+### `Pagination`
+
+```typescript
+<Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
+```
+
+### `StatusBadge`
+
+```typescript
+// Pass the raw backend value — StatusBadge normalizes casing internally
+<StatusBadge status={row.status ?? 'unknown'} />
+```
+
+### `useRole`
+
+```typescript
+import { useRole } from '@/hooks/useRole'
+
+const { isAdmin, isManager, isRep } = useRole()
+// isManager = MANAGER or ADMIN (additive). Never use user?.roles.includes() inline.
+```
+
+### `formatDate` / `formatCurrency`
+
+```typescript
+import { formatDate, formatCurrency } from '@/utils/formatters'
+
+formatDate('2026-03-06T10:00:00Z')   // → "Mar 6, 2026"
+formatCurrency(1500)                  // → "₱1,500.00"
+```
+
+---
+
+## Auth Routes
+
+| Route | Page | Notes |
+|---|---|---|
+| `/login` | Login | Email + password |
+| `/forgot-password` | ForgotPassword | Sends reset link |
+| `/reset-password?token=xxx` | ResetPassword | Sets new password via email link |
+| `/verify-email?token=xxx` | VerifyEmail | Activated via email link |
+| `/register` | Register | Company registration — availability depends on deployment |
+
+---
+
+---
+
+## Intern Guide
+
+### Branch Strategy
 
 ```
-main          ← stable scaffold, production-ready code only
-  └── dev-intern   ← your branch — all intern work happens here
-        └── feature/contacts   ← one branch per feature you build
+main              ← production-ready code only
+  └── dev-intern  ← your base branch
+        └── feature/contacts
         └── feature/leads
-        └── feature/orders
 ```
 
-You never commit directly to `dev-intern`. You branch off it, do your work, then open a PR back into `dev-intern`. The lead dev reviews before anything merges.
-
----
+Never commit directly to `dev-intern`. Branch off it, build your feature, then open a PR back. The lead dev reviews before anything merges.
 
 ### Starting a Feature
 
-Always start from an up-to-date `dev-intern`:
-
 ```bash
-# Make sure you're on dev-intern and it's up to date
 git checkout dev-intern
 git pull origin dev-intern
-
-# Create your feature branch
 git checkout -b feature/contacts
 ```
 
 Branch naming: `feature/<name>` — lowercase, hyphenated.
 
-```
-feature/contacts
-feature/leads
-feature/order-list
-```
-
----
-
-### While You're Working
-
-Commit small and often. Each commit should do one clear thing.
+### Committing
 
 ```bash
-# Stage only the files you changed
 git add src/api/endpoints/contacts.ts
 git add src/features/contacts/ContactListPage.tsx
-
-# Write a clear commit message
 git commit -m "feat(contacts): add useContacts hook and ContactListPage"
 ```
 
@@ -172,289 +243,140 @@ git commit -m "feat(contacts): add useContacts hook and ContactListPage"
 |---|---|
 | `feat` | New component, hook, or page |
 | `fix` | Bug fix |
-| `style` | Formatting, spacing — no logic change |
-| `refactor` | Restructuring code without changing behavior |
+| `refactor` | Restructuring without behavior change |
 | `chore` | Config, deps, cleanup |
-
-Examples:
-```
-feat(contacts): add ContactListPage with pagination
-feat(leads): add useLeads hook
-fix(contacts): handle empty phone field
-style(contacts): align table column widths
-```
-
----
 
 ### Before Opening a PR
 
-Run these — both must pass:
-
 ```bash
-npm run typecheck   # zero TypeScript errors
-npm run build       # build must succeed
+npm run check   # must pass
+npm run build   # must pass
 ```
 
-If either fails, fix it before asking for review.
-
----
-
-### Opening a PR
-
-Push your branch and open a PR into `dev-intern` (not `main`):
-
-```bash
-git push origin feature/contacts
-```
-
-Then go to GitHub → New Pull Request → base: `dev-intern` ← compare: `feature/contacts`.
-
-**PR title format:** same as commit messages — `feat(contacts): add ContactListPage`
-
-In the PR description, briefly note:
-- What you built
-- Any decisions you made (e.g. which fields you chose to display)
-- Anything you're unsure about
-
----
+Then push and open a PR targeting `dev-intern` — never `main`.
 
 ### Keeping Your Branch Up to Date
 
-If `dev-intern` gets new commits while you're working, rebase your branch on top of it:
-
 ```bash
 git fetch origin
-git checkout feature/contacts
 git rebase origin/dev-intern
 ```
 
-Resolve any conflicts, then continue. **Never use `git merge dev-intern`** — it creates merge commits that pollute your branch history and cause conflicts on the PR.
-
----
+Never `git merge dev-intern` — rebase keeps history clean.
 
 ### What NOT to Do
 
-- Do not commit directly to `dev-intern` or `main`
-- Do not push to someone else's feature branch
-- Do not force push (`git push --force`) — ever
-- Do not open PRs against `main` — always target `dev-intern`
-- Do not commit `.env` files — they are gitignored for a reason
+- Do not commit to `dev-intern` or `main` directly
+- Do not force push — ever
+- Do not open PRs against `main`
+- Do not commit `.env` files
 
----
+### Files You Must NOT Touch
 
-## Your Task Format
+Talk to the lead dev before changing any of these:
 
-You'll receive a task like this:
+- `src/api/client.ts`, `src/api/types.ts`, `src/api/app-types.ts`
+- `src/features/auth/`
+- `src/providers/`, `src/routes/`, `src/components/layout/`
+- `src/index.css`, `vite.config.ts`, `tsconfig.app.json`, `package.json`, `eslint.config.js`
 
-```
-Feature: Contacts
-Files to create:
-  - src/features/contacts/ContactListPage.tsx
-  - src/api/endpoints/contacts.ts
-Pattern to copy: src/features/accounts/AccountListPage.tsx
-API endpoint: GET /api/pharma/contacts
-Fields to display: firstName, lastName, email, phone, title, createdAt
-```
+### Building a Feature
 
----
-
-## Step-by-Step: Building a List Page
-
-### Step 1 — Create the endpoint hook
-
-`src/api/endpoints/contacts.ts`:
+**Step 1 — Create the endpoint hook** (`src/api/endpoints/contacts.ts`):
 
 ```typescript
 import { useQuery } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { PagePharmaContact } from '@/api/app-types'
+import type { PharmaContact, PagePharmaContact } from '@/api/app-types'
 
-export function useContacts(page = 0) {
+export function useContacts(page = 0, size = 20, filters: Record<string, string> = {}) {
   return useQuery({
-    queryKey: ['contacts', 'list', page],
+    queryKey: ['contacts', 'list', { page, size, ...filters }],
     queryFn: () =>
       client
-        .get<PagePharmaContact>('/api/pharma/contacts', { params: { page, size: 20, sort: 'createdAt,desc' } })
+        .get<PagePharmaContact>('/api/pharma/contacts', { params: { page, size, sort: 'createdAt,desc', ...filters } })
         .then((r) => r.data),
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useContactSearch(q: string) {
+  return useQuery({
+    queryKey: ['contacts', 'search', q],
+    queryFn: ({ signal }) =>
+      client.get<PharmaContact[]>('/api/pharma/contacts/search', { params: { q }, signal }).then((r) => r.data),
+    enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })
 }
 ```
 
-> Use `placeholderData: (prev) => prev` — not `keepPreviousData`. That was removed in React Query v5.
-
-> Import types from `@/api/app-types`, not `@/api/types`.
-
-### Step 2 — Create the page component
-
-`src/features/contacts/ContactListPage.tsx`:
+**Step 2 — Create the list page** (`src/features/contacts/ContactListPage.tsx`):
 
 ```typescript
-import { useContacts } from '@/api/endpoints/contacts'
-import { usePagination } from '@/hooks/usePagination'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useContacts, useContactSearch } from '@/api/endpoints/contacts'
+import { useListParams } from '@/hooks/useListParams'
+import { useDebounce } from '@/hooks/useDebounce'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { SearchInput } from '@/components/ui/search-input'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 import { formatDate } from '@/utils/formatters'
 import type { PharmaContact } from '@/api/app-types'
 
 const columns: Column<PharmaContact>[] = [
-  { header: 'First Name', accessor: 'firstName' },
-  { header: 'Last Name', accessor: 'lastName' },
-  { header: 'Email', accessor: (row) => row.email ?? '—' },
-  { header: 'Phone', accessor: (row) => row.phone ?? '—' },
-  { header: 'Title', accessor: (row) => row.title ?? '—' },
+  { header: 'Name',    accessor: (row) => row.fullName ?? '—' },
+  { header: 'Email',   accessor: (row) => row.email ?? '—' },
+  { header: 'Status',  accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
   { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
 ]
 
 export default function ContactListPage() {
-  const { page, goToPage } = usePagination()
-  const { data, isLoading, isError } = useContacts(page)
+  const navigate = useNavigate()
+  const { page, filters, goToPage } = useListParams([])
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage />
+  const isSearching  = debouncedQuery.trim().length >= 2
+  const listQuery    = useContacts(page, 20, filters)
+  const searchQuery  = useContactSearch(debouncedQuery)
+
+  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
+  const isError   = isSearching ? searchQuery.isError   : listQuery.isError
+  const data: PharmaContact[] = isSearching
+    ? (searchQuery.data ?? [])
+    : (listQuery.data?.content ?? [])
+
+  if (isLoading && !isSearching) return <ListPageSkeleton />
+  if (isError) return <ErrorMessage message="Failed to load contacts." />
 
   return (
     <div className="space-y-4">
       <PageHeader title="Contacts" description="All pharma contacts" />
-      <DataTable columns={columns} data={data?.content ?? []} />
-      <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
+      <SearchInput value={query} onChange={(v) => { setQuery(v); goToPage(0) }} placeholder="Search…" className="max-w-sm" />
+      <DataTable columns={columns} data={data} onRowClick={(row) => navigate(`/contacts/${row.id}`)} />
+      {!isSearching && (
+        <Pagination page={page} totalPages={listQuery.data?.totalPages ?? 0} onChange={goToPage} />
+      )}
     </div>
   )
 }
 ```
 
-### Step 3 — Tell the lead dev to wire the route
+**Step 3 — Tell the lead dev to wire the route.** `src/routes/index.tsx` is off-limits.
 
-`src/routes/index.tsx` is off-limits. Once your component is done, tell the lead dev — they'll swap the placeholder.
-
-### Step 4 — Check your work
+**Step 4 — Check your work:**
 
 ```bash
-npm run typecheck   # must pass with zero errors
-npm run build       # must pass
+npm run check && npm run build
 ```
 
----
+### Reference
 
-## Rules
-
-### TypeScript
-- No `any` — ever.
-- No type assertions (`as SomeType`) without a comment explaining why.
-- Import types from `@/api/app-types` — never define your own API response types.
-
-### Components
-- Functional components only.
-- One component per file. Filename = component name.
-- Pages use `export default`. Shared components use named exports.
-- No inline styles — Tailwind classes only.
-
-### Data Fetching
-- React Query for everything — no `useEffect` + `useState` for API calls.
-- Always handle `isLoading` and `isError`.
-- Use `data?.content ?? []` and `data?.totalPages ?? 0` — data is `undefined` while loading.
-
-### Forms
-- React Hook Form + Zod always together.
-- Schema in `src/schemas/[feature].ts`, not in the component.
-
----
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---|---|
-| `keepPreviousData: true` | Use `placeholderData: (prev) => prev` |
-| `data.content` without `?.` | Use `data?.content ?? []` |
-| Relative imports (`../../api/client`) | Use `@/api/client` |
-| Importing from `@/api/types` | Import from `@/api/app-types` |
-| Defining your own API types | Use aliases from `@/api/app-types` |
-| Named export on a page | Pages use `export default function MyPage()` |
-| Hardcoding the API URL | Use `client` from `@/api/client` |
-| Editing files outside your feature folder | Don't. Talk to the lead dev. |
-
----
-
-## Shared Components Reference
-
-### `DataTable<T>`
-
-```typescript
-import { DataTable, type Column } from '@/components/shared/DataTable'
-
-const columns: Column<MyType>[] = [
-  { header: 'Name', accessor: 'name' },
-  { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? ''} /> },
-  { header: 'Date', accessor: (row) => formatDate(row.createdAt) },
-]
-
-<DataTable columns={columns} data={data?.content ?? []} />
-```
-
-### `Pagination`
-
-```typescript
-import { Pagination } from '@/components/shared/Pagination'
-
-<Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={goToPage} />
-```
-
-### `StatusBadge`
-
-```typescript
-import { StatusBadge } from '@/components/shared/StatusBadge'
-
-<StatusBadge status={row.status ?? ''} />
-```
-
-### `PageHeader`
-
-```typescript
-import { PageHeader } from '@/components/shared/PageHeader'
-
-<PageHeader
-  title="Contacts"
-  description="Manage all pharma contacts"
-  actions={<button>Add Contact</button>}
-/>
-```
-
-### `useAuth`
-
-```typescript
-import { useAuth } from '@/hooks/useAuth'
-
-const { user } = useAuth()
-// user.roles → string[] e.g. ['ADMIN'] or ['MANAGER'] or ['FIELD_REP']
-// user.fullName, user.email, user.userId, user.tenantId
-```
-
-### `formatDate` / `formatCurrency`
-
-```typescript
-import { formatDate, formatCurrency } from '@/utils/formatters'
-
-formatDate('2026-03-06T10:00:00Z')  // → "Mar 6, 2026"
-formatCurrency(1500, 'USD')          // → "$1,500.00"
-```
-
----
-
-## Getting Help
-
-- Read `src/features/accounts/AccountListPage.tsx` — it is the reference pattern.
-- Check `STATUS.md` to see what's been built and what's pending.
-- Ask the lead dev before touching any shared file.
-
-## Auth Routes (pre-built — for reference)
-
-| Route | Page | Notes |
-|---|---|---|
-| `/register` | Register | Creates a new tenant + admin account |
-| `/verify-email?token=xxx` | VerifyEmail | Activated via email link |
-| `/login` | Login | Email + password |
-| `/forgot-password` | ForgotPassword | Sends reset link to email |
-| `/reset-password?token=xxx` | ResetPassword | Sets new password via email link |
+- `src/features/accounts/` — reference implementation for list, detail, and form pages
+- Ask the lead dev before touching any shared file
