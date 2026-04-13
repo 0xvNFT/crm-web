@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, TrendingUp } from 'lucide-react'
 import { useOpportunities, useOpportunitySearch } from '@/api/endpoints/opportunities'
@@ -11,8 +10,8 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Pagination } from '@/components/shared/Pagination'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useListParams } from '@/hooks/useListParams'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
@@ -38,23 +37,15 @@ const ALL_COLUMNS: Column<PharmaOpportunity>[] = [
 export default function OpportunityListPage() {
   const navigate = useNavigate()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
   const { isReadOnly, isManager } = useRole()
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Opportunities')
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
   const listQuery   = useOpportunities(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaOpportunity>(goToPage)
   const searchQuery = useOpportunitySearch(debouncedQuery)
 
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError   = isSearching ? searchQuery.isError   : listQuery.isError
-  const error     = isSearching ? searchQuery.error     : listQuery.error
-  const opportunities: PharmaOpportunity[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
+  const { isLoading, isError, error, data: opportunities, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
@@ -80,7 +71,7 @@ export default function OpportunityListPage() {
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput
           value={query}
-          onChange={(v) => { setQuery(v); goToPage(0) }}
+          onChange={setQuery}
           placeholder="Search opportunities…"
           className="max-w-sm"
         />
@@ -99,15 +90,16 @@ export default function OpportunityListPage() {
         data={opportunities}
         onRowClick={(row) => navigate(`/opportunities/${row.id}`)}
         empty={isSearching
-          ? { icon: TrendingUp, title: `No opportunities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: TrendingUp, title: `No opportunities found for "${query}"`, description: 'Try a different search term.' }
           : { icon: TrendingUp, title: emptyTitle, description: emptyDescription }
         }
+        totalElements={totalElements}
       />
 
       {!isSearching && (
         <Pagination
           page={page}
-          totalPages={listQuery.data?.totalPages ?? 0}
+          totalPages={totalPages}
           onChange={goToPage}
         />
       )}

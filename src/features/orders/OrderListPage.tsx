@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShoppingCart, Plus } from 'lucide-react'
 import { useOrders, useOrderSearch } from '@/api/endpoints/orders'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -39,24 +38,15 @@ export default function OrderListPage() {
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Orders')
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Owner')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
-
-  const isSearching = debouncedQuery.trim().length >= 2
 
   const listQuery   = useOrders(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaOrder>(goToPage)
   const searchQuery = useOrderSearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isLoading  = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError    = isSearching ? searchQuery.isError   : listQuery.isError
-  const error      = isSearching ? searchQuery.error     : listQuery.error
-  const data: PharmaOrder[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -77,7 +67,7 @@ export default function OrderListPage() {
       />
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search by order number…"
         className="max-w-sm"
       />
@@ -94,10 +84,10 @@ export default function OrderListPage() {
         data={data}
         onRowClick={(row) => navigate(`/orders/${row.id}`)}
         empty={isSearching
-          ? { icon: ShoppingCart, title: `No orders found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: ShoppingCart, title: `No orders found for "${query}"`, description: 'Try a different search term.' }
           : { icon: ShoppingCart, title: emptyTitle, description: emptyDescription }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

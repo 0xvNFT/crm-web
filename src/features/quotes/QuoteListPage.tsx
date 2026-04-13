@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { useQuotes, useQuoteSearch } from '@/api/endpoints/quotes'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -46,24 +45,15 @@ export default function QuoteListPage() {
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Quotes')
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Assigned Rep')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useQuotes(page, 20, filters)
+  const listQuery   = useQuotes(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaQuote>(goToPage)
   const searchQuery = useQuoteSearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-  const data: PharmaQuote[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -77,7 +67,7 @@ export default function QuoteListPage() {
       />
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search quotes..."
         className="max-w-sm"
       />
@@ -94,10 +84,10 @@ export default function QuoteListPage() {
         data={data}
         onRowClick={(row) => navigate(`/quotes/${row.id}`)}
         empty={isSearching
-          ? { icon: FileText, title: `No quotes found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: FileText, title: `No quotes found for "${query}"`, description: 'Try a different search term.' }
           : { icon: FileText, title: emptyTitle, description: emptyDescription }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

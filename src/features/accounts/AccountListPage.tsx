@@ -1,10 +1,9 @@
 // REFERENCE PATTERN — Interns: copy this structure for your own feature list pages
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Building2 } from 'lucide-react'
 import { useAccounts, useAccountSearch } from '@/api/endpoints/accounts'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { DataTable, type Column } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -37,29 +36,11 @@ export default function AccountListPage() {
   const navigate = useNavigate()
   const { isReadOnly } = useRole()
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useAccounts(page, 20, filters)
+  const listQuery   = useAccounts(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaAccount>(goToPage)
   const searchQuery = useAccountSearch(debouncedQuery)
-
-  function handleFilterChange(param: string, value: string) {
-    setFilter(param, value)
-  }
-
-  function handleFilterClear() {
-    clearFilters()
-  }
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-  const data: PharmaAccount[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -78,7 +59,7 @@ export default function AccountListPage() {
       />
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search by name…"
         className="max-w-sm"
       />
@@ -86,8 +67,8 @@ export default function AccountListPage() {
         <FilterBar
           filters={ACCOUNT_FILTERS}
           values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
+          onChange={(param, value) => setFilter(param, value)}
+          onClear={clearFilters}
         />
       )}
       <DataTable
@@ -95,10 +76,10 @@ export default function AccountListPage() {
         data={data}
         onRowClick={(row) => navigate(`/accounts/${row.id}`)}
         empty={isSearching
-          ? { icon: Building2, title: `No accounts found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: Building2, title: `No accounts found for "${query}"`, description: 'Try a different search term.' }
           : { icon: Building2, title: 'No accounts yet', description: 'Add your first account to get started.' }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>

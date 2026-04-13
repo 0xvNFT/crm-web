@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Calendar } from 'lucide-react'
 import { useActivities, useActivitySearch } from '@/api/endpoints/activities'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -74,27 +73,15 @@ export default function ActivityListPage() {
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Activities')
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Assigned To')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useActivities(page, 20, filters)
+  const listQuery   = useActivities(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<ActivityRow>(goToPage)
   const searchQuery = useActivitySearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-
-  // Fix 3: Removed type cast, used typed variable declaration
-  const data: ActivityRow[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-    
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -114,7 +101,7 @@ export default function ActivityListPage() {
       
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search activities..."
         className="max-w-sm"
       />
@@ -133,10 +120,10 @@ export default function ActivityListPage() {
         data={data}
         onRowClick={(row) => navigate(`/activities/${row.id}`)}
         empty={isSearching
-          ? { icon: Calendar, title: `No activities found for "${debouncedQuery}"`, description: 'Try a different search term.' }
+          ? { icon: Calendar, title: `No activities found for "${query}"`, description: 'Try a different search term.' }
           : { icon: Calendar, title: emptyTitle, description: emptyDescription }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
       
       {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}

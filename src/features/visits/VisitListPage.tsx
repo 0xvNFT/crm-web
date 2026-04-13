@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, MapPin } from 'lucide-react'
 import { useVisits, useVisitSearch } from '@/api/endpoints/visits'
 import { useListParams } from '@/hooks/useListParams'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useListSearch } from '@/hooks/useListSearch'
 import { useRole } from '@/hooks/useRole'
 import { useScopedLabel } from '@/hooks/useScopedLabel'
 import { DataTable, type Column } from '@/components/shared/DataTable'
@@ -56,24 +55,15 @@ export default function VisitListPage() {
   const { title, emptyTitle, emptyDescription } = useScopedLabel('Visits')
   const columns = isManager ? ALL_COLUMNS : ALL_COLUMNS.filter((c) => c.header !== 'Rep')
   const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const isSearching = debouncedQuery.trim().length >= 2
-
-  const listQuery = useVisits(page, 20, filters)
+  const listQuery   = useVisits(page, 20, filters)
+  const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaFieldVisit>(goToPage)
   const searchQuery = useVisitSearch(debouncedQuery)
+
+  const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
   function handleFilterChange(param: string, value: string) { setFilter(param, value) }
   function handleFilterClear() { clearFilters() }
-
-  const isLoading = isSearching ? searchQuery.isLoading : listQuery.isLoading
-  const isError = isSearching ? searchQuery.isError : listQuery.isError
-  const error = isSearching ? searchQuery.error : listQuery.error
-  const data: PharmaFieldVisit[] = isSearching
-    ? (searchQuery.data ?? [])
-    : (listQuery.data?.content ?? [])
-  const totalPages = isSearching ? 0 : (listQuery.data?.totalPages ?? 0)
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -95,7 +85,7 @@ export default function VisitListPage() {
 
       <SearchInput
         value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
+        onChange={setQuery}
         placeholder="Search by visit # or subject…"
         className="max-w-sm"
       />
@@ -115,24 +105,10 @@ export default function VisitListPage() {
         onRowClick={(row) => navigate(`/visits/${row.id}`)}
         empty={
           isSearching
-            ? {
-                icon: MapPin,
-                title: `No visits found for "${debouncedQuery}"`,
-                description: 'Try a different search term.',
-              }
-            : {
-                icon: MapPin,
-                title: emptyTitle,
-                description: emptyDescription,
-                // action: isRep ? (
-                //   <Button size="sm" onClick={() => navigate('/visits/new')}>
-                //     <Plus className="h-4 w-4 mr-1.5" />
-                //     Schedule Visit
-                //   </Button>
-                // ) : undefined,
-              }
+            ? { icon: MapPin, title: `No visits found for "${query}"`, description: 'Try a different search term.' }
+            : { icon: MapPin, title: emptyTitle, description: emptyDescription }
         }
-        totalElements={isSearching ? data.length : listQuery.data?.totalElements}
+        totalElements={totalElements}
       />
 
       {!isSearching && (
