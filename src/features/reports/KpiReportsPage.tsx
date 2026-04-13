@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Target, Users, MapPin, BarChart2, Settings } from 'lucide-react'
+import { ArrowLeft, Target, Users, MapPin, BarChart2, Settings, BookUser } from 'lucide-react'
 import {
   useKpiCallSummary,
   useKpiActivitySummary,
@@ -43,6 +43,10 @@ export default function KpiReportsPage() {
                 Manage Targets
               </Button>
             )}
+            <Button variant="outline" size="sm" onClick={() => navigate('/reports/kpi/my-doctors')}>
+              <BookUser className="h-4 w-4 mr-1.5" />
+              My Doctors
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/reports')}>
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               All Reports

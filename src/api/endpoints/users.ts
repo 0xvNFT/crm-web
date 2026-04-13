@@ -51,8 +51,8 @@ export function useStaffSearch(q: string) {
     queryKey: ['users', 'search', q],
     queryFn: ({ signal }) =>
       client
-        .get<PageUser>('/api/v1/pharma/users/search', { params: { q }, signal })
-        .then((r) => (r.data.content ?? []).map(mapStaffMember)),
+        .get<User[]>('/api/v1/pharma/users/search', { params: { q }, signal })
+        .then((r) => r.data.map(mapStaffMember)),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,
   })

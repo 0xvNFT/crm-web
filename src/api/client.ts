@@ -20,6 +20,9 @@ const client = axios.create({
 client.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
+    // Ignore request cancellations (AbortController signal) — not a real error.
+    if (axios.isCancel(error)) return Promise.reject(error)
+
     if (axios.isAxiosError(error)) {
       const status = error.response?.status
 

@@ -10,6 +10,7 @@ import type {
   KpiDoctorCoverageRow,
   KpiTerritoryPerformanceRow,
   KpiPeriod,
+  MyDoctorsRow,
 } from '@/api/app-types'
 
 export function usePipelineSummary() {
@@ -84,5 +85,23 @@ export function useKpiTerritoryPerformance(period: Pick<KpiPeriod, 'year' | 'qua
         .get<KpiTerritoryPerformanceRow[]>('/api/v1/pharma/reporting/kpi/territory-performance', { params: period })
         .then((r) => r.data),
     enabled: !!period.quarter,
+  })
+}
+
+export interface MyDoctorsParams {
+  year: number
+  month: number
+  repId?: string
+  territoryId?: string
+}
+
+export function useKpiMyDoctors(params: MyDoctorsParams) {
+  return useQuery({
+    queryKey: ['kpi', 'my-doctors', params],
+    queryFn: ({ signal }) =>
+      client
+        .get<MyDoctorsRow[]>('/api/v1/pharma/reporting/kpi/my-doctors', { params, signal })
+        .then((r) => r.data),
+    placeholderData: (prev) => prev,
   })
 }
