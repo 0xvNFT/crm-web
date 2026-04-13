@@ -25,7 +25,7 @@ function Section({ title, icon: Icon, children }: { title: string; icon: React.E
   return (
     <div className="rounded-xl border bg-background p-5 space-y-4">
       <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-        <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
+        <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
         {title}
       </h2>
       {children}
@@ -151,8 +151,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Full Name" value={user?.fullName} />
               <Field label="Email" value={user?.email} />
-              <Field label="Role" value={user?.roles[0]} />
-              <Field label="Tenant ID" value={user?.tenantId} />
+              <Field label="Role" value={user?.roles[0] ? formatLabel(user.roles[0]) : undefined} />
             </div>
             <div>
               <Button variant="outline" size="sm" onClick={startEditName}>
@@ -164,11 +163,11 @@ export default function ProfilePage() {
         ) : (
           <form onSubmit={nameForm.handleSubmit(onSubmitName)} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormRow label="First Name" error={nameForm.formState.errors.firstName?.message}>
-                <Input {...nameForm.register('firstName')} autoFocus />
+              <FormRow label="First Name" fieldId="firstName" error={nameForm.formState.errors.firstName?.message}>
+                <Input id="firstName" {...nameForm.register('firstName')} autoFocus />
               </FormRow>
-              <FormRow label="Last Name" error={nameForm.formState.errors.lastName?.message}>
-                <Input {...nameForm.register('lastName')} />
+              <FormRow label="Last Name" fieldId="lastName" error={nameForm.formState.errors.lastName?.message}>
+                <Input id="lastName" {...nameForm.register('lastName')} />
               </FormRow>
             </div>
             <div className="flex items-center gap-2">
@@ -192,16 +191,16 @@ export default function ProfilePage() {
       <Section title="Security" icon={Shield}>
         <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormRow label="Current Password" error={passwordForm.formState.errors.currentPassword?.message}>
-              <Input {...passwordForm.register('currentPassword')} type="password" autoComplete="current-password" />
+            <FormRow label="Current Password" fieldId="currentPassword" error={passwordForm.formState.errors.currentPassword?.message}>
+              <Input id="currentPassword" {...passwordForm.register('currentPassword')} type="password" autoComplete="current-password" />
             </FormRow>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormRow label="New Password" error={passwordForm.formState.errors.newPassword?.message}>
-              <Input {...passwordForm.register('newPassword')} type="password" autoComplete="new-password" />
+            <FormRow label="New Password" fieldId="newPassword" error={passwordForm.formState.errors.newPassword?.message}>
+              <Input id="newPassword" {...passwordForm.register('newPassword')} type="password" autoComplete="new-password" />
             </FormRow>
-            <FormRow label="Confirm New Password" error={passwordForm.formState.errors.confirmPassword?.message}>
-              <Input {...passwordForm.register('confirmPassword')} type="password" autoComplete="new-password" />
+            <FormRow label="Confirm New Password" fieldId="confirmPassword" error={passwordForm.formState.errors.confirmPassword?.message}>
+              <Input id="confirmPassword" {...passwordForm.register('confirmPassword')} type="password" autoComplete="new-password" />
             </FormRow>
           </div>
           <p className="text-xs text-muted-foreground">
