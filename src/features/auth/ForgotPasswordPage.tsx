@@ -1,17 +1,27 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/schemas/auth'
 import { useForgotPassword } from '@/api/endpoints/auth'
+import { parseApiError } from '@/utils/errors'
 import { AuthLayout } from './components/AuthLayout'
 import { FormField } from './components/FormField'
 import { Button } from '@/components/ui/button'
 import { MailCheck } from 'lucide-react'
 
+const COOLDOWN_SECONDS = 60
+
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false)
+  const [cooldown, setCooldown] = useState(0)
   const mutation = useForgotPassword()
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const id = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000)
+    return () => clearInterval(id)
+  }, [cooldown])
 
   const {
     register,
@@ -22,8 +32,13 @@ export default function ForgotPasswordPage() {
   })
 
   async function onSubmit(data: ForgotPasswordFormData) {
-    await mutation.mutateAsync(data)
-    setSent(true)
+    try {
+      await mutation.mutateAsync(data)
+      setSent(true)
+    } catch {
+      // error shown via mutation.error — start cooldown to prevent spam
+      setCooldown(COOLDOWN_SECONDS)
+    }
   }
 
   return (
@@ -63,8 +78,14 @@ export default function ForgotPasswordPage() {
               {...register('email')}
             />
 
-            <Button type="submit" className="w-full" size="lg" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Sending…' : 'Send reset link'}
+            {mutation.error && (
+              <p className="text-sm text-destructive text-center rounded-md bg-destructive/5 border border-destructive/20 px-3 py-2">
+                {parseApiError(mutation.error)}
+              </p>
+            )}
+
+            <Button type="submit" className="w-full" size="lg" disabled={mutation.isPending || cooldown > 0}>
+              {mutation.isPending ? 'Sending…' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Send reset link'}
             </Button>
           </form>
 
