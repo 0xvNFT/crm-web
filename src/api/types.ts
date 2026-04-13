@@ -85,7 +85,7 @@ export interface paths {
         };
         /** Get rep target by ID */
         get: operations["getById_5"];
-        /** Update target values (visits, contacts, calls) */
+        /** Update target values (visits, contacts, calls, sales) */
         put: operations["update_4"];
         post?: never;
         /** Delete a rep target */
@@ -2005,6 +2005,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/reporting/kpi/sales-performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sales performance — net sales vs target per rep for a given month. FIELD_REP sees own data only. */
+        get: operations["salesPerformance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/reporting/kpi/my-doctors": {
         parameters: {
             query?: never;
@@ -3169,103 +3186,17 @@ export interface components {
             targetContacts?: number;
             /** Format: int32 */
             targetCalls?: number;
+            targetSales?: number;
         };
-        BusinessUnit: {
-            /** Format: uuid */
-            tenantId?: string;
+        RepTargetResponse: {
             /** Format: uuid */
             id?: string;
-            code?: string;
-            name?: string;
-            description?: string;
-            parentBusinessUnit?: components["schemas"]["BusinessUnit"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaProduct: {
             /** Format: uuid */
-            tenantId?: string;
+            repId?: string;
+            repName?: string;
             /** Format: uuid */
-            id?: string;
-            ndcNumber: string;
-            name: string;
-            genericName?: string;
-            manufacturer?: string;
-            strength?: string;
-            dosageForm?: string;
-            packageSize?: string;
-            unitPrice: number;
-            status?: string;
-            /** Format: int64 */
-            version?: number;
-            controlledSubstance?: boolean;
-            deaSchedule?: string;
-            requiresRefrigeration?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        PharmaTerritory: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            territoryCode: string;
-            territoryName: string;
-            description?: string;
-            businessUnit?: components["schemas"]["BusinessUnit"];
-            parentTerritory?: components["schemas"]["PharmaTerritory"];
-            /** Format: int32 */
-            territoryLevel?: number;
-            hierarchyPath?: string;
-            region: string;
-            provinces?: Record<string, never>;
-            cities?: Record<string, never>;
-            countryCode?: string;
-            geographicBounds?: Record<string, never>;
-            primaryRep?: components["schemas"]["User"];
-            secondaryReps?: components["schemas"]["TerritorySecondaryRep"][];
-            manager?: components["schemas"]["User"];
-            productFocusItems?: components["schemas"]["TerritoryProductFocus"][];
-            /** Format: int32 */
-            totalAccountsCount?: number;
-            /** Format: int32 */
-            activeAccountsCount?: number;
-            /** Format: int32 */
-            totalHcpsCount?: number;
-            /** Format: int32 */
-            totalVisitsYtd?: number;
-            targetRevenueAnnual?: number;
-            /** Format: int32 */
-            targetVisitsMonthly?: number;
-            /** Format: int32 */
-            targetNewAccountsQuarterly?: number;
-            status?: string;
-            /** Format: date */
-            effectiveFrom?: string;
-            /** Format: date */
-            effectiveTo?: string;
-            aiTerritorySummary?: string;
-            aiGrowthPotential?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            updatedAt?: string;
-            createdBy?: components["schemas"]["User"];
-        };
-        RepTarget: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            rep?: components["schemas"]["User"];
-            territory?: components["schemas"]["PharmaTerritory"];
+            territoryId?: string;
+            territoryName?: string;
             /** Format: int32 */
             year?: number;
             /** Format: int32 */
@@ -3276,78 +3207,11 @@ export interface components {
             targetContacts?: number;
             /** Format: int32 */
             targetCalls?: number;
+            targetSales?: number;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
-            /** Format: int64 */
-            version?: number;
-        };
-        Role: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            description?: string;
-            permissions?: string;
-        };
-        TerritoryProductFocus: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            product?: components["schemas"]["PharmaProduct"];
-            /** Format: int32 */
-            priority?: number;
-            notes?: string;
-            /** Format: date-time */
-            assignedAt?: string;
-            /** Format: int64 */
-            version?: number;
-        };
-        TerritorySecondaryRep: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            user?: components["schemas"]["User"];
-            /** Format: date-time */
-            assignedAt?: string;
-            /** Format: int64 */
-            version?: number;
-        };
-        User: {
-            /** Format: uuid */
-            tenantId?: string;
-            /** Format: uuid */
-            id?: string;
-            email?: string;
-            firstName?: string;
-            lastName?: string;
-            status?: string;
-            emailVerified?: boolean;
-            manager?: components["schemas"]["User"];
-            jobTitle?: string;
-            department?: string;
-            phoneWork?: string;
-            phoneMobile?: string;
-            isFieldRep?: boolean;
-            /** Format: uuid */
-            homeTerritory?: string;
-            mustChangePassword?: boolean;
-            /** Format: date-time */
-            lastLoginAt?: string;
-            timeZone?: string;
-            preferredLanguage?: string;
-            roles?: components["schemas"]["Role"][];
-            /** Format: int64 */
-            version?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-            fullName?: string;
         };
         UpdateQuoteRequest: {
             /** Format: date */
@@ -4316,6 +4180,7 @@ export interface components {
             targetContacts: number;
             /** Format: int32 */
             targetCalls: number;
+            targetSales?: number;
         };
         CreateQuoteRequest: {
             /** Format: uuid */
@@ -4509,6 +4374,21 @@ export interface components {
             /** Format: uuid */
             opportunityId?: string;
         };
+        BusinessUnit: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            code?: string;
+            name?: string;
+            description?: string;
+            parentBusinessUnit?: components["schemas"]["BusinessUnit"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
         LeadConversionResult: {
             lead?: components["schemas"]["PharmaLead"];
             account?: components["schemas"]["PharmaAccount"];
@@ -4685,6 +4565,146 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+        };
+        PharmaProduct: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            ndcNumber: string;
+            name: string;
+            genericName?: string;
+            manufacturer?: string;
+            strength?: string;
+            dosageForm?: string;
+            packageSize?: string;
+            unitPrice: number;
+            status?: string;
+            /** Format: int64 */
+            version?: number;
+            controlledSubstance?: boolean;
+            deaSchedule?: string;
+            requiresRefrigeration?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaTerritory: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            territoryCode: string;
+            territoryName: string;
+            description?: string;
+            businessUnit?: components["schemas"]["BusinessUnit"];
+            parentTerritory?: components["schemas"]["PharmaTerritory"];
+            /** Format: int32 */
+            territoryLevel?: number;
+            hierarchyPath?: string;
+            region: string;
+            provinces?: Record<string, never>;
+            cities?: Record<string, never>;
+            countryCode?: string;
+            geographicBounds?: Record<string, never>;
+            primaryRep?: components["schemas"]["User"];
+            secondaryReps?: components["schemas"]["TerritorySecondaryRep"][];
+            manager?: components["schemas"]["User"];
+            productFocusItems?: components["schemas"]["TerritoryProductFocus"][];
+            /** Format: int32 */
+            totalAccountsCount?: number;
+            /** Format: int32 */
+            activeAccountsCount?: number;
+            /** Format: int32 */
+            totalHcpsCount?: number;
+            /** Format: int32 */
+            totalVisitsYtd?: number;
+            targetRevenueAnnual?: number;
+            /** Format: int32 */
+            targetVisitsMonthly?: number;
+            /** Format: int32 */
+            targetNewAccountsQuarterly?: number;
+            status?: string;
+            /** Format: date */
+            effectiveFrom?: string;
+            /** Format: date */
+            effectiveTo?: string;
+            aiTerritorySummary?: string;
+            aiGrowthPotential?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: components["schemas"]["User"];
+        };
+        Role: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            description?: string;
+            permissions?: string;
+        };
+        TerritoryProductFocus: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            product?: components["schemas"]["PharmaProduct"];
+            /** Format: int32 */
+            priority?: number;
+            notes?: string;
+            /** Format: date-time */
+            assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        TerritorySecondaryRep: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            user?: components["schemas"]["User"];
+            /** Format: date-time */
+            assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        User: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            status?: string;
+            emailVerified?: boolean;
+            manager?: components["schemas"]["User"];
+            jobTitle?: string;
+            department?: string;
+            phoneWork?: string;
+            phoneMobile?: string;
+            isFieldRep?: boolean;
+            /** Format: uuid */
+            homeTerritory?: string;
+            mustChangePassword?: boolean;
+            /** Format: date-time */
+            lastLoginAt?: string;
+            timeZone?: string;
+            preferredLanguage?: string;
+            roles?: components["schemas"]["Role"][];
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            fullName?: string;
         };
         CreateInvoiceRequest: {
             subject: string;
@@ -5087,6 +5107,15 @@ export interface components {
             targetVisitsTotal?: number;
             callRatePct?: number;
         };
+        SalesPerformanceDto: {
+            /** Format: uuid */
+            repId?: string;
+            repName?: string;
+            netSales?: number;
+            targetSales?: number;
+            achievementPct?: number;
+            balance?: number;
+        };
         MyDoctorsRowDto: {
             /** Format: uuid */
             contactId?: string;
@@ -5147,7 +5176,7 @@ export interface components {
             /** Format: int64 */
             completedCount?: number;
         };
-        PageRepTarget: {
+        PageRepTargetResponse: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
@@ -5156,7 +5185,7 @@ export interface components {
             last?: boolean;
             /** Format: int32 */
             size?: number;
-            content?: components["schemas"]["RepTarget"][];
+            content?: components["schemas"]["RepTargetResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -5670,7 +5699,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RepTarget"];
+                    "*/*": components["schemas"]["RepTargetResponse"];
                 };
             };
         };
@@ -5696,7 +5725,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RepTarget"];
+                    "*/*": components["schemas"]["RepTargetResponse"];
                 };
             };
         };
@@ -7252,7 +7281,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageRepTarget"];
+                    "*/*": components["schemas"]["PageRepTargetResponse"];
                 };
             };
         };
@@ -7276,7 +7305,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RepTarget"];
+                    "*/*": components["schemas"]["RepTargetResponse"];
                 };
             };
         };
@@ -9218,6 +9247,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["TerritoryPerformanceDto"][];
+                };
+            };
+        };
+    };
+    salesPerformance: {
+        parameters: {
+            query: {
+                year: number;
+                month: number;
+                repId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SalesPerformanceDto"][];
                 };
             };
         };

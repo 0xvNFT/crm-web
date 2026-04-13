@@ -143,9 +143,7 @@ function TargetRow({ target: t, canEdit }: TargetRowProps) {
   const { mutate: updateTarget, isPending: isUpdating } = useUpdateRepTarget()
   const { mutate: deleteTarget, isPending: isDeleting } = useDeleteRepTarget()
 
-  const repName = t.rep?.fullName
-    ?? ([t.rep?.firstName, t.rep?.lastName].filter(Boolean).join(' ') || t.rep?.email)
-    ?? '—'
+  const repName = t.repName ?? '—'
 
   function saveEdit() {
     const v = Number(visits)
@@ -175,7 +173,7 @@ function TargetRow({ target: t, canEdit }: TargetRowProps) {
     <>
       <tr className="hover:bg-muted/20">
         <td className="px-4 py-3 font-medium">{repName}</td>
-        <td className="px-4 py-3 text-muted-foreground">{t.territory?.territoryName ?? '—'}</td>
+        <td className="px-4 py-3 text-muted-foreground">{t.territoryName ?? '—'}</td>
 
         {editing ? (
           <>
