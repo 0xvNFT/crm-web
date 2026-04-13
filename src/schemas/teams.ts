@@ -1,10 +1,10 @@
 import { z } from 'zod'
-import { emailField } from './primitives'
+import { emailField, notesField } from './primitives'
 
 export const createTeamSchema = z.object({
   name:         z.string().trim().min(2, 'Team name must be at least 2 characters'),
   teamType:     z.string().optional(),
-  description:  z.string().max(2000).optional(),
+  description:  notesField,
   emailAddress: emailField,
 })
 export type CreateTeamFormData = z.infer<typeof createTeamSchema>

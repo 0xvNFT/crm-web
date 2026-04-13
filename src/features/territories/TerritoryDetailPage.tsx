@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, X, Check, Building2, Users } from 'lucide-react'
+import { ArrowLeft, Pencil, X, Check, Building2, Users, Trash2 } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTerritory, useUpdateTerritory, useTerritoryAccounts, useTerritoryReps } from '@/api/endpoints/territories'
+import { useTerritory, useUpdateTerritory, useTerritoryAccounts, useTerritoryReps, useAssignTerritoryAccount, useRemoveTerritoryAccount } from '@/api/endpoints/territories'
+import { useAccountSearch } from '@/api/endpoints/accounts'
 import { TerritorySecondaryRepsSection } from './components/TerritorySecondaryRepsSection'
 import { TerritoryProductFocusSection } from './components/TerritoryProductFocusSection'
 import { useStaffSearch } from '@/api/endpoints/users'
@@ -15,18 +16,18 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { DataTable, type Column } from '@/components/shared/DataTable'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { updateTerritorySchema, type UpdateTerritoryFormData } from '@/schemas/territories'
-import type { PharmaAccountTerritory, UpdateTerritoryRequest } from '@/api/app-types'
+import type { UpdateTerritoryRequest } from '@/api/app-types'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -54,28 +55,30 @@ function DetailField({ label, value }: { label: string; value?: string | number 
   )
 }
 
-const accountColumns: Column<PharmaAccountTerritory>[] = [
-  { header: 'Name', accessor: (row) => row.accountName ?? '—' },
-]
-
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function TerritoryDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
+  const [removeAccountId, setRemoveAccountId] = useState<string | null>(null)
   const { isManager, isReadOnly } = useRole()
 
   const [repQuery, setRepQuery] = useState('')
   const [managerQuery, setManagerQuery] = useState('')
+  const [accountQuery, setAccountQuery] = useState('')
   const debouncedRepQuery = useDebounce(repQuery, 300)
   const debouncedManagerQuery = useDebounce(managerQuery, 300)
+  const debouncedAccountQuery = useDebounce(accountQuery, 300)
 
   const { data: territory, isLoading, isError } = useTerritory(id ?? '')
   const { mutate: updateTerritory, isPending } = useUpdateTerritory(id ?? '')
   const { data: accounts, isLoading: isLoadingAccounts } = useTerritoryAccounts(id ?? '')
   const { data: reps, isLoading: isLoadingReps } = useTerritoryReps(id ?? '')
+  const { mutate: assignAccount, isPending: isAssigning } = useAssignTerritoryAccount(id ?? '')
+  const { mutate: removeAccount, isPending: isRemoving } = useRemoveTerritoryAccount(id ?? '')
   const { data: repResults, isLoading: isSearchingReps } = useStaffSearch(debouncedRepQuery)
   const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
+  const { data: accountResults, isLoading: isSearchingAccounts } = useAccountSearch(debouncedAccountQuery)
   const regionOptions = useConfigOptions('territory.region')
   const territoryStatusOptions = useConfigOptions('territory.status')
 
@@ -86,6 +89,10 @@ export default function TerritoryDetailPage() {
   const managerOptions: ComboboxOption[] = (managerResults ?? []).map((u) => ({
     value: u.id!,
     label: u.fullName ?? `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+  }))
+  const accountOptions: ComboboxOption[] = (accountResults ?? []).map((a) => ({
+    value: a.id!,
+    label: a.name ?? '—',
   }))
 
   const {
@@ -231,24 +238,76 @@ export default function TerritoryDetailPage() {
 
           {/* Accounts in Territory sub-section */}
           <div className="rounded-xl border bg-background p-5 space-y-4">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Accounts in Territory
-            </h2>
-            {isLoadingAccounts ? (
-              <LoadingSpinner />
-            ) : (
-              <DataTable
-                columns={accountColumns}
-                data={accounts ?? []}
-                onRowClick={(row) => navigate(`/accounts/${row.accountId}`)}
-                empty={{
-                  icon: Building2,
-                  title: 'No accounts in this territory',
-                  description: 'Accounts will appear here once assigned to this territory.',
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                Accounts in Territory
+              </h2>
+            </div>
+
+            {isManager && !isReadOnly && (
+              <Combobox
+                value=""
+                onChange={(accountId) => {
+                  if (!accountId) return
+                  assignAccount(accountId, {
+                    onSuccess: () => { toast('Account assigned', { variant: 'success' }); setAccountQuery('') },
+                    onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+                  })
                 }}
+                options={accountOptions}
+                placeholder="Search accounts to assign…"
+                onSearchChange={setAccountQuery}
+                isLoading={isSearchingAccounts || isAssigning}
               />
             )}
+
+            {isLoadingAccounts ? (
+              <LoadingSpinner />
+            ) : !accounts || accounts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No accounts assigned to this territory.</p>
+            ) : (
+              <ul className="divide-y">
+                {accounts.map((a) => (
+                  <li key={a.id} className="flex items-center justify-between py-2">
+                    <button
+                      type="button"
+                      className="text-sm font-medium text-foreground hover:underline text-left"
+                      onClick={() => navigate(`/accounts/${a.accountId}`)}
+                    >
+                      {a.accountName ?? '—'}
+                    </button>
+                    {isManager && !isReadOnly && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Remove account"
+                        disabled={isRemoving}
+                        onClick={() => setRemoveAccountId(a.id!)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
+          <ConfirmDialog
+            open={removeAccountId !== null}
+            onCancel={() => setRemoveAccountId(null)}
+            onConfirm={() =>
+              removeAccount(removeAccountId!, {
+                onSuccess: () => { toast('Account removed', { variant: 'success' }); setRemoveAccountId(null) },
+                onError: (err) => { toast(parseApiError(err), { variant: 'destructive' }); setRemoveAccountId(null) },
+              })
+            }
+            title="Remove account?"
+            description="This will unassign the account from this territory. The account record itself will not be deleted."
+            confirmLabel="Remove"
+            isPending={isRemoving}
+          />
 
           {isManager && <TerritorySecondaryRepsSection territoryId={id ?? ''} />}
           <TerritoryProductFocusSection territoryId={id ?? ''} />
@@ -317,7 +376,7 @@ export default function TerritoryDetailPage() {
               </FormRow>
               <div className="sm:col-span-2">
                 <FormRow label="Description" error={errors.description?.message}>
-                  <Textarea {...register('description')} rows={3} />
+                  <TextareaWithCounter {...register('description')} rows={3} maxLength={2000} />
                 </FormRow>
               </div>
             </div>
