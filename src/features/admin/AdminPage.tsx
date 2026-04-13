@@ -75,7 +75,7 @@ export default function AdminPage() {
   }
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
-  if (isError) return <ErrorMessage error={error} />
+  if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
     <div className="space-y-4">

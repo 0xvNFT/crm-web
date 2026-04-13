@@ -60,6 +60,7 @@ export default function DashboardPage() {
           isLoading={pipeline.isLoading}
           isError={pipeline.isError}
           error={pipeline.error}
+          onRetry={() => pipeline.refetch()}
         />
       )}
 
@@ -70,12 +71,14 @@ export default function DashboardPage() {
           isLoading={leadFunnel.isLoading}
           isError={leadFunnel.isError}
           error={leadFunnel.error}
+          onRetry={() => leadFunnel.refetch()}
         />
         <ActivityChart
           data={activitySummary.data}
           isLoading={activitySummary.isLoading}
           isError={activitySummary.isError}
           error={activitySummary.error}
+          onRetry={() => activitySummary.refetch()}
         />
       </div>
 

@@ -10,6 +10,7 @@ import {
 import { useRole } from '@/hooks/useRole'
 import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { KpiSection, PeriodSelector } from './components/KpiShared'
 import { CURRENT_YEAR, CURRENT_MONTH, QUARTERS } from './components/kpi-constants'
 import { CallSummaryTable, ActivitySummaryTable, DoctorCoverageTable, TerritoryPerformanceTable } from './components/KpiTables'
@@ -86,7 +87,7 @@ export default function KpiReportsPage() {
 
       <KpiSection title="Call Summary" icon={Target} isLoading={callSummary.isLoading}>
         {callSummary.isError ? (
-          <p className="px-5 py-6 text-sm text-destructive">Failed to load call summary.</p>
+          <ErrorMessage className="py-6" error={callSummary.error} onRetry={() => callSummary.refetch()} />
         ) : (
           <CallSummaryTable rows={callSummary.data ?? []} />
         )}
@@ -94,7 +95,7 @@ export default function KpiReportsPage() {
 
       <KpiSection title="Doctor Coverage (Call Reach)" icon={Users} isLoading={doctorCoverage.isLoading}>
         {doctorCoverage.isError ? (
-          <p className="px-5 py-6 text-sm text-destructive">Failed to load doctor coverage.</p>
+          <ErrorMessage className="py-6" error={doctorCoverage.error} onRetry={() => doctorCoverage.refetch()} />
         ) : (
           <DoctorCoverageTable rows={doctorCoverage.data ?? []} />
         )}
@@ -102,7 +103,7 @@ export default function KpiReportsPage() {
 
       <KpiSection title="Activity Summary" icon={BarChart2} isLoading={activitySummary.isLoading}>
         {activitySummary.isError ? (
-          <p className="px-5 py-6 text-sm text-destructive">Failed to load activity summary.</p>
+          <ErrorMessage className="py-6" error={activitySummary.error} onRetry={() => activitySummary.refetch()} />
         ) : (
           <ActivitySummaryTable rows={activitySummary.data ?? []} />
         )}
@@ -111,7 +112,7 @@ export default function KpiReportsPage() {
       {(isAdmin || isManager) && (
         <KpiSection title={`Territory Performance — ${QUARTERS[quarter - 1]}`} icon={MapPin} isLoading={territoryPerf.isLoading}>
           {territoryPerf.isError ? (
-            <p className="px-5 py-6 text-sm text-destructive">Failed to load territory performance.</p>
+            <ErrorMessage className="py-6" error={territoryPerf.error} onRetry={() => territoryPerf.refetch()} />
           ) : (
             <TerritoryPerformanceTable rows={territoryPerf.data ?? []} />
           )}

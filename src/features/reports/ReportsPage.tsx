@@ -35,9 +35,11 @@ interface InvoiceAgingChartProps {
   data: InvoiceAgingSummary[] | undefined
   isLoading: boolean
   isError: boolean
+  error?: unknown
+  onRetry?: () => void
 }
 
-function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps) {
+function InvoiceAgingChart({ data, isLoading, isError, error, onRetry }: InvoiceAgingChartProps) {
   return (
     <div className="rounded-xl border bg-background p-5">
       <div className="mb-4">
@@ -46,7 +48,7 @@ function InvoiceAgingChart({ data, isLoading, isError }: InvoiceAgingChartProps)
       </div>
 
       {isLoading && <LoadingSpinner className="py-10" />}
-      {isError && <ErrorMessage className="py-10" />}
+      {isError && <ErrorMessage className="py-10" error={error} onRetry={onRetry} />}
 
       {data && data.length === 0 && (
         <div className="flex items-center justify-center py-10">
@@ -131,6 +133,8 @@ export default function ReportsPage() {
         data={pipeline.data}
         isLoading={pipeline.isLoading}
         isError={pipeline.isError}
+        error={pipeline.error}
+        onRetry={() => pipeline.refetch()}
       />
 
       {/* Lead Funnel + Activity — side by side */}
@@ -139,11 +143,15 @@ export default function ReportsPage() {
           data={leadFunnel.data}
           isLoading={leadFunnel.isLoading}
           isError={leadFunnel.isError}
+          error={leadFunnel.error}
+          onRetry={() => leadFunnel.refetch()}
         />
         <ActivityChart
           data={activitySummary.data}
           isLoading={activitySummary.isLoading}
           isError={activitySummary.isError}
+          error={activitySummary.error}
+          onRetry={() => activitySummary.refetch()}
         />
       </div>
 
@@ -152,6 +160,8 @@ export default function ReportsPage() {
         data={invoiceAging.data}
         isLoading={invoiceAging.isLoading}
         isError={invoiceAging.isError}
+        error={invoiceAging.error}
+        onRetry={() => invoiceAging.refetch()}
       />
     </div>
   )
