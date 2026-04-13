@@ -22,6 +22,7 @@ import {
   Receipt,
   GraduationCap,
   CreditCard,
+  BookUser,
 } from 'lucide-react'
 
 interface NavItem {
@@ -59,8 +60,9 @@ const NAV_MANAGER: NavItem[] = [
   // Coaching: MANAGER+ only (write) — detail view is all roles but list is gated
   { to: '/coaching',    label: 'Coaching',    icon: GraduationCap, roles: ['ADMIN', 'MANAGER'] },
   // Reports/KPI: all non-CSR roles
-  { to: '/reports',     label: 'Reports',     icon: BarChart3,     roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
-  { to: '/reports/kpi', label: 'KPI Reports', icon: Target,        roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/reports',              label: 'Reports',     icon: BarChart3,  roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/reports/kpi',          label: 'KPI Reports', icon: Target,     roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/reports/kpi/my-doctors', label: 'My Doctors',  icon: BookUser,   roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
 ]
 
 const billingEnabled = import.meta.env.VITE_BILLING_ENABLED === 'true'
