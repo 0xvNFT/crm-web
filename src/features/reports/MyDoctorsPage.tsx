@@ -212,8 +212,9 @@ const PAGE_SIZES = [25, 50, 100]
 
 export default function MyDoctorsPage() {
   const navigate = useNavigate()
-  const { isAdmin, isManager } = useRole()
+  const { isAdmin, isManager, isRep } = useRole()
   const canFilterByRep = isAdmin || isManager
+  const isRepOnly = isRep && !isManager
 
   const [year, setYear]               = useState(CURRENT_YEAR)
   const [month, setMonth]             = useState(CURRENT_MONTH)
@@ -262,8 +263,12 @@ export default function MyDoctorsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="My Doctors"
-        description="HCP call list by territory — specialty, class, adoption stage, and visit activity"
+        title={isRepOnly ? 'My Doctors' : 'Doctor Call List'}
+        description={
+          isRepOnly
+            ? 'Your HCP call list — specialty, class, adoption stage, and visit activity'
+            : 'HCP call list by territory — specialty, class, adoption stage, and visit activity'
+        }
         actions={
           <Button variant="ghost" size="sm" onClick={() => navigate('/reports/kpi')}>
             <ArrowLeft className="h-4 w-4 mr-1.5" strokeWidth={1.5} />

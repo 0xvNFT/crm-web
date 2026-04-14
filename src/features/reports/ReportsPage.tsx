@@ -19,6 +19,7 @@ import {
   useInvoiceAgingSummary,
   useActivitySummary,
 } from '@/api/endpoints/reports'
+import { useRole } from '@/hooks/useRole'
 import type { InvoiceAgingSummary } from '@/api/app-types'
 
 // ─── Invoice Aging Chart ────────────────────────────────────────────────────────
@@ -116,28 +117,37 @@ function InvoiceAgingChart({ data, isLoading, isError, error, onRetry }: Invoice
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 export default function ReportsPage() {
-  const pipeline = usePipelineSummary()
+  const { isManager, isRep } = useRole()
+  const isRepOnly = isRep && !isManager
+
+  const pipeline = usePipelineSummary({ enabled: isManager })
   const leadFunnel = useLeadFunnelSummary()
-  const invoiceAging = useInvoiceAgingSummary()
+  const invoiceAging = useInvoiceAgingSummary({ enabled: !isRepOnly })
   const activitySummary = useActivitySummary()
+
+  const description = isManager
+    ? 'Analytics and summaries across your field force'
+    : 'Your activity analytics and lead pipeline'
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Reports"
-        description="Analytics and summaries across your field force"
+        description={description}
       />
 
-      {/* Pipeline — full width */}
-      <PipelineChart
-        data={pipeline.data}
-        isLoading={pipeline.isLoading}
-        isError={pipeline.isError}
-        error={pipeline.error}
-        onRetry={() => pipeline.refetch()}
-      />
+      {/* Pipeline — MANAGER/ADMIN only: org-level opportunity visibility */}
+      {isManager && (
+        <PipelineChart
+          data={pipeline.data}
+          isLoading={pipeline.isLoading}
+          isError={pipeline.isError}
+          error={pipeline.error}
+          onRetry={() => pipeline.refetch()}
+        />
+      )}
 
-      {/* Lead Funnel + Activity — side by side */}
+      {/* Lead Funnel + Activity — all roles */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <LeadFunnelChart
           data={leadFunnel.data}
@@ -155,14 +165,16 @@ export default function ReportsPage() {
         />
       </div>
 
-      {/* Invoice Aging — full width */}
-      <InvoiceAgingChart
-        data={invoiceAging.data}
-        isLoading={invoiceAging.isLoading}
-        isError={invoiceAging.isError}
-        error={invoiceAging.error}
-        onRetry={() => invoiceAging.refetch()}
-      />
+      {/* Invoice Aging — MANAGER/ADMIN only: financial data not relevant to reps */}
+      {!isRepOnly && (
+        <InvoiceAgingChart
+          data={invoiceAging.data}
+          isLoading={invoiceAging.isLoading}
+          isError={invoiceAging.isError}
+          error={invoiceAging.error}
+          onRetry={() => invoiceAging.refetch()}
+        />
+      )}
     </div>
   )
 }
