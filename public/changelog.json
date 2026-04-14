@@ -1,12 +1,12 @@
 [
   {
-    "version": "version 2.1.0",
+    "version": "version 2.2.0",
     "date": "2026-04-14",
-    "title": "What's new in version 2.1.0",
+    "title": "What's new in version 2.2.0",
     "items": [
       "KPI reports now available for reps and managers",
       "Sales performance report with rep-level breakdown",
-      "Territory assignment and removal for managers",
+      "Audit trail logging for all entity changes",
       "User interface improvements and bug fixes"
     ]
   }

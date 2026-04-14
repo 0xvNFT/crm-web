@@ -9,6 +9,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -268,6 +269,8 @@ export default function TeamDetailPage() {
           </div>
         )}
       </div>
+
+      <EntityHistorySection entityType="PharmaTeam" entityId={id ?? ''} />
 
       {/* Deactivate confirm dialog */}
       <ConfirmDialog

@@ -10,6 +10,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
@@ -179,6 +180,8 @@ export default function MaterialDetailPage() {
         confirmLabel="Approve"
         isPending={isApproving}
       />
+
+      <EntityHistorySection entityType="PharmaMaterial" entityId={id ?? ''} />
 
       <ConfirmDialog
         open={showArchive}

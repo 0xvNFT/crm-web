@@ -16,6 +16,7 @@ import { AccountOpportunitiesSection } from './components/AccountOpportunitiesSe
 import { AccountInvoicesSection } from './components/AccountInvoicesSection'
 import { AccountVisitsSection } from './components/AccountVisitsSection'
 import { AccountActivitiesSection } from './components/AccountActivitiesSection'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -204,6 +205,7 @@ export default function AccountDetailPage() {
           <AccountInvoicesSection accountId={id ?? ''} />
           <AccountVisitsSection accountId={id ?? ''} />
           <AccountActivitiesSection accountId={id ?? ''} />
+          <EntityHistorySection entityType="PharmaAccount" entityId={id ?? ''} />
         </div>
       )}
 

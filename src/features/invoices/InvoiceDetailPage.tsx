@@ -12,6 +12,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -220,6 +221,8 @@ export default function InvoiceDetailPage() {
         <DetailRow label="Created" value={invoice.createdAt ? formatDate(invoice.createdAt) : null} />
         <DetailRow label="Updated" value={invoice.updatedAt ? formatDate(invoice.updatedAt) : null} />
       </Section>
+
+      <EntityHistorySection entityType="PharmaInvoice" entityId={id ?? ''} />
 
       {/* Send dialog */}
       <ConfirmDialog

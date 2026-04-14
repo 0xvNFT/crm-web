@@ -8,6 +8,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
@@ -317,6 +318,8 @@ export default function VisitDetailPage() {
           <VisitMaterialsSection visitId={id ?? ''} visit={visit} />
         </>
       )}
+
+      <EntityHistorySection entityType="PharmaFieldVisit" entityId={id ?? ''} />
 
       {/* ─── Dialogs ──────────────────────────────────────────────────────────── */}
 

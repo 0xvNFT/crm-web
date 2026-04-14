@@ -17,6 +17,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
@@ -432,6 +433,8 @@ export default function TerritoryDetailPage() {
           </div>
         </form>
       )}
+
+      <EntityHistorySection entityType="PharmaTerritory" entityId={id ?? ''} />
     </div>
   )
 }
