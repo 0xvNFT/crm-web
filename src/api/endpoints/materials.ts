@@ -21,7 +21,7 @@ export function useMaterialSearch(q: string) {
     queryKey: ['materials', 'search', q],
     queryFn: ({ signal }) =>
       client
-        .get<PagePharmaMaterial>('/api/v1/pharma/materials', { params: { title: q, size: 20 }, signal })
+        .get<PagePharmaMaterial>('/api/v1/pharma/materials/search', { params: { q, size: 20 }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

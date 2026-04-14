@@ -34,7 +34,9 @@ const FILTER_KEYS = ['activityType', 'status']
 const ALL_COLUMNS: Column<ActivityRow>[] = [
   {
     header: 'Subject',
-    accessor: (row) => (
+    accessor: 'subject',
+    sortable: true,
+    cell: (row) => (
       <div>
         <p className="font-medium text-foreground">{row.subject}</p>
         {row.activityType && (
@@ -47,7 +49,9 @@ const ALL_COLUMNS: Column<ActivityRow>[] = [
   },
   {
     header: 'Status',
-    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
+    accessor: 'status',
+    sortable: true,
+    cell: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
   },
   {
     header: 'Assigned To',
@@ -55,7 +59,9 @@ const ALL_COLUMNS: Column<ActivityRow>[] = [
   },
   {
     header: 'Due Date',
-    accessor: (row) => (row.dueDate ? formatDate(row.dueDate) : '—'),
+    accessor: 'dueDate',
+    sortable: true,
+    cell: (row) => (row.dueDate ? formatDate(row.dueDate) : '—'),
   },
   {
     header: 'Duration',

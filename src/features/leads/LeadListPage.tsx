@@ -26,11 +26,11 @@ const FILTER_KEYS = ['leadStatus', 'rating']
 
 const ALL_COLUMNS: Column<PharmaLead>[] = [
   { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
-  { header: 'Company', accessor: (row) => row.companyName },
-  { header: 'Status', accessor: (row) => <StatusBadge status={row.leadStatus ?? 'unknown'} /> },
-  { header: 'Rating', accessor: (row) => row.rating ?? '—' },
-  { header: 'Owner', accessor: (row) => row.assignedUserName ?? '—' },
-  { header: 'Created', accessor: (row) => formatDate(row.createdAt) },
+  { header: 'Company',   accessor: 'companyName', sortable: true, cell: (row) => row.companyName ?? '—' },
+  { header: 'Status',    accessor: 'leadStatus',  sortable: true, cell: (row) => <StatusBadge status={row.leadStatus ?? 'unknown'} /> },
+  { header: 'Rating',    accessor: 'rating',      sortable: true, cell: (row) => row.rating ?? '—' },
+  { header: 'Owner',     accessor: (row) => row.assignedUserName ?? '—' },
+  { header: 'Created',   accessor: 'createdAt',   sortable: true, cell: (row) => formatDate(row.createdAt) },
 ]
 
 export default function LeadListPage() {

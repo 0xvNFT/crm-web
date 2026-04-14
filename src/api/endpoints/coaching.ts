@@ -7,13 +7,14 @@ import type {
   UpdateCoachingNoteRequest,
 } from '@/api/app-types'
 
-export function useCoachingNotes(page = 0, size = 20) {
+export function useCoachingNotes(page = 0, size = 20, filters: Record<string, string> = {}) {
+  const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
   return useQuery({
-    queryKey: ['coaching', 'list', { page, size }],
+    queryKey: ['coaching', 'list', { page, size, ...cleanFilters }],
     queryFn: () =>
       client
         .get<PagePharmaCoachingNote>('/api/v1/pharma/coaching', {
-          params: { page, size, sort: 'createdAt,desc' },
+          params: { page, size, sort: 'createdAt,desc', ...cleanFilters },
         })
         .then((r) => r.data),
     placeholderData: (prev) => prev,
