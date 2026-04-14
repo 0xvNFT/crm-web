@@ -10,6 +10,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
@@ -329,6 +330,8 @@ export default function OpportunityDetailPage() {
           </div>
         </form>
       )}
+
+      <EntityHistorySection entityType="PharmaOpportunity" entityId={id ?? ''} />
 
       {/* Stage advance confirmation */}
       <ConfirmDialog

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil } from 'lucide-react'
 import { useActivity } from '@/api/endpoints/activities'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -87,6 +88,8 @@ export default function ActivityDetailPage() {
         <DetailField label="Created" value={activity.createdAt ? formatDate(activity.createdAt) : null} />
         <DetailField label="Last Updated" value={activity.updatedAt ? formatDate(activity.updatedAt) : null} />
       </DetailSection>
+
+      <EntityHistorySection entityType="PharmaActivity" entityId={id ?? ''} />
     </div>
   )
 }

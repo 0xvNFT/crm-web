@@ -7,6 +7,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -169,6 +170,8 @@ export default function QuoteDetailPage() {
         <DetailField label="Created"      value={quote.createdAt ? formatDate(quote.createdAt) : null} />
         <DetailField label="Last Updated" value={quote.updatedAt ? formatDate(quote.updatedAt) : null} />
       </DetailSection>
+
+      <EntityHistorySection entityType="PharmaQuote" entityId={id ?? ''} />
 
       {/* Convert to Order dialog */}
       <ConfirmDialog

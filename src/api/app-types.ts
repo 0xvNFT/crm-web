@@ -96,6 +96,8 @@ export type PagePharmaCoachingNote = components['schemas']['PagePharmaCoachingNo
 export type PagePharmaVisitAudit   = components['schemas']['PagePharmaVisitAuditResponse']
 export type PageNotification       = components['schemas']['PageNotification']
 export type PageApprovalRule       = components['schemas']['PageApprovalRule']
+export type AuditEvent             = components['schemas']['AuditEventResponse']
+export type PageAuditEvent         = components['schemas']['PageAuditEventResponse']
 
 // ─── Reporting (GET /api/pharma/reports/*) ────────────────────────────────────
 export type PipelineSummary    = components['schemas']['PipelineSummary']

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useProduct } from '@/api/endpoints/products'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -78,6 +79,8 @@ export default function ProductDetailPage() {
         <DetailField label="Controlled Substance" value={product.controlledSubstance} />
         <DetailField label="DEA Schedule" value={product.deaSchedule} />
       </DetailSection>
+
+      <EntityHistorySection entityType="PharmaProduct" entityId={id ?? ''} />
     </div>
   )
 }

@@ -75,6 +75,7 @@ const ProductDetailPage = lazy(() => import('@/features/products/ProductDetailPa
 const ProductFormPage = lazy(() => import('@/features/products/ProductFormPage'))
 const BillingPage = lazy(() => import('@/features/billing/BillingPage'))
 const MaterialListPage = lazy(() => import('@/features/materials/MaterialListPage'))
+const AuditLogPage = lazy(() => import('@/features/audit/AuditLogPage'))
 const MaterialDetailPage = lazy(() => import('@/features/materials/MaterialDetailPage'))
 
 
@@ -330,6 +331,16 @@ export function AppRouter() {
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY']}>
                 <Wrap><SalesPerformancePage /></Wrap>
+              </RoleRoute>
+            }
+          />
+
+          {/* Audit log — ADMIN/MANAGER only */}
+          <Route
+            path="/audit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><AuditLogPage /></Wrap>
               </RoleRoute>
             }
           />

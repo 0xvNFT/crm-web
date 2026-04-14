@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { useRole } from '@/hooks/useRole'
@@ -145,6 +146,8 @@ export default function LeadDetailPage() {
         <DetailField label="Created" value={lead.createdAt ? formatDate(lead.createdAt) : null} />
         <DetailField label="Last Updated" value={lead.updatedAt ? formatDate(lead.updatedAt) : null} />
       </DetailSection>
+
+      <EntityHistorySection entityType="PharmaLead" entityId={id ?? ''} />
 
       <ConfirmDialog
         open={showClose}

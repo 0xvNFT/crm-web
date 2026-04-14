@@ -5,6 +5,7 @@ import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
@@ -166,6 +167,8 @@ export default function CoachingDetailPage() {
           <DetailField label="Last Updated" value={formatDate(note.updatedAt)} />
         </div>
       </div>
+
+      <EntityHistorySection entityType="PharmaCoachingNote" entityId={id ?? ''} />
 
       <ConfirmDialog
         open={showComplete}
