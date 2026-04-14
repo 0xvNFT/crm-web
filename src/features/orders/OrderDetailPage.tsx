@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, FileText, FileCheck2, Truck, PackageCheck } from 'lucide-react'
-import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice, useShipOrder, useDeliverOrder } from '@/api/endpoints/orders'
+import { ArrowLeft, Pencil, FileText, FileCheck2, Truck, PackageCheck, XCircle } from 'lucide-react'
+import { useOrder, useApproveOrder, useRejectOrder, useGenerateInvoice, useShipOrder, useDeliverOrder, useCancelOrder } from '@/api/endpoints/orders'
 import { useRole } from '@/hooks/useRole'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
@@ -46,12 +46,14 @@ export default function OrderDetailPage() {
   const { mutate: generateInvoice, isPending: isGenerating } = useGenerateInvoice(id ?? '')
   const { mutate: shipOrder, isPending: isShipping } = useShipOrder(id ?? '')
   const { mutate: deliverOrder, isPending: isDelivering } = useDeliverOrder(id ?? '')
+  const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder(id ?? '')
 
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
   const [showGenerateInvoice, setShowGenerateInvoice] = useState(false)
   const [showShip, setShowShip] = useState(false)
   const [showDeliver, setShowDeliver] = useState(false)
+  const [showCancel, setShowCancel] = useState(false)
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !order) return <ErrorMessage message="Order not found." />
@@ -64,6 +66,7 @@ export default function OrderDetailPage() {
   )
   const canShip    = canFulfill && order.status === 'processing'
   const canDeliver = canFulfill && order.status === 'shipped'
+  const canCancel  = isManager && order.status !== 'canceled' && order.status !== 'delivered'
 
   return (
     <div className="space-y-4">
@@ -115,6 +118,12 @@ export default function OrderDetailPage() {
                 Reject
               </Button>
             </>
+          )}
+          {canCancel && (
+            <Button variant="destructive" size="sm" onClick={() => setShowCancel(true)} disabled={isCancelling}>
+              <XCircle className="h-4 w-4 mr-1.5" />
+              Cancel Order
+            </Button>
           )}
         </div>
       </div>
@@ -311,6 +320,29 @@ export default function OrderDetailPage() {
         isPending={isRejecting}
         requireReason
         reasonPlaceholder="e.g. Exceeds budget limit, missing approval..."
+      />
+
+      {/* Cancel dialog */}
+      <ConfirmDialog
+        open={showCancel}
+        onCancel={() => setShowCancel(false)}
+        onConfirm={(reason) =>
+          cancelOrder(reason, {
+            onSuccess: () => {
+              toast('Order cancelled', { variant: 'success' })
+              setShowCancel(false)
+            },
+            onError: (err) => {
+              toast(parseApiError(err), { variant: 'destructive' })
+              setShowCancel(false)
+            },
+          })
+        }
+        title="Cancel Order?"
+        description="Provide an optional reason. This action cannot be undone."
+        confirmLabel="Cancel Order"
+        isPending={isCancelling}
+        reasonPlaceholder="e.g. Customer requested cancellation..."
       />
     </div>
   )

@@ -91,6 +91,15 @@ export function useDeliverOrder(id: string) {
   })
 }
 
+export function useCancelOrder(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (reason: string | undefined) =>
+      client.post<PharmaOrder>(`/api/v1/pharma/orders/${id}/cancel`, { reason }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['orders'] }),
+  })
+}
+
 export function useGenerateInvoice(id: string) {
   const qc = useQueryClient()
   return useMutation({
