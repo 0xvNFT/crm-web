@@ -7,53 +7,96 @@ import { LeadFunnelChart } from './components/LeadFunnelChart'
 import { ActivityChart } from './components/ActivityChart'
 import { useDashboardStats } from './hooks/useDashboardStats'
 import { usePipelineSummary, useLeadFunnelSummary, useActivitySummary } from '@/api/endpoints/reports'
-import { Building2, Target, ShoppingCart, Activity } from 'lucide-react'
+import { Building2, Target, ShoppingCart, Activity, CalendarCheck } from 'lucide-react'
 import { OverdueFollowUpsWidget } from './components/OverdueFollowUpsWidget'
 
 export default function DashboardPage() {
   const { user } = useAuth()
-  const { isManager } = useRole()
-  const { accounts, leads, pendingOrders, activities } = useDashboardStats()
-  const pipeline = usePipelineSummary()
+  const { isManager, isRep } = useRole()
+  const isRepOnly = isRep && !isManager
+
+  // FIELD_REP: scope visits to their own userId so the count reflects personal activity
+  const repId = isRepOnly ? user?.userId : undefined
+  const { accounts, leads, pendingOrders, activities, myVisits } = useDashboardStats({ repId })
+
+  const pipeline = usePipelineSummary({ enabled: isManager })
   const leadFunnel = useLeadFunnelSummary()
   const activitySummary = useActivitySummary()
+
+  // Dashboard description differs by role: REPs see personal context, managers see org-wide
+  const description = isManager
+    ? "Here's what's happening across your field force today."
+    : "Here's a snapshot of your field activity today."
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={`Good ${getTimeOfDay()}, ${user?.fullName?.split(' ')[0] ?? 'there'}`}
-        description="Here's what's happening across your field force today."
+        description={description}
       />
 
-      {/* KPI Stats */}
+      {/* KPI Stats — FIELD_REP sees personal stats; MANAGER/ADMIN sees org-wide */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          label="Total Accounts"
-          value={accounts.data ?? '—'}
-          icon={Building2}
-          loading={accounts.isLoading}
-        />
-        <StatCard
-          label="Total Leads"
-          value={leads.data ?? '—'}
-          icon={Target}
-          loading={leads.isLoading}
-        />
-        <StatCard
-          label="Pending Orders"
-          value={pendingOrders.data ?? '—'}
-          icon={ShoppingCart}
-          loading={pendingOrders.isLoading}
-        />
-        <StatCard
-          label="Activities"
-          value={activities.data ?? '—'}
-          icon={Activity}
-          loading={activities.isLoading}
-        />
+        {isRepOnly ? (
+          // FIELD_REP: personal stats that matter for daily field work
+          <>
+            <StatCard
+              label="My Visits"
+              value={myVisits.data ?? '—'}
+              icon={CalendarCheck}
+              loading={myVisits.isLoading}
+            />
+            <StatCard
+              label="My Activities"
+              value={activities.data ?? '—'}
+              icon={Activity}
+              loading={activities.isLoading}
+            />
+            <StatCard
+              label="Accounts"
+              value={accounts.data ?? '—'}
+              icon={Building2}
+              loading={accounts.isLoading}
+            />
+            <StatCard
+              label="My Leads"
+              value={leads.data ?? '—'}
+              icon={Target}
+              loading={leads.isLoading}
+            />
+          </>
+        ) : (
+          // MANAGER / ADMIN: org-wide overview
+          <>
+            <StatCard
+              label="Total Accounts"
+              value={accounts.data ?? '—'}
+              icon={Building2}
+              loading={accounts.isLoading}
+            />
+            <StatCard
+              label="Total Leads"
+              value={leads.data ?? '—'}
+              icon={Target}
+              loading={leads.isLoading}
+            />
+            <StatCard
+              label="Pending Orders"
+              value={pendingOrders.data ?? '—'}
+              icon={ShoppingCart}
+              loading={pendingOrders.isLoading}
+            />
+            <StatCard
+              label="Activities"
+              value={activities.data ?? '—'}
+              icon={Activity}
+              loading={activities.isLoading}
+            />
+          </>
+        )}
       </div>
 
-      {/* Pipeline chart — full width */}
+      {/* Pipeline chart — MANAGER/ADMIN only: org-level pipeline visibility */}
       {isManager && (
         <PipelineChart
           data={pipeline.data}
@@ -64,7 +107,7 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Lead Funnel + Activity Breakdown — side by side on lg+ */}
+      {/* Lead Funnel + Activity Breakdown — all roles see these (backend scopes REP data) */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <LeadFunnelChart
           data={leadFunnel.data}
@@ -82,6 +125,7 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* Overdue follow-ups — MANAGER/ADMIN only: coaching oversight tool */}
       {isManager && <OverdueFollowUpsWidget />}
     </div>
   )

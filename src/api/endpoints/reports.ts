@@ -14,11 +14,16 @@ import type {
   MyDoctorsRow,
 } from '@/api/app-types'
 
-export function usePipelineSummary() {
+export interface ReportQueryOptions {
+  enabled?: boolean
+}
+
+export function usePipelineSummary({ enabled = true }: ReportQueryOptions = {}) {
   return useQuery({
     queryKey: ['reports', 'pipeline'],
     queryFn: () =>
       client.get<PipelineSummary[]>('/api/v1/pharma/reports/pipeline').then((r) => r.data),
+    enabled,
   })
 }
 
@@ -30,11 +35,12 @@ export function useLeadFunnelSummary() {
   })
 }
 
-export function useInvoiceAgingSummary() {
+export function useInvoiceAgingSummary({ enabled = true }: ReportQueryOptions = {}) {
   return useQuery({
     queryKey: ['reports', 'invoice-aging'],
     queryFn: () =>
       client.get<InvoiceAgingSummary[]>('/api/v1/pharma/reports/invoice-aging').then((r) => r.data),
+    enabled,
   })
 }
 

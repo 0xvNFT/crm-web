@@ -100,8 +100,9 @@ const COLUMNS: Column<Row>[] = [
 
 export default function SalesPerformancePage() {
   const navigate = useNavigate()
-  const { isAdmin, isManager } = useRole()
+  const { isAdmin, isManager, isRep } = useRole()
   const canFilterByRep = isAdmin || isManager
+  const isRepOnly = isRep && !isManager
 
   const [year, setYear]           = useState(CURRENT_YEAR)
   const [month, setMonth]         = useState(CURRENT_MONTH)
@@ -133,8 +134,12 @@ export default function SalesPerformancePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Sales Performance"
-        description="Net sales vs monthly target per rep — achievement % and balance"
+        title={isRepOnly ? 'My Sales Performance' : 'Sales Performance'}
+        description={
+          isRepOnly
+            ? 'Your net sales vs monthly target — achievement % and balance'
+            : 'Net sales vs monthly target per rep — achievement % and balance'
+        }
         actions={
           <Button variant="ghost" size="sm" onClick={() => navigate('/reports/kpi')}>
             <ArrowLeft className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
