@@ -12,7 +12,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -158,7 +158,7 @@ export default function OrderFormPage() {
 
           <div className="space-y-1">
             <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" placeholder="Order notes..." rows={3} {...register('notes')} />
+            <TextareaWithCounter id="notes" placeholder="Order notes..." rows={3} maxLength={2000} {...register('notes')} />
           </div>
         </div>
 

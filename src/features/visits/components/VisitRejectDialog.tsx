@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRejectVisit } from '@/api/endpoints/visits'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { rejectVisitSchema, type RejectVisitFormData } from '@/schemas/visits'
@@ -51,10 +51,11 @@ export function VisitRejectDialog({ open, visitId, onClose }: VisitRejectDialogP
             <Label className="text-xs font-medium text-muted-foreground">
               Rejection Reason <span className="text-destructive">*</span>
             </Label>
-            <Textarea
+            <TextareaWithCounter
               {...register('reason')}
               placeholder="Explain what needs to be corrected…"
               rows={3}
+              maxLength={2000}
               autoFocus
             />
             {errors.reason && (

@@ -13,7 +13,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { materialEditSchema, type MaterialEditFormData } from '@/schemas/materials'
 import { formatDate } from '@/utils/formatters'
@@ -238,7 +238,7 @@ export default function MaterialDetailPage() {
                 <DateInput {...register('expirationDate')} />
               </FormRow>
               <FormRow label="Description" error={errors.description?.message} className="sm:col-span-2">
-                <Textarea {...register('description')} rows={3} />
+                <TextareaWithCounter {...register('description')} rows={3} maxLength={2000} />
               </FormRow>
             </div>
           </div>

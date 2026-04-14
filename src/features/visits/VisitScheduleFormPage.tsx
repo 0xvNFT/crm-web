@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
@@ -154,17 +154,19 @@ export default function VisitScheduleFormPage() {
           <h2 className="text-sm font-semibold text-foreground">Call Details</h2>
           <div className="space-y-4">
             <FormRow label="Call Objectives" error={errors.callObjectives?.message}>
-              <Textarea
+              <TextareaWithCounter
                 {...register('callObjectives')}
                 placeholder="What do you aim to achieve in this visit?"
                 rows={3}
+                maxLength={2000}
               />
             </FormRow>
             <FormRow label="Notes" error={errors.notes?.message}>
-              <Textarea
+              <TextareaWithCounter
                 {...register('notes')}
                 placeholder="Any additional notes…"
                 rows={2}
+                maxLength={2000}
               />
             </FormRow>
           </div>

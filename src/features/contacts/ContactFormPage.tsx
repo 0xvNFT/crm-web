@@ -15,7 +15,7 @@ import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
@@ -327,9 +327,10 @@ export default function ContactFormPage() {
         {/* Notes */}
         <div className="rounded-xl border bg-background p-5 space-y-2">
           <Label className="text-sm font-semibold text-foreground">Notes</Label>
-          <Textarea
+          <TextareaWithCounter
             {...register('notes')}
             rows={3}
+            maxLength={2000}
             placeholder="Any additional notes about this contact…"
           />
         </div>
