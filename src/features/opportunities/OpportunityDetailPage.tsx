@@ -13,7 +13,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -314,7 +314,7 @@ export default function OpportunityDetailPage() {
 
           <div className="rounded-xl border bg-background p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Description</h2>
-            <Textarea {...register('description')} rows={4} placeholder="Notes about this opportunity…" />
+            <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Notes about this opportunity…" />
           </div>
 
           <div className="flex items-center gap-2 justify-end">

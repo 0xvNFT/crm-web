@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { toast } from '@/hooks/useToast'
@@ -217,7 +217,7 @@ function QuoteEditForm({ quoteId, defaultValues, initialAccountName, initialCont
 
         <div className="space-y-1">
           <Label htmlFor="notes">Notes</Label>
-          <Textarea id="notes" placeholder="Quote notes..." rows={3} {...register('notes')} />
+          <TextareaWithCounter id="notes" placeholder="Quote notes..." rows={3} maxLength={2000} {...register('notes')} />
         </div>
       </div>
 

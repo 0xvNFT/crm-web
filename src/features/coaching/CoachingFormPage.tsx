@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -215,12 +215,12 @@ function CoachingForm({ note, isEdit }: { note?: PharmaCoachingNote; isEdit: boo
         <FormSection title="Feedback">
           <div className="sm:col-span-2">
             <FormRow label="Detailed Feedback" required={!isEdit} error={(errors as Record<string, { message?: string }>).detailedFeedback?.message}>
-              <Textarea {...register('detailedFeedback')} rows={4} placeholder="Detailed observations and feedback…" />
+              <TextareaWithCounter {...register('detailedFeedback')} rows={4} maxLength={2000} placeholder="Detailed observations and feedback…" />
             </FormRow>
           </div>
           <div className="sm:col-span-2">
             <FormRow label="Summary" error={errors.summaryOfFeedback?.message}>
-              <Textarea {...register('summaryOfFeedback')} rows={2} placeholder="Brief summary…" />
+              <TextareaWithCounter {...register('summaryOfFeedback')} rows={2} maxLength={2000} placeholder="Brief summary…" />
             </FormRow>
           </div>
         </FormSection>

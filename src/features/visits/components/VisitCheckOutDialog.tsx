@@ -4,7 +4,7 @@ import { useCheckOutVisit } from '@/api/endpoints/visits'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { checkOutSchema, type CheckOutFormData } from '@/schemas/visits'
@@ -61,18 +61,20 @@ export function VisitCheckOutDialog({ open, visitId, onClose }: VisitCheckOutDia
           </div>
           <div className="space-y-1">
             <Label className="text-xs font-medium text-muted-foreground">Key Discussion Points</Label>
-            <Textarea
+            <TextareaWithCounter
               {...register('keyDiscussionPoints')}
               placeholder="What was discussed?"
               rows={2}
+              maxLength={2000}
             />
           </div>
           <div className="space-y-1">
             <Label className="text-xs font-medium text-muted-foreground">Customer Feedback</Label>
-            <Textarea
+            <TextareaWithCounter
               {...register('customerFeedback')}
               placeholder="Any feedback from the customer?"
               rows={2}
+              maxLength={2000}
             />
           </div>
           <div className="flex justify-end gap-2">

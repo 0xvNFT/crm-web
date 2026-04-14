@@ -13,7 +13,7 @@ import { activitySchema, type ActivityFormData } from '@/schemas/activities'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -210,7 +210,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
                   <DateInput {...register('followUpDate')} />
                 </FormRow>
                 <FormRow label="Follow-up Notes" error={errors.followUpNotes?.message} className="sm:col-span-2">
-                  <Textarea {...register('followUpNotes')} rows={2} placeholder="Notes for the follow-up…" />
+                  <TextareaWithCounter {...register('followUpNotes')} rows={2} maxLength={2000} placeholder="Notes for the follow-up…" />
                 </FormRow>
               </>
             )}
@@ -219,7 +219,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
 
         <div className="rounded-xl border bg-background p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Description</h2>
-          <Textarea {...register('description')} rows={4} placeholder="Details about this activity…" />
+          <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Details about this activity…" />
         </div>
 
         <div className="flex items-center gap-2 justify-end">

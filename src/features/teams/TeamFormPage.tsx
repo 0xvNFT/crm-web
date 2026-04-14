@@ -6,7 +6,7 @@ import { useCreateTeam, useUpdateTeam, useTeam } from '@/api/endpoints/teams'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -102,7 +102,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
           </FormRow>
           <div className="sm:col-span-2">
             <FormRow label="Description" error={errors.description?.message}>
-              <Textarea {...register('description')} placeholder="Optional description" rows={3} />
+              <TextareaWithCounter {...register('description')} placeholder="Optional description" rows={3} maxLength={2000} />
             </FormRow>
           </div>
         </FormSection>

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { FormRow } from '@/components/shared/FormRow'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -121,7 +121,7 @@ export default function TerritoryFormPage() {
           </FormRow>
           <div className="sm:col-span-2">
             <FormRow label="Description" error={errors.description?.message}>
-              <Textarea {...register('description')} placeholder="Optional description" rows={3} />
+              <TextareaWithCounter {...register('description')} placeholder="Optional description" rows={3} maxLength={2000} />
             </FormRow>
           </div>
         </FormSection>

@@ -10,7 +10,7 @@ import { affiliationSchema, type AffiliationFormData } from '@/schemas/contacts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -176,7 +176,7 @@ function AddAffiliationDialog({
           </div>
 
           <FormRow label="Notes" error={errors.notes?.message}>
-            <Textarea {...register('notes')} rows={2} placeholder="Any notes about this affiliation…" />
+            <TextareaWithCounter {...register('notes')} rows={2} maxLength={2000} placeholder="Any notes about this affiliation…" />
           </FormRow>
 
           <CheckboxField label="Set as primary affiliation" id="isPrimary" {...register('isPrimary')} />

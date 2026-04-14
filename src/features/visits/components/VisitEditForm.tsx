@@ -9,7 +9,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { parseApiError } from '@/utils/errors'
@@ -146,10 +146,10 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
             <Input {...register('scheduledEnd')} type="datetime-local" />
           </FormRow>
           <FormRow label="Call Objectives" error={errors.callObjectives?.message} className="sm:col-span-2">
-            <Textarea {...register('callObjectives')} rows={2} />
+            <TextareaWithCounter {...register('callObjectives')} rows={2} maxLength={2000} />
           </FormRow>
           <FormRow label="Notes" error={errors.notes?.message} className="sm:col-span-2">
-            <Textarea {...register('notes')} rows={2} />
+            <TextareaWithCounter {...register('notes')} rows={2} maxLength={2000} />
           </FormRow>
           <FormRow label="Opportunity" error={errors.opportunityId?.message} className="sm:col-span-2">
             <Controller
