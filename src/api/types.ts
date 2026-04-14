@@ -2345,6 +2345,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/materials/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search materials by title (paginated) */
+        get: operations["search_8"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/materials/current": {
         parameters: {
             query?: never;
@@ -2370,7 +2387,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search leads by name or company */
-        get: operations["search_8"];
+        get: operations["search_9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2404,7 +2421,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search invoices by invoice number or subject */
-        get: operations["search_9"];
+        get: operations["search_10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2506,7 +2523,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search coaching notes by title — ADMIN/MANAGER only */
-        get: operations["search_10"];
+        get: operations["search_11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2591,7 +2608,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search activities by subject */
-        get: operations["search_11"];
+        get: operations["search_12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2676,7 +2693,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search accounts by name */
-        get: operations["search_12"];
+        get: operations["search_13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4981,8 +4998,8 @@ export interface components {
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
             unpaged?: boolean;
+            paged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -8138,6 +8155,7 @@ export interface operations {
     getAll_12: {
         parameters: {
             query: {
+                feedbackType?: string;
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;
@@ -9707,6 +9725,29 @@ export interface operations {
             };
         };
     };
+    search_8: {
+        parameters: {
+            query: {
+                q: string;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagePharmaMaterialResponse"];
+                };
+            };
+        };
+    };
     getCurrent: {
         parameters: {
             query: {
@@ -9729,7 +9770,7 @@ export interface operations {
             };
         };
     };
-    search_8: {
+    search_9: {
         parameters: {
             query: {
                 q: string;
@@ -9776,7 +9817,7 @@ export interface operations {
             };
         };
     };
-    search_9: {
+    search_10: {
         parameters: {
             query: {
                 q: string;
@@ -9906,7 +9947,7 @@ export interface operations {
             };
         };
     };
-    search_10: {
+    search_11: {
         parameters: {
             query: {
                 q: string;
@@ -10024,7 +10065,7 @@ export interface operations {
             };
         };
     };
-    search_11: {
+    search_12: {
         parameters: {
             query: {
                 q: string;
@@ -10141,7 +10182,7 @@ export interface operations {
             };
         };
     };
-    search_12: {
+    search_13: {
         parameters: {
             query: {
                 q: string;

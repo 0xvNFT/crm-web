@@ -9,17 +9,24 @@ import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import type { PharmaCoachingNote } from '@/api/app-types'
 
+const COACHING_FILTERS: FilterDef[] = [
+  { param: 'feedbackType', label: 'Feedback Type', configKey: 'coaching.feedbackType' },
+]
+
+const FILTER_KEYS = ['feedbackType']
+
 const columns: Column<PharmaCoachingNote>[] = [
-  { header: 'Title', accessor: (row) => row.noteTitle ?? '—' },
-  { header: 'Rep', accessor: (row) => row.salesRepName ?? '—' },
-  { header: 'Coach', accessor: (row) => row.coachName ?? '—' },
-  { header: 'Feedback Type', accessor: (row) => row.feedbackType ? formatLabel(row.feedbackType) : '—' },
-  { header: 'Date', accessor: (row) => formatDate(row.dateProvided) },
+  { header: 'Title',         accessor: 'noteTitle',    sortable: true, cell: (row) => row.noteTitle ?? '—' },
+  { header: 'Rep',           accessor: 'salesRepName', cell: (row) => row.salesRepName ?? '—' },
+  { header: 'Coach',         accessor: 'coachName',    cell: (row) => row.coachName ?? '—' },
+  { header: 'Feedback Type', accessor: 'feedbackType', sortable: true, cell: (row) => row.feedbackType ? formatLabel(row.feedbackType) : '—' },
+  { header: 'Date',          accessor: 'dateProvided', sortable: true, cell: (row) => formatDate(row.dateProvided) },
   {
     header: 'Follow-up',
     accessor: (row) => {
@@ -33,13 +40,16 @@ const columns: Column<PharmaCoachingNote>[] = [
 export default function CoachingListPage() {
   const navigate = useNavigate()
   const { isManager } = useRole()
-  const { page, goToPage } = useListParams([])
+  const { page, filters, goToPage, setFilter, clearFilters } = useListParams(FILTER_KEYS)
 
-  const listQuery   = useCoachingNotes(page)
+  const listQuery   = useCoachingNotes(page, 20, filters)
   const { query, debouncedQuery, setQuery, isSearching, resolve } = useListSearch<PharmaCoachingNote>(goToPage)
   const searchQuery = useCoachingSearch(debouncedQuery)
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
+
+  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
+  function handleFilterClear() { clearFilters() }
 
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
@@ -65,6 +75,15 @@ export default function CoachingListPage() {
         placeholder="Search by title…"
         className="max-w-sm"
       />
+
+      {!isSearching && (
+        <FilterBar
+          filters={COACHING_FILTERS}
+          values={filters}
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+        />
+      )}
 
       <DataTable
         columns={columns}

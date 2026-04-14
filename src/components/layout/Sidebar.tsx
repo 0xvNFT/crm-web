@@ -34,18 +34,26 @@ interface NavItem {
 
 // No roles array = visible to all authenticated users.
 // roles array = visible only to those roles.
-// CSR sees: Accounts, Contacts, Orders, Invoices, Products, Materials (no Leads/Quotes/Visits/Activities/Opportunities/Territories/Teams/Reports)
+// Sidebar ordered by pharma field force workflow:
+//   Prospecting (Leads) → Customer Base (Accounts, Contacts) →
+//   Pipeline (Opportunities, Visits, Activities) →
+//   Commercial (Quotes, Orders, Invoices)
+// CSR sees: Accounts, Contacts, Orders, Invoices, Products, Materials
 // READ_ONLY sees everything a non-admin user sees.
 const NAV_MAIN: NavItem[] = [
   { to: '/dashboard',     label: 'Dashboard',     icon: LayoutDashboard },
+  // Prospecting
+  { to: '/leads',         label: 'Leads',         icon: Target,      roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  // Customer base
   { to: '/accounts',      label: 'Accounts',      icon: Building2 },
   { to: '/contacts',      label: 'Contacts',      icon: Users },
-  { to: '/leads',         label: 'Leads',         icon: Target,      roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
-  { to: '/orders',        label: 'Orders',        icon: ShoppingCart },
-  { to: '/quotes',        label: 'Quotes',        icon: FileText,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
-  { to: '/activities',    label: 'Activities',    icon: Activity,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  // Pipeline management
   { to: '/opportunities', label: 'Opportunities', icon: TrendingUp,  roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/visits',        label: 'Visits',        icon: MapPin,      roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/activities',    label: 'Activities',    icon: Activity,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  // Commercial documents
+  { to: '/quotes',        label: 'Quotes',        icon: FileText,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/orders',        label: 'Orders',        icon: ShoppingCart },
   { to: '/invoices',      label: 'Invoices',      icon: Receipt },
 ]
 
@@ -54,12 +62,12 @@ const NAV_MANAGER: NavItem[] = [
   { to: '/territories', label: 'Territories', icon: MapPin,        roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'READ_ONLY'] },
   // Teams: all non-CSR roles can view
   { to: '/teams',       label: 'Teams',       icon: Users2,        roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
-  // Products/Materials: all roles including CSR can view
+  // Catalog: all roles including CSR can view
   { to: '/products',    label: 'Products',    icon: Package,       roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] },
   { to: '/materials',   label: 'Materials',   icon: FileText,      roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] },
-  // Coaching: MANAGER+ only (write) — detail view is all roles but list is gated
+  // People development: MANAGER+ only
   { to: '/coaching',    label: 'Coaching',    icon: GraduationCap, roles: ['ADMIN', 'MANAGER'] },
-  // Reports/KPI: all non-CSR roles
+  // Analytics: all non-CSR roles
   { to: '/reports',              label: 'Reports',     icon: BarChart3,  roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/reports/kpi',          label: 'KPI Reports', icon: Target,     roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/reports/kpi/my-doctors', label: 'My Doctors',  icon: BookUser,   roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
