@@ -10,8 +10,8 @@ import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatDate } from '@/utils/formatters'
@@ -25,7 +25,7 @@ const VISIT_FILTERS: FilterDef[] = [
 const FILTER_KEYS = ['visitType', 'status']
 
 const ALL_COLUMNS: Column<PharmaFieldVisit>[] = [
-  { header: 'Visit #', accessor: 'visitNumber', sortable: true },
+  { header: 'Visit #',   accessor: 'visitNumber', sortable: true, cell: (row) => <span className="font-medium text-foreground tabular-nums">{row.visitNumber ?? '—'}</span> },
   {
     header: 'Subject',
     accessor: (row) => (
@@ -37,16 +37,10 @@ const ALL_COLUMNS: Column<PharmaFieldVisit>[] = [
       </div>
     ),
   },
-  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
-  {
-    header: 'Rep',
-    accessor: (row) => row.assignedRepName ?? '—',
-  },
-  {
-    header: 'Status',
-    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
-  },
-  { header: 'Scheduled', accessor: (row) => formatDate(row.scheduledStart), sortable: false },
+  { header: 'Account',   accessor: (row) => row.accountName ?? '—' },
+  { header: 'Rep',       accessor: (row) => row.assignedRepName ?? '—' },
+  { header: 'Status',    accessor: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
+  { header: 'Scheduled', accessor: (row) => <span className="text-muted-foreground tabular-nums">{formatDate(row.scheduledStart)}</span> },
 ]
 
 export default function VisitListPage() {
@@ -62,58 +56,67 @@ export default function VisitListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title={title}
         description="Field visit records and check-in/check-out activity"
         actions={
           isRep ? (
-            <Button size="sm" onClick={() => navigate('/visits/new')}>
-              <Plus className="h-4 w-4 mr-1.5" />
+            <Button size="sm" onClick={() => navigate('/visits/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
               Schedule Visit
             </Button>
           ) : undefined
         }
       />
 
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search by visit # or subject…"
-        className="max-w-sm"
-      />
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by visit # or subject…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={VISIT_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'visit' : 'visits'}
+            </span>
+          )}
+        </div>
 
-      {!isSearching && (
-        <FilterBar
-          filters={VISIT_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/visits/${row.id}`)}
-        empty={
-          isSearching
-            ? { icon: MapPin, title: `No visits found for "${query}"`, description: 'Try a different search term.' }
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/visits/${row.id}`)}
+          empty={isSearching
+            ? { icon: MapPin, title: `No visits match "${query}"`, description: 'Try a different search term.' }
             : { icon: MapPin, title: emptyTitle, description: emptyDescription }
-        }
-        totalElements={totalElements}
-      />
+          }
+        />
 
-      {!isSearching && (
-        <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
-      )}
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

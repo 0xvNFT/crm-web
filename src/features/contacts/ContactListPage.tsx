@@ -8,8 +8,8 @@ import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatLabel } from '@/utils/formatters'
@@ -35,11 +35,8 @@ const columns: Column<PharmaContact>[] = [
   { header: 'Type', accessor: 'contactType', sortable: true, cell: (row) => formatLabel(row.contactType) },
   { header: 'Specialty', accessor: 'specialty', sortable: true, cell: (row) => row.specialty ?? '—' },
   { header: 'Account', accessor: (row) => row.accountName ?? '—' },
-  { header: 'Mobile', accessor: (row) => row.mobile ?? row.phone ?? '—' },
-  {
-    header: 'Status',
-    accessor: (row) => <StatusBadge status={row.status ?? 'active'} />,
-  },
+  { header: 'Mobile', accessor: (row) => <span className="text-muted-foreground tabular-nums">{row.mobile ?? row.phone ?? '—'}</span> },
+  { header: 'Status', accessor: (row) => <StatusBadge status={row.status ?? 'active'} /> },
 ]
 
 const FILTER_KEYS = ['contactType', 'status']
@@ -54,49 +51,65 @@ export default function ContactListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Contacts"
         description="Doctors, pharmacists, and healthcare professionals"
         actions={
-          <Button size="sm" onClick={() => navigate('/contacts/new')}>
-            <Plus className="h-4 w-4 mr-1.5" />
+          <Button size="sm" onClick={() => navigate('/contacts/new')} className="h-8 gap-1.5 text-xs font-medium">
+            <Plus className="h-3.5 w-3.5" strokeWidth={2} />
             New Contact
           </Button>
         }
       />
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search by name…"
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={CONTACT_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={CONTACT_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'contact' : 'contacts'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/contacts/${row.id}`)}
+          empty={isSearching
+            ? { icon: Users, title: `No contacts match "${query}"`, description: 'Try a different search term.' }
+            : { icon: Users, title: 'No contacts yet', description: 'Add your first contact to get started.' }
+          }
         />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/contacts/${row.id}`)}
-        empty={isSearching
-          ? { icon: Users, title: `No contacts found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: Users, title: 'No contacts yet', description: 'Add your first contact to get started.' }
-        }
-        totalElements={totalElements}
-      />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

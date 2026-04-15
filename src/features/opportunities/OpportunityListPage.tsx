@@ -18,20 +18,20 @@ import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import type { PharmaOpportunity } from '@/api/app-types'
 
 const OPPORTUNITY_FILTERS: FilterDef[] = [
-  { param: 'status',      label: 'Status',    configKey: 'opportunity.status' },
-  { param: 'salesStage',  label: 'Stage',     configKey: 'opportunity.salesStage' },
+  { param: 'status',     label: 'Status', configKey: 'opportunity.status' },
+  { param: 'salesStage', label: 'Stage',  configKey: 'opportunity.salesStage' },
 ]
 
 const FILTER_KEYS = ['status', 'salesStage']
 
 const ALL_COLUMNS: Column<PharmaOpportunity>[] = [
-  { header: 'Topic',    accessor: 'topic', sortable: true },
-  { header: 'Account',  accessor: (row) => row.accountName ?? '—' },
-  { header: 'Stage',    accessor: (row) => row.salesStage ? formatLabel(row.salesStage) : '—' },
-  { header: 'Status',   accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
-  { header: 'Revenue',  accessor: (row) => row.estRevenue != null ? formatCurrency(row.estRevenue) : '—' },
-  { header: 'Close',    accessor: (row) => formatDate(row.estCloseDate), sortable: false },
-  { header: 'Owner',    accessor: (row) => row.ownerName ?? '—' },
+  { header: 'Topic',   accessor: 'topic',  sortable: true, cell: (row) => <span className="font-medium text-foreground">{row.topic ?? '—'}</span> },
+  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
+  { header: 'Stage',   accessor: (row) => row.salesStage ? formatLabel(row.salesStage) : '—' },
+  { header: 'Status',  accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
+  { header: 'Revenue', accessor: (row) => <span className="tabular-nums">{row.estRevenue != null ? formatCurrency(row.estRevenue) : '—'}</span> },
+  { header: 'Close',   accessor: (row) => <span className="text-muted-foreground tabular-nums">{formatDate(row.estCloseDate)}</span> },
+  { header: 'Owner',   accessor: (row) => row.ownerName ?? '—' },
 ]
 
 export default function OpportunityListPage() {
@@ -47,62 +47,67 @@ export default function OpportunityListPage() {
 
   const { isLoading, isError, error, data: opportunities, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title={title}
         description="Track your pipeline and close deals"
         actions={
           !isReadOnly ? (
-            <Button size="sm" onClick={() => navigate('/opportunities/new')}>
-              <Plus className="h-4 w-4 mr-1.5" />
+            <Button size="sm" onClick={() => navigate('/opportunities/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
               New Opportunity
             </Button>
           ) : undefined
         }
       />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder="Search opportunities…"
-          className="max-w-sm"
-        />
-        {!isSearching && (
-          <FilterBar
-            filters={OPPORTUNITY_FILTERS}
-            values={filters}
-            onChange={handleFilterChange}
-            onClear={handleFilterClear}
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search opportunities…"
+            className="w-60 shrink-0"
           />
+          {!isSearching && (
+            <FilterBar
+              filters={OPPORTUNITY_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'opportunity' : 'opportunities'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={opportunities}
+          onRowClick={(row) => navigate(`/opportunities/${row.id}`)}
+          empty={isSearching
+            ? { icon: TrendingUp, title: `No opportunities match "${query}"`, description: 'Try a different search term.' }
+            : { icon: TrendingUp, title: emptyTitle, description: emptyDescription }
+          }
+        />
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
         )}
       </div>
-
-      <DataTable
-        columns={columns}
-        data={opportunities}
-        onRowClick={(row) => navigate(`/opportunities/${row.id}`)}
-        empty={isSearching
-          ? { icon: TrendingUp, title: `No opportunities found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: TrendingUp, title: emptyTitle, description: emptyDescription }
-        }
-        totalElements={totalElements}
-      />
-
-      {!isSearching && (
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          onChange={goToPage}
-        />
-      )}
     </div>
   )
 }

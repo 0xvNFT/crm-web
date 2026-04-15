@@ -23,23 +23,12 @@ const TERRITORY_FILTERS: FilterDef[] = [
 const FILTER_KEYS = ['region', 'status']
 
 const columns: Column<PharmaTerritory>[] = [
-  { header: 'Code', accessor: 'territoryCode', sortable: true },
-  { header: 'Name', accessor: 'territoryName', sortable: true },
-  { header: 'Region', accessor: 'region', sortable: true },
-  {
-    header: 'Status',
-    accessor: (row) => (
-      <StatusBadge status={row.status ?? 'active'} />
-    ),
-  },
-  {
-    header: 'Primary Rep',
-    accessor: (row) => row.primaryRepName ?? '—',
-  },
-  {
-    header: 'Accounts',
-    accessor: (row) => String(row.totalAccountsCount ?? 0),
-  },
+  { header: 'Code',        accessor: 'territoryCode', sortable: true, cell: (row) => <span className="font-medium text-foreground tabular-nums">{row.territoryCode ?? '—'}</span> },
+  { header: 'Name',        accessor: 'territoryName', sortable: true },
+  { header: 'Region',      accessor: 'region',        sortable: true },
+  { header: 'Status',      accessor: (row) => <StatusBadge status={row.status ?? 'active'} /> },
+  { header: 'Primary Rep', accessor: (row) => row.primaryRepName ?? '—' },
+  { header: 'Accounts',    accessor: (row) => <span className="tabular-nums">{String(row.totalAccountsCount ?? 0)}</span> },
 ]
 
 export default function TerritoryListPage() {
@@ -53,52 +42,67 @@ export default function TerritoryListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Territories"
         description="Manage your sales territories and assignments"
         actions={
           isManager && !isReadOnly ? (
-            <Button size="sm" onClick={() => navigate('/territories/new')}>
-              <Plus className="h-4 w-4 mr-1.5" />
+            <Button size="sm" onClick={() => navigate('/territories/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
               New Territory
             </Button>
           ) : undefined
         }
       />
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search territories…"
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={TERRITORY_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/territories/${row.id}`)}
-        empty={
-          isSearching
-            ? { icon: MapPin, title: `No territories found for "${query}"`, description: 'Try a different search term.' }
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search territories…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={TERRITORY_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'territory' : 'territories'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/territories/${row.id}`)}
+          empty={isSearching
+            ? { icon: MapPin, title: `No territories match "${query}"`, description: 'Try a different search term.' }
             : { icon: MapPin, title: 'No territories yet', description: 'Create your first territory to organize accounts and reps.' }
-        }
-        totalElements={totalElements}
-      />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+          }
+        />
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
