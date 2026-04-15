@@ -100,7 +100,7 @@ function NavGroup({
 
   return (
     <div className="space-y-0.5">
-      <p className="px-3 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-widest text-white/30 first:pt-0">
+      <p className="px-3 pb-1 pt-4 text-[9px] font-semibold uppercase tracking-[0.12em] text-white/25 first:pt-0">
         {label}
       </p>
       {visible.map((item) => (
@@ -110,10 +110,10 @@ function NavGroup({
           onClick={onNavigate}
           className={({ isActive }) =>
             cn(
-              'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              'flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
               isActive
-                ? 'bg-white text-auth-panel'
-                : 'text-white/60 hover:bg-white/10 hover:text-white'
+                ? 'bg-white/12 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]'
+                : 'text-white/55 hover:bg-white/8 hover:text-white/90'
             )
           }
         >
@@ -147,7 +147,7 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   return (
     <div className="flex h-full flex-col bg-auth-panel">
       {/* Logo */}
-      <div className="flex h-14 shrink-0 items-center gap-2.5 px-4">
+      <div className="flex h-12 shrink-0 items-center gap-2.5 px-4 border-b border-white/8">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-xs font-bold text-white select-none">
           C
         </span>
@@ -164,7 +164,7 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
       </nav>
 
       {/* User + Logout */}
-      <div className="shrink-0 border-t border-white/10 px-2 py-3">
+      <div className="shrink-0 border-t border-white/8 px-2 py-2.5">
         <div className="flex items-center gap-2.5 rounded-md px-3 py-2">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs font-semibold text-white select-none">
             {user?.fullName ? getInitials(user.fullName) : '?'}

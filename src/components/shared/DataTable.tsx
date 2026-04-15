@@ -72,7 +72,7 @@ export function DataTable<T extends { id?: string }>({
   className,
   emptyMessage = 'No records found.',
   empty,
-  totalElements,
+  totalElements: _totalElements,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -90,12 +90,12 @@ export function DataTable<T extends { id?: string }>({
   const rows = table.getRowModel().rows
 
   return (
-    <div className={cn('w-full space-y-1', className)}>
-      <div className="overflow-auto rounded-lg border">
+    <div className={cn('w-full', className)}>
+      <div className="overflow-auto">
         <table className="w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-b bg-muted/50">
+              <tr key={hg.id} className="border-b border-border/60 bg-muted/30">
                 {hg.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
@@ -105,7 +105,7 @@ export function DataTable<T extends { id?: string }>({
                     <th
                       key={header.id}
                       className={cn(
-                        'px-4 py-3 text-left text-xs font-semibold text-muted-foreground',
+                        'px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70',
                         canSort && 'cursor-pointer select-none hover:text-foreground transition-colors',
                         meta?.className
                       )}
@@ -114,7 +114,10 @@ export function DataTable<T extends { id?: string }>({
                       <span className="inline-flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {canSort && (
-                          <span className="text-muted-foreground/50">
+                          <span className={cn(
+                            'transition-colors',
+                            sorted ? 'text-foreground/60' : 'text-muted-foreground/30'
+                          )}>
                             {sorted === 'asc' ? (
                               <ChevronUp className="h-3 w-3" />
                             ) : sorted === 'desc' ? (
@@ -155,14 +158,15 @@ export function DataTable<T extends { id?: string }>({
                   key={row.id}
                   onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                   className={cn(
-                    'border-b transition-colors last:border-0 hover:bg-muted/40',
+                    'border-b border-border/40 transition-colors last:border-0',
+                    'hover:bg-accent/50',
                     onRowClick && 'cursor-pointer'
                   )}
                 >
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as { className?: string } | undefined
                     return (
-                      <td key={cell.id} className={cn('px-4 py-3', meta?.className)}>
+                      <td key={cell.id} className={cn('px-4 py-3 text-sm text-foreground/90', meta?.className)}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     )
@@ -173,14 +177,6 @@ export function DataTable<T extends { id?: string }>({
           </tbody>
         </table>
       </div>
-
-      {rows.length > 0 && (
-        <p className="px-1 text-xs text-muted-foreground">
-          {totalElements !== undefined
-            ? `Showing ${rows.length} of ${totalElements} results`
-            : `${rows.length} ${rows.length === 1 ? 'record' : 'records'}`}
-        </p>
-      )}
     </div>
   )
 }

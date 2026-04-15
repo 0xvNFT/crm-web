@@ -175,7 +175,7 @@ export function TopNav() {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-4 lg:px-6">
+    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border/60 bg-background/95 backdrop-blur-sm px-4 lg:px-6 shadow-[0_1px_0_0_hsl(var(--color-border)/0.5)]">
       {/* Left — hamburger (mobile) + breadcrumb (desktop) */}
       <div className="flex items-center gap-3">
         <button

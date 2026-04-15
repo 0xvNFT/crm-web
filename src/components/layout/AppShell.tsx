@@ -15,7 +15,7 @@ export function AppShell() {
           <Sidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
             <TopNav />
-            <main className="flex-1 overflow-y-auto bg-secondary p-6">
+            <main className="flex-1 overflow-y-auto bg-secondary px-6 py-5">
               <Outlet />
             </main>
           </div>

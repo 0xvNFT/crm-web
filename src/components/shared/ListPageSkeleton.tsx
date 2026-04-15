@@ -9,32 +9,38 @@ interface ListPageSkeletonProps {
 
 export function ListPageSkeleton({ rows = 8, columns = 5 }: ListPageSkeletonProps) {
   return (
-    <div className="space-y-4" role="status" aria-label="Loading">
+    <div className="space-y-5" role="status" aria-label="Loading">
       {/* Page header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div className="space-y-1.5">
-          <Skeleton className="h-7 w-36" />
-          <Skeleton className="h-4 w-56" />
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-52" />
         </div>
         <Skeleton className="h-8 w-24 rounded-lg" />
       </div>
 
-      {/* Search bar */}
-      <Skeleton className="h-9 w-72 rounded-lg" />
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <Skeleton className="h-8 w-56 rounded-md" />
+          <Skeleton className="h-8 w-28 rounded-md" />
+          <Skeleton className="h-8 w-28 rounded-md" />
+          <Skeleton className="ml-auto h-4 w-20" />
+        </div>
 
-      {/* Table */}
-      <div className="rounded-xl border bg-background overflow-hidden">
         {/* Header row */}
-        <div className="border-b px-4 py-3 grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div className="border-b border-border/60 bg-muted/30 px-4 py-2.5 grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
           {Array.from({ length: columns }).map((_, i) => (
-            <Skeleton key={i} className="h-3.5 w-16" />
+            <Skeleton key={i} className="h-3 w-14" />
           ))}
         </div>
-        {/* Data rows — alternating widths give a natural varied look */}
+
+        {/* Data rows */}
         {Array.from({ length: rows }).map((_, ri) => (
           <div
             key={ri}
-            className="border-b last:border-0 px-4 py-3.5 grid gap-4"
+            className="border-b border-border/40 last:border-0 px-4 py-3 grid gap-4"
             style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
           >
             {Array.from({ length: columns }).map((_, ci) => {
