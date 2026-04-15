@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
+import { cn } from '@/lib/utils'
 
 export interface FilterDef {
   param: string       // query param name sent to backend (e.g. 'accountType', 'status')
@@ -18,9 +19,15 @@ interface FilterSelectProps {
 
 function FilterSelect({ def, value, onChange }: FilterSelectProps) {
   const options = useConfigOptions(def.configKey)
+  const isActive = value !== ''
   return (
     <Select value={value || '__all__'} onValueChange={(v) => onChange(v === '__all__' ? '' : v)}>
-      <SelectTrigger className="h-8 text-xs w-[140px]">
+      <SelectTrigger className={cn(
+        'h-8 text-xs w-[130px] transition-colors',
+        isActive
+          ? 'border-primary/40 bg-primary/5 text-primary font-medium'
+          : 'border-border/60 bg-background text-muted-foreground hover:border-border hover:text-foreground'
+      )}>
         <SelectValue placeholder={def.label} />
       </SelectTrigger>
       <SelectContent>
@@ -47,7 +54,7 @@ export function FilterBar({ filters, values, onChange, onClear, className }: Fil
   const hasActive = useMemo(() => Object.values(values).some((v) => v !== ''), [values])
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className ?? ''}`}>
+    <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {filters.map((f) => (
         <FilterSelect
           key={f.param}
@@ -61,10 +68,10 @@ export function FilterBar({ filters, values, onChange, onClear, className }: Fil
           variant="ghost"
           size="sm"
           onClick={onClear}
-          className="h-8 text-xs text-muted-foreground"
+          className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1"
         >
-          <X className="h-3 w-3 mr-1" />
-          Clear filters
+          <X className="h-3 w-3" strokeWidth={1.5} />
+          Clear
         </Button>
       )}
     </div>

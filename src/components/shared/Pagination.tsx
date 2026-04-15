@@ -12,26 +12,26 @@ export function Pagination({ page, totalPages, onChange, className }: Pagination
   if (totalPages <= 1) return null
 
   return (
-    <div className={cn('flex items-center justify-between px-2 py-4', className)}>
-      <p className="text-sm text-muted-foreground">
+    <div className={cn('flex items-center justify-between px-1 py-3', className)}>
+      <p className="text-xs text-muted-foreground">
         Page {page + 1} of {totalPages}
       </p>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onChange(page - 1)}
           disabled={page === 0}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border/60 bg-background text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-accent hover:text-foreground hover:border-border"
           aria-label="Previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
         </button>
         <button
           onClick={() => onChange(page + 1)}
           disabled={page >= totalPages - 1}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border/60 bg-background text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-accent hover:text-foreground hover:border-border"
           aria-label="Next page"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
         </button>
       </div>
     </div>
