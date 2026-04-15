@@ -10,8 +10,8 @@ import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatCurrency } from '@/utils/formatters'
@@ -24,19 +24,13 @@ const QUOTE_FILTERS: FilterDef[] = [
 const FILTER_KEYS = ['status']
 
 const ALL_COLUMNS: Column<PharmaQuote>[] = [
-  { header: 'Quote #', accessor: (row) => row.quoteNumber ?? '—' },
-  { header: 'Account', accessor: (row) => row.accountName ?? '—' },
-  {
-    header: 'Status',
-    accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—',
-  },
-  {
-    header: 'Total',
-    accessor: (row) => row.totalAmount != null ? formatCurrency(row.totalAmount) : '—',
-  },
+  { header: 'Quote #',      accessor: (row) => <span className="font-medium text-foreground tabular-nums">{row.quoteNumber ?? '—'}</span> },
+  { header: 'Account',      accessor: (row) => row.accountName ?? '—' },
+  { header: 'Status',       accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
+  { header: 'Total',        accessor: (row) => <span className="tabular-nums">{row.totalAmount != null ? formatCurrency(row.totalAmount) : '—'}</span> },
   { header: 'Assigned Rep', accessor: (row) => row.assignedRepName ?? '—' },
-  { header: 'Valid From', accessor: (row) => row.validFrom ? formatDate(row.validFrom) : '—' },
-  { header: 'Created', accessor: (row) => row.createdAt ? formatDate(row.createdAt) : '—' },
+  { header: 'Valid From',   accessor: (row) => <span className="text-muted-foreground tabular-nums">{row.validFrom ? formatDate(row.validFrom) : '—'}</span> },
+  { header: 'Created',      accessor: (row) => <span className="text-muted-foreground tabular-nums">{row.createdAt ? formatDate(row.createdAt) : '—'}</span> },
 ]
 
 export default function QuoteListPage() {
@@ -52,44 +46,64 @@ export default function QuoteListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title={title}
         description="Sales quotes and proposals"
-        actions={<Button onClick={() => navigate('/quotes/new')}>New Quote</Button>}
-      />
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search quotes..."
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={QUOTE_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/quotes/${row.id}`)}
-        empty={isSearching
-          ? { icon: FileText, title: `No quotes found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: FileText, title: emptyTitle, description: emptyDescription }
+        actions={
+          <Button size="sm" onClick={() => navigate('/quotes/new')} className="h-8 gap-1.5 text-xs font-medium">
+            New Quote
+          </Button>
         }
-        totalElements={totalElements}
       />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search quotes…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={QUOTE_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'quote' : 'quotes'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/quotes/${row.id}`)}
+          empty={isSearching
+            ? { icon: FileText, title: `No quotes match "${query}"`, description: 'Try a different search term.' }
+            : { icon: FileText, title: emptyTitle, description: emptyDescription }
+          }
+        />
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

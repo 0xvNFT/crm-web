@@ -25,23 +25,24 @@ function ActiveBadge({ isActive }: { isActive?: boolean }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold',
+        'inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-wide',
         isActive
-          ? 'bg-green-100 text-green-800 border-green-200'
-          : 'bg-red-100 text-red-800 border-red-200'
+          ? 'bg-green-50 text-green-700 border-green-200/80'
+          : 'bg-red-50 text-red-700 border-red-200/80'
       )}
     >
+      <span className={cn('h-1.5 w-1.5 rounded-full flex-shrink-0', isActive ? 'bg-green-500' : 'bg-red-500')} />
       {isActive ? 'Active' : 'Inactive'}
     </span>
   )
 }
 
 const columns: Column<PharmaTeam>[] = [
-  { header: 'Name', accessor: 'name', sortable: true },
-  { header: 'Type', accessor: (row) => row.teamType ?? '—' },
+  { header: 'Name',          accessor: 'name',              sortable: true, cell: (row) => <span className="font-medium text-foreground">{row.name ?? '—'}</span> },
+  { header: 'Type',          accessor: (row) => row.teamType ?? '—' },
   { header: 'Administrator', accessor: (row) => row.administratorName ?? '—' },
-  { header: 'Email', accessor: (row) => row.emailAddress ?? '—' },
-  { header: 'Status', accessor: (row) => <ActiveBadge isActive={row.isActive} /> },
+  { header: 'Email',         accessor: (row) => <span className="text-muted-foreground">{row.emailAddress ?? '—'}</span> },
+  { header: 'Status',        accessor: (row) => <ActiveBadge isActive={row.isActive} /> },
 ]
 
 export default function TeamListPage() {
@@ -55,52 +56,67 @@ export default function TeamListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Teams"
         description="Manage your field force teams"
         actions={
           isManager && !isReadOnly ? (
-            <Button size="sm" onClick={() => navigate('/teams/new')}>
-              <Plus className="h-4 w-4 mr-1.5" />
+            <Button size="sm" onClick={() => navigate('/teams/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
               New Team
             </Button>
           ) : undefined
         }
       />
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search teams…"
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={TEAM_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/teams/${row.id}`)}
-        empty={
-          isSearching
-            ? { icon: Users2, title: `No teams found for "${query}"`, description: 'Try a different search term.' }
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search teams…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={TEAM_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'team' : 'teams'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/teams/${row.id}`)}
+          empty={isSearching
+            ? { icon: Users2, title: `No teams match "${query}"`, description: 'Try a different search term.' }
             : { icon: Users2, title: 'No teams yet', description: 'Create your first team to organize your field reps.' }
-        }
-        totalElements={totalElements}
-      />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+          }
+        />
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

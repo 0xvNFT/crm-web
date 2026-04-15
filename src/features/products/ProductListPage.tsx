@@ -23,12 +23,12 @@ const PRODUCT_FILTERS: FilterDef[] = [
 const FILTER_KEYS = ['status']
 
 const columns: Column<PharmaProduct>[] = [
-  { header: 'Name', accessor: 'name', sortable: true },
-  { header: 'NDC', accessor: 'ndcNumber' },
+  { header: 'Name',         accessor: 'name',        sortable: true, cell: (row) => <span className="font-medium text-foreground">{row.name ?? '—'}</span> },
+  { header: 'NDC',          accessor: 'ndcNumber',   cell: (row) => <span className="text-muted-foreground tabular-nums">{row.ndcNumber ?? '—'}</span> },
   { header: 'Generic Name', accessor: (row) => row.genericName ?? '—' },
-  { header: 'Strength', accessor: (row) => row.strength ?? '—' },
-  { header: 'Unit Price', accessor: (row) => row.unitPrice != null ? formatCurrency(row.unitPrice) : '—' },
-  { header: 'Status', accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
+  { header: 'Strength',     accessor: (row) => row.strength ?? '—' },
+  { header: 'Unit Price',   accessor: (row) => <span className="tabular-nums">{row.unitPrice != null ? formatCurrency(row.unitPrice) : '—'}</span> },
+  { header: 'Status',       accessor: (row) => row.status ? <StatusBadge status={row.status} /> : '—' },
 ]
 
 export default function ProductListPage() {
@@ -42,48 +42,66 @@ export default function ProductListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Products"
         description="Product catalog"
         actions={
           isAdmin ? (
-            <Button onClick={() => navigate('/products/new')}>New Product</Button>
+            <Button size="sm" onClick={() => navigate('/products/new')} className="h-8 gap-1.5 text-xs font-medium">
+              New Product
+            </Button>
           ) : undefined
         }
       />
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search products..."
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={PRODUCT_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search products…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={PRODUCT_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'product' : 'products'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/products/${row.id}`)}
+          empty={isSearching
+            ? { icon: Package, title: `No products match "${query}"`, description: 'Try a different search term.' }
+            : { icon: Package, title: 'No products yet', description: 'Products will appear here once created.' }
+          }
         />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/products/${row.id}`)}
-        empty={isSearching
-          ? { icon: Package, title: `No products found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: Package, title: 'No products yet', description: 'Products will appear here once created.' }
-        }
-        totalElements={totalElements}
-      />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

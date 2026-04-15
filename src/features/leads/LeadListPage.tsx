@@ -25,12 +25,12 @@ const LEAD_FILTERS: FilterDef[] = [
 const FILTER_KEYS = ['leadStatus', 'rating']
 
 const ALL_COLUMNS: Column<PharmaLead>[] = [
-  { header: 'Lead Name', accessor: (row) => `${row.firstName ?? ''} ${row.lastName}`.trim() },
+  { header: 'Lead Name', accessor: (row) => <span className="font-medium text-foreground">{`${row.firstName ?? ''} ${row.lastName}`.trim()}</span> },
   { header: 'Company',   accessor: 'companyName', sortable: true, cell: (row) => row.companyName ?? '—' },
   { header: 'Status',    accessor: 'leadStatus',  sortable: true, cell: (row) => <StatusBadge status={row.leadStatus ?? 'unknown'} /> },
   { header: 'Rating',    accessor: 'rating',      sortable: true, cell: (row) => row.rating ?? '—' },
   { header: 'Owner',     accessor: (row) => row.assignedUserName ?? '—' },
-  { header: 'Created',   accessor: 'createdAt',   sortable: true, cell: (row) => formatDate(row.createdAt) },
+  { header: 'Created',   accessor: 'createdAt',   sortable: true, cell: (row) => <span className="text-muted-foreground tabular-nums">{formatDate(row.createdAt)}</span> },
 ]
 
 export default function LeadListPage() {
@@ -46,51 +46,67 @@ export default function LeadListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <PageHeader
-          title={title}
-          description="Potential customers and prospects"
+    <div className="space-y-5">
+      <PageHeader
+        title={title}
+        description="Potential customers and prospects"
+        actions={
+          !isReadOnly ? (
+            <Button size="sm" onClick={() => navigate('/leads/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+              New Lead
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={LEAD_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'lead' : 'leads'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/leads/${row.id}`)}
+          empty={isSearching
+            ? { icon: Users, title: `No leads match "${query}"`, description: 'Try a different search term.' }
+            : { icon: Users, title: emptyTitle, description: emptyDescription }
+          }
         />
-        {!isReadOnly && (
-          <Button onClick={() => navigate('/leads/new')}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            New Lead
-          </Button>
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
         )}
       </div>
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search by name…"
-        className="max-w-sm"
-      />
-      {!isSearching && (
-        <FilterBar
-          filters={LEAD_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/leads/${row.id}`)}
-        empty={isSearching
-          ? { icon: Users, title: `No leads found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: Users, title: emptyTitle, description: emptyDescription }
-        }
-        totalElements={totalElements}
-      />
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
     </div>
   )
 }

@@ -10,8 +10,8 @@ import { Pagination } from '@/components/shared/Pagination'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterBar, type FilterDef } from '@/components/shared/FilterBar'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { SearchInput } from '@/components/ui/search-input'
 import { formatLabel, formatDate } from '@/utils/formatters'
@@ -40,37 +40,16 @@ const ALL_COLUMNS: Column<ActivityRow>[] = [
       <div>
         <p className="font-medium text-foreground">{row.subject}</p>
         {row.activityType && (
-          <p className="text-xs text-muted-foreground">
-            {formatLabel(row.activityType)}
-          </p>
+          <p className="text-xs text-muted-foreground">{formatLabel(row.activityType)}</p>
         )}
       </div>
     ),
   },
-  {
-    header: 'Status',
-    accessor: 'status',
-    sortable: true,
-    cell: (row) => <StatusBadge status={row.status ?? 'unknown'} />,
-  },
-  {
-    header: 'Assigned To',
-    accessor: (row) => row.assignedUserName ?? '—',
-  },
-  {
-    header: 'Due Date',
-    accessor: 'dueDate',
-    sortable: true,
-    cell: (row) => (row.dueDate ? formatDate(row.dueDate) : '—'),
-  },
-  {
-    header: 'Duration',
-    accessor: (row) => (row.durationMinutes != null ? `${row.durationMinutes} min` : '—'),
-  },
-  {
-    header: 'Follow-up',
-    accessor: (row) => (row.followUpRequired ? 'Yes' : 'No'),
-  },
+  { header: 'Status',      accessor: 'status',  sortable: true, cell: (row) => <StatusBadge status={row.status ?? 'unknown'} /> },
+  { header: 'Assigned To', accessor: (row) => row.assignedUserName ?? '—' },
+  { header: 'Due Date',    accessor: 'dueDate', sortable: true, cell: (row) => <span className="text-muted-foreground tabular-nums">{row.dueDate ? formatDate(row.dueDate) : '—'}</span> },
+  { header: 'Duration',    accessor: (row) => row.durationMinutes != null ? `${row.durationMinutes} min` : '—' },
+  { header: 'Follow-up',   accessor: (row) => row.followUpRequired ? 'Yes' : 'No' },
 ]
 
 export default function ActivityListPage() {
@@ -86,53 +65,67 @@ export default function ActivityListPage() {
 
   const { isLoading, isError, error, data, totalPages, totalElements } = resolve(listQuery, searchQuery)
 
-  function handleFilterChange(param: string, value: string) { setFilter(param, value) }
-  function handleFilterClear() { clearFilters() }
-
   if (isLoading && !isSearching) return <ListPageSkeleton />
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title={title}
         description="Manage pharma activities, calls, and meetings"
-        actions={!isReadOnly ? (
-          <Button size="sm" onClick={() => navigate('/activities/new')}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            New Activity
-          </Button>
-        ) : undefined}
-      />
-      
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search activities..."
-        className="max-w-sm"
-      />
-      
-      {!isSearching && (
-        <FilterBar
-          filters={ACTIVITY_FILTERS}
-          values={filters}
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-        />
-      )}
-      
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClick={(row) => navigate(`/activities/${row.id}`)}
-        empty={isSearching
-          ? { icon: Calendar, title: `No activities found for "${query}"`, description: 'Try a different search term.' }
-          : { icon: Calendar, title: emptyTitle, description: emptyDescription }
+        actions={
+          !isReadOnly ? (
+            <Button size="sm" onClick={() => navigate('/activities/new')} className="h-8 gap-1.5 text-xs font-medium">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+              New Activity
+            </Button>
+          ) : undefined
         }
-        totalElements={totalElements}
       />
-      
-      {!isSearching && <Pagination page={page} totalPages={totalPages} onChange={goToPage} />}
+
+      {/* Card surface */}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search activities…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && (
+            <FilterBar
+              filters={ACTIVITY_FILTERS}
+              values={filters}
+              onChange={(param, value) => setFilter(param, value)}
+              onClear={clearFilters}
+            />
+          )}
+          {totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {totalElements.toLocaleString()} {totalElements === 1 ? 'activity' : 'activities'}
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={data}
+          onRowClick={(row) => navigate(`/activities/${row.id}`)}
+          empty={isSearching
+            ? { icon: Calendar, title: `No activities match "${query}"`, description: 'Try a different search term.' }
+            : { icon: Calendar, title: emptyTitle, description: emptyDescription }
+          }
+        />
+
+        {/* Footer — pagination */}
+        {!isSearching && totalPages > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
