@@ -8,6 +8,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
+import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -211,6 +212,7 @@ export default function OrderDetailPage() {
         <DetailRow label="Updated" value={order.updatedAt ? formatDate(order.updatedAt) : null} />
       </Section>
 
+      <EntityNotesSection entityType="PharmaOrder" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaOrder" entityId={id ?? ''} />
 
       {/* Ship dialog */}

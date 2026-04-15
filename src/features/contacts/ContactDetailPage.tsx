@@ -11,6 +11,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
+import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
@@ -272,6 +273,7 @@ export default function ContactDetailPage() {
           <ContactOpportunitiesSection contactId={id ?? ''} />
           <ContactVisitsSection contactId={id ?? ''} />
           <ContactActivitiesSection contactId={id ?? ''} />
+          <EntityNotesSection entityType="PharmaContact" entityId={id ?? ''} />
           <EntityHistorySection entityType="PharmaContact" entityId={id ?? ''} />
         </div>
       )}
