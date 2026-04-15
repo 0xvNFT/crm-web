@@ -94,6 +94,8 @@ export type PagePharmaInvoice      = components['schemas']['PagePharmaInvoiceRes
 export type PagePharmaMaterial     = components['schemas']['PagePharmaMaterialResponse']
 export type PagePharmaCoachingNote = components['schemas']['PagePharmaCoachingNoteResponse']
 export type PagePharmaVisitAudit   = components['schemas']['PagePharmaVisitAuditResponse']
+export type PharmaNote             = components['schemas']['NoteResponse']
+export type PagePharmaNote         = components['schemas']['PageNoteResponse']
 export type PageNotification       = components['schemas']['PageNotification']
 export type PageApprovalRule       = components['schemas']['PageApprovalRule']
 export type AuditEvent             = components['schemas']['AuditEventResponse']
@@ -222,6 +224,11 @@ export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportu
 // Widen config-driven union literals to string — values are validated by backend at runtime
 export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
 export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
+
+// ─── Note request types ───────────────────────────────────────────────────────
+// noteType is config-driven — widened to string to allow future backend additions without breaking the frontend
+export type CreateNoteRequest = Omit<components['schemas']['CreateNoteRequest'], 'noteType'> & { noteType?: string }
+export type UpdateNoteRequest = Omit<components['schemas']['UpdateNoteRequest'], 'noteType'> & { noteType?: string }
 
 // ─── Coaching note request types ─────────────────────────────────────────────
 // feedbackType and reviewedModule are config-driven — widened to string

@@ -13,6 +13,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
+import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -222,6 +223,7 @@ export default function InvoiceDetailPage() {
         <DetailRow label="Updated" value={invoice.updatedAt ? formatDate(invoice.updatedAt) : null} />
       </Section>
 
+      <EntityNotesSection entityType="PharmaInvoice" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaInvoice" entityId={id ?? ''} />
 
       {/* Send dialog */}

@@ -7,6 +7,7 @@ import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
+import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { useRole } from '@/hooks/useRole'
@@ -147,6 +148,7 @@ export default function LeadDetailPage() {
         <DetailField label="Last Updated" value={lead.updatedAt ? formatDate(lead.updatedAt) : null} />
       </DetailSection>
 
+      <EntityNotesSection entityType="PharmaLead" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaLead" entityId={id ?? ''} />
 
       <ConfirmDialog

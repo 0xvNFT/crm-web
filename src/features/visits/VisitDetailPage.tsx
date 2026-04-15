@@ -9,6 +9,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
+import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
@@ -319,6 +320,7 @@ export default function VisitDetailPage() {
         </>
       )}
 
+      <EntityNotesSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaFieldVisit" entityId={id ?? ''} />
 
       {/* ─── Dialogs ──────────────────────────────────────────────────────────── */}
