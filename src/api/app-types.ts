@@ -225,6 +225,13 @@ export type UpdateOpportunityRequest = Omit<components['schemas']['UpdateOpportu
 export type CreateProductRequest = Omit<components['schemas']['CreateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
 export type UpdateProductRequest = Omit<components['schemas']['UpdateProductRequest'], 'status' | 'deaSchedule'> & { status?: string; deaSchedule?: string }
 
+// ─── Tag types ───────────────────────────────────────────────────────────────
+export type PharmaTag           = components['schemas']['TagResponse']
+export type PagePharmaTag       = components['schemas']['PageTagResponse']
+export type CreateTagRequest    = components['schemas']['CreateTagRequest']
+export type UpdateTagRequest    = components['schemas']['UpdateTagRequest']
+export type ApplyTagsRequest    = components['schemas']['ApplyTagsRequest']
+
 // ─── Note request types ───────────────────────────────────────────────────────
 // noteType is config-driven — widened to string to allow future backend additions without breaking the frontend
 export type CreateNoteRequest = Omit<components['schemas']['CreateNoteRequest'], 'noteType'> & { noteType?: string }

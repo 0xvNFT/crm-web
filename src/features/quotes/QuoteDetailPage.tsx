@@ -9,6 +9,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
+import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -172,7 +173,8 @@ export default function QuoteDetailPage() {
         <DetailField label="Last Updated" value={quote.updatedAt ? formatDate(quote.updatedAt) : null} />
       </DetailSection>
 
-      <EntityNotesSection entityType="PharmaQuote" entityId={id ?? ''} />
+      <EntityTagsSection entityType="PharmaQuote" entityId={id ?? ''} />
+          <EntityNotesSection entityType="PharmaQuote" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaQuote" entityId={id ?? ''} />
 
       {/* Convert to Order dialog */}

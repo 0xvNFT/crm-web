@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useProduct } from '@/api/endpoints/products'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
+import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { useRole } from '@/hooks/useRole'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -81,7 +82,8 @@ export default function ProductDetailPage() {
         <DetailField label="DEA Schedule" value={product.deaSchedule} />
       </DetailSection>
 
-      <EntityNotesSection entityType="PharmaProduct" entityId={id ?? ''} />
+      <EntityTagsSection entityType="PharmaProduct" entityId={id ?? ''} />
+          <EntityNotesSection entityType="PharmaProduct" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaProduct" entityId={id ?? ''} />
     </div>
   )
