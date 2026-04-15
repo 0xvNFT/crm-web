@@ -12,6 +12,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
+import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
@@ -332,7 +333,8 @@ export default function OpportunityDetailPage() {
         </form>
       )}
 
-      <EntityNotesSection entityType="PharmaOpportunity" entityId={id ?? ''} />
+      <EntityTagsSection entityType="PharmaOpportunity" entityId={id ?? ''} />
+          <EntityNotesSection entityType="PharmaOpportunity" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaOpportunity" entityId={id ?? ''} />
 
       {/* Stage advance confirmation */}

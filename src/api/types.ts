@@ -76,6 +76,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/tags/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["update_4"];
+        post?: never;
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/rep-targets/{id}": {
         parameters: {
             query?: never;
@@ -86,10 +102,10 @@ export interface paths {
         /** Get rep target by ID */
         get: operations["getById_5"];
         /** Update target values (visits, contacts, calls, sales) */
-        put: operations["update_4"];
+        put: operations["update_5"];
         post?: never;
         /** Delete a rep target */
-        delete: operations["delete"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -105,7 +121,7 @@ export interface paths {
         /** Get quote by ID */
         get: operations["getById_6"];
         /** Update a quote's editable fields (draft/submitted only) */
-        put: operations["update_5"];
+        put: operations["update_6"];
         post?: never;
         delete?: never;
         options?: never;
@@ -123,10 +139,10 @@ export interface paths {
         /** Get product by ID */
         get: operations["getById_7"];
         /** Update an existing product */
-        put: operations["update_6"];
+        put: operations["update_7"];
         post?: never;
         /** Delete a product */
-        delete: operations["delete_1"];
+        delete: operations["delete_2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -142,10 +158,10 @@ export interface paths {
         /** Get order by ID */
         get: operations["getById_9"];
         /** Update an order's editable fields */
-        put: operations["update_7"];
+        put: operations["update_8"];
         post?: never;
         /** Delete an order (ADMIN/MANAGER only) */
-        delete: operations["delete_2"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         patch?: never;
@@ -161,7 +177,7 @@ export interface paths {
         /** Get opportunity by ID */
         get: operations["getById_10"];
         /** Update opportunity details */
-        put: operations["update_8"];
+        put: operations["update_9"];
         post?: never;
         delete?: never;
         options?: never;
@@ -177,9 +193,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["update_9"];
+        put: operations["update_10"];
         post?: never;
-        delete: operations["delete_3"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         patch?: never;
@@ -195,7 +211,7 @@ export interface paths {
         /** Get material by ID */
         get: operations["getById_11"];
         /** Update a draft/pending_approval material (ADMIN/MANAGER only) */
-        put: operations["update_10"];
+        put: operations["update_11"];
         post?: never;
         delete?: never;
         options?: never;
@@ -213,7 +229,7 @@ export interface paths {
         /** Get lead by ID */
         get: operations["getById_12"];
         /** Update lead details */
-        put: operations["update_11"];
+        put: operations["update_12"];
         post?: never;
         delete?: never;
         options?: never;
@@ -231,7 +247,7 @@ export interface paths {
         /** Get invoice by ID */
         get: operations["getById_13"];
         /** Update a draft invoice — subject, dates, addresses (ADMIN/MANAGER only) */
-        put: operations["update_12"];
+        put: operations["update_13"];
         post?: never;
         delete?: never;
         options?: never;
@@ -268,7 +284,7 @@ export interface paths {
         /** Get coaching note by ID — ADMIN/MANAGER/FIELD_REP */
         get: operations["getById_14"];
         /** Update a coaching note — ADMIN/MANAGER only */
-        put: operations["update_13"];
+        put: operations["update_14"];
         post?: never;
         delete?: never;
         options?: never;
@@ -286,10 +302,10 @@ export interface paths {
         /** Get activity by ID */
         get: operations["getById_15"];
         /** Update activity details */
-        put: operations["update_14"];
+        put: operations["update_15"];
         post?: never;
         /** Delete an activity (ADMIN/MANAGER only) */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         patch?: never;
@@ -305,10 +321,10 @@ export interface paths {
         /** Get account by ID */
         get: operations["getById_16"];
         /** Update an existing account */
-        put: operations["update_15"];
+        put: operations["update_16"];
         post?: never;
         /** Delete an account (ADMIN/MANAGER only) */
-        delete: operations["delete_5"];
+        delete: operations["delete_6"];
         options?: never;
         head?: never;
         patch?: never;
@@ -324,10 +340,10 @@ export interface paths {
         /** Get approval rule by ID */
         get: operations["getById_17"];
         /** Update an existing approval rule */
-        put: operations["update_16"];
+        put: operations["update_17"];
         post?: never;
         /** Delete an approval rule */
-        delete: operations["delete_6"];
+        delete: operations["delete_7"];
         options?: never;
         head?: never;
         patch?: never;
@@ -773,6 +789,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllPaged"];
+        put?: never;
+        post: operations["create_3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pharma/tags/entity/{entityType}/{entityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getByEntity"];
+        put?: never;
+        post: operations["applyTags"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/rep-targets": {
         parameters: {
             query?: never;
@@ -781,10 +829,10 @@ export interface paths {
             cookie?: never;
         };
         /** List rep targets. Optional filter: year, month */
-        get: operations["getAll_4"];
+        get: operations["getAll_5"];
         put?: never;
         /** Create a monthly target for a rep in a territory */
-        post: operations["create_3"];
+        post: operations["create_4"];
         delete?: never;
         options?: never;
         head?: never;
@@ -799,10 +847,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all quotes (paginated). Optional filter: status */
-        get: operations["getAll_5"];
+        get: operations["getAll_6"];
         put?: never;
         /** Create a new quote (draft) */
-        post: operations["create_4"];
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -885,10 +933,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all products (paginated). Optional filter: status */
-        get: operations["getAll_6"];
+        get: operations["getAll_7"];
         put?: never;
         /** Create a new product */
-        post: operations["create_5"];
+        post: operations["create_6"];
         delete?: never;
         options?: never;
         head?: never;
@@ -920,10 +968,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all orders (paginated). Optional filter: status */
-        get: operations["getAll_7"];
+        get: operations["getAll_8"];
         put?: never;
         /** Create a new order */
-        post: operations["create_6"];
+        post: operations["create_7"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1040,10 +1088,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all opportunities (paginated). Optional filters: status, salesStage, accountId, ownerId */
-        get: operations["getAll_8"];
+        get: operations["getAll_9"];
         put?: never;
         /** Create a new opportunity */
-        post: operations["create_7"];
+        post: operations["create_8"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1076,7 +1124,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["create_8"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1107,10 +1155,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all materials (paginated). Optional filters: status, category */
-        get: operations["getAll_9"];
+        get: operations["getAll_10"];
         put?: never;
         /** Create a new material in draft status (ADMIN/MANAGER only) */
-        post: operations["create_9"];
+        post: operations["create_10"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1159,10 +1207,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all leads (paginated). Optional filters: status, rating */
-        get: operations["getAll_10"];
+        get: operations["getAll_11"];
         put?: never;
         /** Create a new lead */
-        post: operations["create_10"];
+        post: operations["create_11"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1197,10 +1245,10 @@ export interface paths {
             cookie?: never;
         };
         /** List invoices (paginated). Optional filters: status, accountId */
-        get: operations["getAll_11"];
+        get: operations["getAll_12"];
         put?: never;
         /** Create a new invoice — invoiceNumber auto-generated (ADMIN/MANAGER only) */
-        post: operations["create_11"];
+        post: operations["create_12"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1302,10 +1350,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all coaching notes (paginated) — ADMIN/MANAGER only */
-        get: operations["getAll_12"];
+        get: operations["getAll_13"];
         put?: never;
         /** Create a coaching note — ADMIN/MANAGER only */
-        post: operations["create_12"];
+        post: operations["create_13"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1337,10 +1385,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all activities (paginated). Optional filters: status, activityType */
-        get: operations["getAll_13"];
+        get: operations["getAll_14"];
         put?: never;
         /** Create a new activity (call, meeting, task, email, note) */
-        post: operations["create_13"];
+        post: operations["create_14"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1372,10 +1420,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all accounts (paginated). Optional filters: status, accountType */
-        get: operations["getAll_14"];
+        get: operations["getAll_15"];
         put?: never;
         /** Create a new account */
-        post: operations["create_14"];
+        post: operations["create_15"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1441,10 +1489,10 @@ export interface paths {
             cookie?: never;
         };
         /** List all approval rules (paginated) */
-        get: operations["getAll_16"];
+        get: operations["getAll_17"];
         put?: never;
         /** Create a new approval rule */
-        post: operations["create_15"];
+        post: operations["create_16"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1985,6 +2033,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pharma/tags/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAll_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pharma/reports/pipeline": {
         parameters: {
             query?: never;
@@ -2417,7 +2481,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getByEntity"];
+        get: operations["getByEntity_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2842,7 +2906,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get all notifications (read + unread) for the current user (paginated) */
-        get: operations["getAll_15"];
+        get: operations["getAll_16"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2971,6 +3035,22 @@ export interface paths {
         post?: never;
         /** Remove an account from a territory */
         delete: operations["removeAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pharma/tags/entity/{entityType}/{entityId}/{tagId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["removeTag"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3309,6 +3389,24 @@ export interface components {
             businessUnitId?: string;
             businessUnitName?: string;
             isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        UpdateTagRequest: {
+            name?: string;
+            /**
+             * @description Hex color code
+             * @example #6366f1
+             */
+            color?: string;
+        };
+        TagResponse: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            color?: string;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -4355,6 +4453,17 @@ export interface components {
             /** Format: date-time */
             joinedAt?: string;
         };
+        CreateTagRequest: {
+            name: string;
+            /**
+             * @description Hex color code
+             * @example #6366f1
+             */
+            color?: string;
+        };
+        ApplyTagsRequest: {
+            tagIds: string[];
+        };
         CreateRepTargetRequest: {
             /** Format: uuid */
             repId: string;
@@ -5182,12 +5291,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
+            paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
-            paged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -5266,6 +5375,24 @@ export interface components {
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PharmaTeamResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        PageTagResponse: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["TagResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -5939,6 +6066,52 @@ export interface operations {
             };
         };
     };
+    update_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTagRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TagResponse"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getById_5: {
         parameters: {
             query?: never;
@@ -5961,7 +6134,7 @@ export interface operations {
             };
         };
     };
-    update_4: {
+    update_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -5987,7 +6160,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6029,7 +6202,7 @@ export interface operations {
             };
         };
     };
-    update_5: {
+    update_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -6077,7 +6250,7 @@ export interface operations {
             };
         };
     };
-    update_6: {
+    update_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -6103,7 +6276,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6145,7 +6318,7 @@ export interface operations {
             };
         };
     };
-    update_7: {
+    update_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -6171,7 +6344,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -6213,7 +6386,7 @@ export interface operations {
             };
         };
     };
-    update_8: {
+    update_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -6239,7 +6412,7 @@ export interface operations {
             };
         };
     };
-    update_9: {
+    update_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -6265,7 +6438,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -6307,7 +6480,7 @@ export interface operations {
             };
         };
     };
-    update_10: {
+    update_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -6355,7 +6528,7 @@ export interface operations {
             };
         };
     };
-    update_11: {
+    update_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -6403,7 +6576,7 @@ export interface operations {
             };
         };
     };
-    update_12: {
+    update_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -6519,7 +6692,7 @@ export interface operations {
             };
         };
     };
-    update_13: {
+    update_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -6567,7 +6740,7 @@ export interface operations {
             };
         };
     };
-    update_14: {
+    update_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -6593,7 +6766,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -6635,7 +6808,7 @@ export interface operations {
             };
         };
     };
-    update_15: {
+    update_16: {
         parameters: {
             query?: never;
             header?: never;
@@ -6661,7 +6834,7 @@ export interface operations {
             };
         };
     };
-    delete_5: {
+    delete_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -6703,7 +6876,7 @@ export interface operations {
             };
         };
     };
-    update_16: {
+    update_17: {
         parameters: {
             query?: never;
             header?: never;
@@ -6729,7 +6902,7 @@ export interface operations {
             };
         };
     };
-    delete_6: {
+    delete_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -7565,7 +7738,103 @@ export interface operations {
             };
         };
     };
-    getAll_4: {
+    getAllPaged: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageTagResponse"];
+                };
+            };
+        };
+    };
+    create_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTagRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TagResponse"];
+                };
+            };
+        };
+    };
+    getByEntity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entityType: string;
+                entityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TagResponse"][];
+                };
+            };
+        };
+    };
+    applyTags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entityType: string;
+                entityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyTagsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TagResponse"][];
+                };
+            };
+        };
+    };
+    getAll_5: {
         parameters: {
             query: {
                 year?: number;
@@ -7589,7 +7858,7 @@ export interface operations {
             };
         };
     };
-    create_3: {
+    create_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -7613,7 +7882,7 @@ export interface operations {
             };
         };
     };
-    getAll_5: {
+    getAll_6: {
         parameters: {
             query: {
                 status?: string;
@@ -7636,7 +7905,7 @@ export interface operations {
             };
         };
     };
-    create_4: {
+    create_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -7752,7 +8021,7 @@ export interface operations {
             };
         };
     };
-    getAll_6: {
+    getAll_7: {
         parameters: {
             query: {
                 status?: string;
@@ -7775,7 +8044,7 @@ export interface operations {
             };
         };
     };
-    create_5: {
+    create_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -7823,7 +8092,7 @@ export interface operations {
             };
         };
     };
-    getAll_7: {
+    getAll_8: {
         parameters: {
             query: {
                 status?: string;
@@ -7846,7 +8115,7 @@ export interface operations {
             };
         };
     };
-    create_6: {
+    create_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -8010,7 +8279,7 @@ export interface operations {
             };
         };
     };
-    getAll_8: {
+    getAll_9: {
         parameters: {
             query: {
                 status?: string;
@@ -8037,7 +8306,7 @@ export interface operations {
             };
         };
     };
-    create_7: {
+    create_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -8087,7 +8356,7 @@ export interface operations {
             };
         };
     };
-    create_8: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -8133,7 +8402,7 @@ export interface operations {
             };
         };
     };
-    getAll_9: {
+    getAll_10: {
         parameters: {
             query: {
                 status?: string;
@@ -8157,7 +8426,7 @@ export interface operations {
             };
         };
     };
-    create_9: {
+    create_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -8225,7 +8494,7 @@ export interface operations {
             };
         };
     };
-    getAll_10: {
+    getAll_11: {
         parameters: {
             query: {
                 status?: string;
@@ -8249,7 +8518,7 @@ export interface operations {
             };
         };
     };
-    create_10: {
+    create_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -8299,7 +8568,7 @@ export interface operations {
             };
         };
     };
-    getAll_11: {
+    getAll_12: {
         parameters: {
             query: {
                 status?: string;
@@ -8323,7 +8592,7 @@ export interface operations {
             };
         };
     };
-    create_11: {
+    create_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -8510,7 +8779,7 @@ export interface operations {
             };
         };
     };
-    getAll_12: {
+    getAll_13: {
         parameters: {
             query: {
                 feedbackType?: string;
@@ -8533,7 +8802,7 @@ export interface operations {
             };
         };
     };
-    create_12: {
+    create_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -8579,7 +8848,7 @@ export interface operations {
             };
         };
     };
-    getAll_13: {
+    getAll_14: {
         parameters: {
             query: {
                 status?: string;
@@ -8603,7 +8872,7 @@ export interface operations {
             };
         };
     };
-    create_13: {
+    create_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -8649,7 +8918,7 @@ export interface operations {
             };
         };
     };
-    getAll_14: {
+    getAll_15: {
         parameters: {
             query: {
                 status?: string;
@@ -8673,7 +8942,7 @@ export interface operations {
             };
         };
     };
-    create_14: {
+    create_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -8758,7 +9027,7 @@ export interface operations {
             };
         };
     };
-    getAll_16: {
+    getAll_17: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -8780,7 +9049,7 @@ export interface operations {
             };
         };
     };
-    create_15: {
+    create_16: {
         parameters: {
             query?: never;
             header?: never;
@@ -9518,6 +9787,26 @@ export interface operations {
             };
         };
     };
+    getAll_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TagResponse"][];
+                };
+            };
+        };
+    };
     pipeline: {
         parameters: {
             query?: {
@@ -10083,7 +10372,7 @@ export interface operations {
             };
         };
     };
-    getByEntity: {
+    getByEntity_1: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -10662,7 +10951,7 @@ export interface operations {
             };
         };
     };
-    getAll_15: {
+    getAll_16: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -10819,6 +11108,28 @@ export interface operations {
             header?: never;
             path: {
                 assignmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    removeTag: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entityType: string;
+                entityId: string;
+                tagId: string;
             };
             cookie?: never;
         };

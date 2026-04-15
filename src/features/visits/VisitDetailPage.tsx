@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
+import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
@@ -320,7 +321,8 @@ export default function VisitDetailPage() {
         </>
       )}
 
-      <EntityNotesSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
+      <EntityTagsSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
+          <EntityNotesSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaFieldVisit" entityId={id ?? ''} />
 
       {/* ─── Dialogs ──────────────────────────────────────────────────────────── */}
