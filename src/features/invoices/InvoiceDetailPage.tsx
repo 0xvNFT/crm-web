@@ -20,26 +20,7 @@ import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import type { PharmaInvoiceItem } from '@/api/app-types'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-3 gap-4 py-2 border-b last:border-0">
-      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-      <dd className="col-span-2 text-sm">{value ?? '—'}</dd>
-    </div>
-  )
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <dl>{children}</dl>
-    </div>
-  )
-}
+import { DlSection, DetailRow } from '@/components/shared/DetailSection'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -68,15 +49,15 @@ export default function InvoiceDetailPage() {
   const canAct   = isManager && !isPaid && !isVoided && !invoice.isLocked && !isReadOnly
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-start gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+      <div className="flex items-start gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold">{invoice.invoiceNumber}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{invoice.invoiceNumber}</h1>
             <StatusBadge status={status} />
             {invoice.isLocked && (
               <span className="text-xs text-muted-foreground border rounded-full px-2 py-0.5">Locked</span>
@@ -112,7 +93,7 @@ export default function InvoiceDetailPage() {
       </div>
 
       {/* Invoice Info */}
-      <Section title="Invoice Info">
+      <DlSection title="Invoice Info">
         <DetailRow label="Invoice #"     value={invoice.invoiceNumber} />
         <DetailRow label="Subject"       value={invoice.subject} />
         <DetailRow label="Status"        value={<StatusBadge status={status} />} />
@@ -120,10 +101,10 @@ export default function InvoiceDetailPage() {
         <DetailRow label="Due Date"      value={formatDate(invoice.dueDate)} />
         {invoice.paymentTerms && <DetailRow label="Payment Terms" value={invoice.paymentTerms} />}
         {invoice.currency && <DetailRow label="Currency" value={invoice.currency} />}
-      </Section>
+      </DlSection>
 
       {/* Account & Contacts */}
-      <Section title="Account">
+      <DlSection title="Account">
         <DetailRow
           label="Account"
           value={
@@ -145,11 +126,11 @@ export default function InvoiceDetailPage() {
         {invoice.billingAddress && <DetailRow label="Billing Address" value={invoice.billingAddress} />}
         {invoice.shippingAddress && <DetailRow label="Shipping Address" value={invoice.shippingAddress} />}
         {invoice.shippingMethod && <DetailRow label="Shipping Method" value={invoice.shippingMethod} />}
-      </Section>
+      </DlSection>
 
       {/* Source */}
       {(invoice.orderId || invoice.quoteId) && (
-        <Section title="Source">
+        <DlSection title="Source">
           {invoice.orderId && (
             <DetailRow
               label="Order"
@@ -170,7 +151,7 @@ export default function InvoiceDetailPage() {
               }
             />
           )}
-        </Section>
+        </DlSection>
       )}
 
       {/* Line Items */}
@@ -212,17 +193,17 @@ export default function InvoiceDetailPage() {
       )}
 
       {/* Amounts */}
-      <Section title="Amounts">
+      <DlSection title="Amounts">
         <DetailRow label="Total Amount" value={invoice.totalAmount != null ? formatCurrency(invoice.totalAmount) : '—'} />
         <DetailRow label="Balance Due"  value={invoice.balanceDue  != null ? formatCurrency(invoice.balanceDue)  : '—'} />
         {invoice.taxExempt && <DetailRow label="Tax Exempt" value="Yes" />}
-      </Section>
+      </DlSection>
 
       {/* Timestamps */}
-      <Section title="Timestamps">
+      <DlSection title="Timestamps">
         <DetailRow label="Created" value={invoice.createdAt ? formatDate(invoice.createdAt) : null} />
         <DetailRow label="Updated" value={invoice.updatedAt ? formatDate(invoice.updatedAt) : null} />
-      </Section>
+      </DlSection>
 
       <EntityTagsSection entityType="PharmaInvoice" entityId={id ?? ''} />
           <EntityNotesSection entityType="PharmaInvoice" entityId={id ?? ''} />

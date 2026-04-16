@@ -11,30 +11,7 @@ import { formatDate, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { useState } from 'react'
-
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 export default function CoachingDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -51,14 +28,14 @@ export default function CoachingDetailPage() {
   const followUpPending = note.followUpRequired && !note.followUpCompleted
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{note.noteTitle ?? '—'}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{note.noteTitle ?? '—'}</h1>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {note.salesRepName && <span>{note.salesRepName}</span>}
             {note.coachName && (
@@ -140,27 +117,27 @@ export default function CoachingDetailPage() {
       )}
 
       {note.detailedFeedback && (
-        <div className="rounded-xl border bg-background p-5 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Detailed Feedback</h2>
           <p className="text-sm text-foreground whitespace-pre-wrap">{note.detailedFeedback}</p>
         </div>
       )}
 
       {note.summaryOfFeedback && (
-        <div className="rounded-xl border bg-background p-5 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Summary</h2>
           <p className="text-sm text-foreground whitespace-pre-wrap">{note.summaryOfFeedback}</p>
         </div>
       )}
 
       {note.aiSuggestedNextSteps && (
-        <div className="rounded-xl border bg-background p-5 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">AI Suggested Next Steps</h2>
           <p className="text-sm text-foreground whitespace-pre-wrap">{note.aiSuggestedNextSteps}</p>
         </div>
       )}
 
-      <div className="rounded-xl border bg-background p-5">
+      <div className="rounded-xl border border-border/60 bg-card p-5">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <DetailField label="Note ID"      value={note.id} />
           <DetailField label="Created"      value={formatDate(note.createdAt)} />

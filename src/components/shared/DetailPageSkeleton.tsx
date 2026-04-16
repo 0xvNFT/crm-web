@@ -9,12 +9,12 @@ interface DetailPageSkeletonProps {
 
 export function DetailPageSkeleton({ sections = 2, fieldsPerSection = 4 }: DetailPageSkeletonProps) {
   return (
-    <div className="space-y-4" role="status" aria-label="Loading">
+    <div className="space-y-5" role="status" aria-label="Loading">
       {/* Header */}
       <div className="flex items-start gap-4">
-        <Skeleton className="h-9 w-9 shrink-0 rounded-lg" />
+        <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
         <div className="flex-1 space-y-2">
-          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="flex gap-2">
@@ -25,7 +25,7 @@ export function DetailPageSkeleton({ sections = 2, fieldsPerSection = 4 }: Detai
 
       {/* Info sections */}
       {Array.from({ length: sections }).map((_, si) => (
-        <div key={si} className="rounded-xl border bg-background p-5 space-y-4">
+        <div key={si} className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <Skeleton className="h-3.5 w-28" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {Array.from({ length: fieldsPerSection }).map((_, fi) => (

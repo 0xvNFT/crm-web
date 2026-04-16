@@ -29,32 +29,7 @@ import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { updateTerritorySchema, type UpdateTerritoryFormData } from '@/schemas/territories'
 import type { UpdateTerritoryRequest } from '@/api/app-types'
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function TerritoryDetailPage() {
@@ -146,7 +121,7 @@ export default function TerritoryDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
@@ -154,7 +129,7 @@ export default function TerritoryDetailPage() {
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{territory.territoryName}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{territory.territoryName}</h1>
             <StatusBadge status={territory.status ?? 'active'} />
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -178,7 +153,7 @@ export default function TerritoryDetailPage() {
 
       {/* View mode */}
       {!editing && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <DetailSection title="Territory Info">
             <DetailField label="Territory Code" value={territory.territoryCode} />
             <DetailField label="Territory Name" value={territory.territoryName} />
@@ -189,7 +164,7 @@ export default function TerritoryDetailPage() {
             <DetailField label="Created" value={formatDate(territory.createdAt)} />
           </DetailSection>
 
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <Users className="h-3.5 w-3.5" strokeWidth={1.75} />
               Reps
@@ -238,7 +213,7 @@ export default function TerritoryDetailPage() {
           </DetailSection>
 
           {/* Accounts in Territory sub-section */}
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -318,7 +293,7 @@ export default function TerritoryDetailPage() {
       {/* Edit mode */}
       {editing && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Edit Territory</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Territory Code" error={errors.territoryCode?.message}>
@@ -383,7 +358,7 @@ export default function TerritoryDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Assignments</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Primary Rep" error={errors.primaryRepId?.message}>

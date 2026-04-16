@@ -8,31 +8,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatDateTime, formatLabel } from '@/utils/formatters'
-
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -44,14 +20,14 @@ export default function ActivityDetailPage() {
   if (isError || !activity) return <ErrorMessage message="Activity not found." />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{activity.subject}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{activity.subject}</h1>
             <StatusBadge status={activity.status ?? 'unknown'} />
           </div>
         </div>
@@ -71,7 +47,7 @@ export default function ActivityDetailPage() {
       </DetailSection>
 
       {activity.description && (
-        <div className="rounded-xl border bg-background p-5 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</h2>
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{activity.description}</p>
         </div>

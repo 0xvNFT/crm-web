@@ -26,31 +26,7 @@ import { toast } from '@/hooks/useToast'
 import { opportunityEditSchema, type OpportunityEditFormData } from '@/schemas/opportunities'
 import { OpportunityActivitiesSection } from './components/OpportunityActivitiesSection'
 import { OpportunityVisitsSection } from './components/OpportunityVisitsSection'
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 // ─── Stage pipeline strip ───────────────────────────────────────────────────────
 const STAGE_ORDER = ['prospecting', 'qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']
@@ -144,7 +120,7 @@ export default function OpportunityDetailPage() {
     : null
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
@@ -152,7 +128,7 @@ export default function OpportunityDetailPage() {
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{opp.topic}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{opp.topic}</h1>
             {opp.status && <StatusBadge status={opp.status} />}
           </div>
           <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -200,7 +176,7 @@ export default function OpportunityDetailPage() {
 
       {/* View mode */}
       {!editing && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <DetailSection title="Overview">
             <DetailField label="Topic"            value={opp.topic} />
             <DetailField label="Stage"            value={formatLabel(opp.salesStage)} />
@@ -227,13 +203,13 @@ export default function OpportunityDetailPage() {
           </DetailSection>
 
           {opp.description && (
-            <div className="rounded-xl border bg-background p-5 space-y-2">
+            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</h2>
               <p className="text-sm text-foreground whitespace-pre-wrap">{opp.description}</p>
             </div>
           )}
 
-          <div className="rounded-xl border bg-background p-5">
+          <div className="rounded-xl border border-border/60 bg-card p-5">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <DetailField label="Opportunity ID" value={opp.id} />
               <DetailField label="Created"        value={formatDate(opp.createdAt)} />
@@ -249,7 +225,7 @@ export default function OpportunityDetailPage() {
       {/* Edit mode */}
       {editing && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Overview</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Topic *" error={errors.topic?.message}>
@@ -297,7 +273,7 @@ export default function OpportunityDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Financials</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Est. Revenue" error={errors.estRevenue?.message}>
@@ -315,7 +291,7 @@ export default function OpportunityDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Description</h2>
             <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Notes about this opportunity…" />
           </div>
