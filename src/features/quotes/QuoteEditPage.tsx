@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
+import { FormSection } from '@/components/shared/FormSection'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -98,11 +99,9 @@ function QuoteEditForm({ quoteId, defaultValues, initialAccountName, initialCont
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-3xl">
       {/* Quote Info */}
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quote Info</h2>
-
+      <FormSection title="Quote Info" noGrid>
         {/* Account */}
         <div className="space-y-1">
           <Label>Account *</Label>
@@ -219,16 +218,16 @@ function QuoteEditForm({ quoteId, defaultValues, initialAccountName, initialCont
           <Label htmlFor="notes">Notes</Label>
           <TextareaWithCounter id="notes" placeholder="Quote notes..." rows={3} maxLength={2000} {...register('notes')} />
         </div>
-      </div>
+      </FormSection>
 
       {/* Line Items */}
-      <div className="rounded-xl border bg-background p-5">
+      <FormSection title="Line Items" noGrid>
         <QuoteLineItemsField
           control={control}
           errors={errors}
           accountId={watchedAccountId ?? ''}
         />
-      </div>
+      </FormSection>
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
@@ -250,16 +249,15 @@ export default function QuoteEditPage() {
 
   const { data: quote, isLoading, isError } = useQuote(id ?? '')
 
-  // Gate: only draft quotes are editable
-  useEffect(() => {
-    if (quote && quote.status !== 'draft') {
-      toast('Only draft quotes can be edited', { variant: 'destructive' })
-      navigate(`/quotes/${id}`, { replace: true })
-    }
-  }, [quote, id, navigate])
-
   if (isLoading) return <FormPageSkeleton />
   if (isError || !quote) return <ErrorMessage message="Quote not found." />
+
+  // Gate: only draft quotes are editable
+  if (quote.status !== 'draft') {
+    toast('Only draft quotes can be edited', { variant: 'destructive' })
+    navigate(`/quotes/${id}`, { replace: true })
+    return null
+  }
 
   const defaultValues: QuoteFormData = {
     accountId: quote.accountId ?? '',
@@ -281,10 +279,10 @@ export default function QuoteEditPage() {
   const initialContactName = quote.contactName ?? ''
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(`/quotes/${id}`)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Edit Quote</h1>

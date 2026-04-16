@@ -56,7 +56,7 @@ function SubscriptionCard({ sub }: { sub: BillingSubscription }) {
   const isCanceled = sub.status?.toUpperCase() === 'CANCELED' || sub.status?.toUpperCase() === 'INACTIVE'
 
   return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
+    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -109,7 +109,7 @@ function PlanCard({
 
   return (
     <div className={cn(
-      'relative rounded-xl border bg-background p-5 flex flex-col gap-4 transition-shadow',
+      'relative rounded-xl border border-border/60 bg-card p-5 flex flex-col gap-4 transition-shadow',
       isCurrent
         ? 'border-primary ring-1 ring-primary/30 shadow-sm'
         : 'hover:shadow-sm',
@@ -239,7 +239,7 @@ export default function BillingPage() {
           {sub ? (
             <SubscriptionCard sub={sub} />
           ) : (
-            <div className="rounded-xl border bg-background p-8 text-center space-y-2">
+            <div className="rounded-xl border border-border/60 bg-card p-8 text-center space-y-2">
               <Zap className="h-8 w-8 text-muted-foreground/40 mx-auto" strokeWidth={1.5} />
               <p className="text-sm font-medium text-foreground">No active subscription</p>
               <p className="text-xs text-muted-foreground">Choose a plan below to get started.</p>

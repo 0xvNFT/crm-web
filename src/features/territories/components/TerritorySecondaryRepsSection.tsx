@@ -49,7 +49,7 @@ export function TerritorySecondaryRepsSection({ territoryId }: TerritorySecondar
   }
 
   return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
+    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
           <Users className="h-3.5 w-3.5" strokeWidth={1.75} />

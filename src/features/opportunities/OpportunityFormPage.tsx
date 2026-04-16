@@ -128,7 +128,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -139,7 +139,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
         />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <FormSection title="Overview">
           <FormRow label="Topic" required error={errors.topic?.message}>
             <Input {...register('topic')} placeholder="e.g. Hospital Network Expansion" />
@@ -307,7 +307,7 @@ function OpportunityForm({ opportunity, isEdit }: { opportunity?: PharmaOpportun
           </FormRow>
         </FormSection>
 
-        <div className="rounded-xl border bg-background p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Description</h2>
           <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Notes about this opportunity…" />
         </div>

@@ -31,7 +31,7 @@ function formatRevenue(value: number) {
 
 export function PipelineChart({ data, isLoading, isError, error, onRetry }: PipelineChartProps) {
   return (
-    <div className="rounded-xl border bg-background p-5">
+    <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-foreground">Pipeline by Stage</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Estimated revenue across open opportunities</p>

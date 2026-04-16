@@ -308,7 +308,7 @@ export function EntityTagsSection({ entityType, entityId }: EntityTagsSectionPro
   }
 
   return (
-    <div className="rounded-xl border bg-background">
+    <div className="rounded-xl border border-border/60 bg-card">
       {/* Header */}
       <div className="px-5 py-3 border-b bg-muted/40 flex items-center justify-between">
         <div className="flex items-center gap-2">

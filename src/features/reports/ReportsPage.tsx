@@ -42,7 +42,7 @@ interface InvoiceAgingChartProps {
 
 function InvoiceAgingChart({ data, isLoading, isError, error, onRetry }: InvoiceAgingChartProps) {
   return (
-    <div className="rounded-xl border bg-background p-5">
+    <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-foreground">Invoice Aging</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Outstanding balance by age bracket</p>
@@ -130,7 +130,7 @@ export default function ReportsPage() {
     : 'Your activity analytics and lead pipeline'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Reports"
         description={description}

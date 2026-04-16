@@ -68,15 +68,15 @@ export default function VisitScheduleFormPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/visits')} className="-ml-2">
-          <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={() => navigate('/visits')} aria-label="Go back">
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <PageHeader title="Schedule Visit" description="Plan a new field visit" />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <FormSection title="Visit Information">
           <div className="sm:col-span-2">
             <FormRow label="Subject" required error={errors.subject?.message}>
@@ -150,9 +150,8 @@ export default function VisitScheduleFormPage() {
           </FormRow>
         </FormSection>
 
-        <div className="rounded-xl border bg-background p-5 space-y-4">
-          <h2 className="text-sm font-semibold text-foreground">Call Details</h2>
-          <div className="space-y-4">
+        <FormSection title="Call Details">
+          <div className="sm:col-span-2">
             <FormRow label="Call Objectives" error={errors.callObjectives?.message}>
               <TextareaWithCounter
                 {...register('callObjectives')}
@@ -161,6 +160,8 @@ export default function VisitScheduleFormPage() {
                 maxLength={2000}
               />
             </FormRow>
+          </div>
+          <div className="sm:col-span-2">
             <FormRow label="Notes" error={errors.notes?.message}>
               <TextareaWithCounter
                 {...register('notes')}
@@ -170,10 +171,10 @@ export default function VisitScheduleFormPage() {
               />
             </FormRow>
           </div>
-        </div>
+        </FormSection>
 
         {/* Sticky footer */}
-        <div className="sticky bottom-0 -mx-6 border-t bg-background px-6 py-3 flex items-center justify-end gap-3">
+        <div className="sticky bottom-0 -mx-6 border-t border-border/50 bg-background/95 backdrop-blur-sm px-6 py-3 flex items-center justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate('/visits')} disabled={isPending}>
             Cancel
           </Button>

@@ -132,7 +132,7 @@ export default function SalesPerformancePage() {
   const totalAchievement = totalTargetSales > 0 ? (totalNetSales / totalTargetSales) * 100 : null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title={isRepOnly ? 'My Sales Performance' : 'Sales Performance'}
         description={
@@ -149,7 +149,7 @@ export default function SalesPerformancePage() {
       />
 
       {/* Filters */}
-      <div className="rounded-xl border bg-background p-4 flex flex-wrap items-end gap-4">
+      <div className="rounded-xl border border-border/60 bg-card p-4 flex flex-wrap items-end gap-4">
         <PeriodSelector
           year={year}
           month={month}
@@ -193,7 +193,7 @@ export default function SalesPerformancePage() {
         <ErrorMessage error={error} onRetry={() => refetch()} />
       )}
       {!isLoading && !isError && (
-        <div className="rounded-xl border bg-background overflow-hidden">
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
           <DataTable
             columns={COLUMNS}
             data={tableRows}

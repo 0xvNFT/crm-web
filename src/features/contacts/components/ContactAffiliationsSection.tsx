@@ -201,7 +201,7 @@ export function ContactAffiliationsSection({ contactId }: ContactAffiliationsSec
   const { isManager } = useRole()
 
   return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
+    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />

@@ -34,7 +34,7 @@ const STAGE_ORDER = ['prospecting', 'qualification', 'proposal', 'negotiation', 
 function StagePipeline({ current }: { current?: string }) {
   const activeIdx = current ? STAGE_ORDER.indexOf(current) : -1
   return (
-    <div className="flex items-center gap-0 rounded-xl border bg-background overflow-hidden">
+    <div className="flex items-center gap-0 rounded-xl border border-border/60 bg-card overflow-hidden">
       {STAGE_ORDER.map((stage, i) => {
         const isActive  = stage === current
         const isPast    = activeIdx >= 0 && i < activeIdx

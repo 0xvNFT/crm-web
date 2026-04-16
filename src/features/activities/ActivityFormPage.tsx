@@ -107,7 +107,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -118,7 +118,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
         />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <FormSection title="Activity Info">
           <FormRow label="Subject" required error={errors.subject?.message}>
             <Input {...register('subject')} placeholder="e.g. Follow-up call with Dr. Santos" />
@@ -200,7 +200,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
           </FormRow>
         </FormSection>
 
-        <div className="rounded-xl border bg-background p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Follow-up</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <CheckboxField label="Follow-up Required" id="followUpRequired" className="sm:col-span-2" {...register('followUpRequired')} />
@@ -217,7 +217,7 @@ function ActivityForm({ activity, isEdit }: { activity?: PharmaActivity; isEdit:
           </div>
         </div>
 
-        <div className="rounded-xl border bg-background p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Description</h2>
           <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Details about this activity…" />
         </div>

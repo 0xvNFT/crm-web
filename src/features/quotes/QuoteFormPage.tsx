@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
+import { FormSection } from '@/components/shared/FormSection'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { PharmaAccount, PharmaContact } from '@/api/app-types'
@@ -107,10 +108,10 @@ export default function QuoteFormPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">New Quote</h1>
@@ -118,11 +119,9 @@ export default function QuoteFormPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-3xl">
         {/* Quote Info */}
-        <div className="rounded-xl border bg-background p-5 space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quote Info</h2>
-
+        <FormSection title="Quote Info" noGrid>
           {/* Account */}
           <div className="space-y-1">
             <Label>Account *</Label>
@@ -259,16 +258,16 @@ export default function QuoteFormPage() {
             <Label htmlFor="notes">Notes</Label>
             <TextareaWithCounter id="notes" placeholder="Quote notes..." rows={3} maxLength={2000} {...register('notes')} />
           </div>
-        </div>
+        </FormSection>
 
         {/* Line Items */}
-        <div className="rounded-xl border bg-background p-5">
+        <FormSection title="Line Items" noGrid>
           <QuoteLineItemsField
             control={control}
             errors={errors}
             accountId={watchedAccountId ?? ''}
           />
-        </div>
+        </FormSection>
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isPending}>

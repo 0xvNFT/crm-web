@@ -23,7 +23,7 @@ import {
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
+    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
       <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
         {title}

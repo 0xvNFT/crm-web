@@ -78,7 +78,7 @@ export default function AdminPage() {
   if (isError) return <ErrorMessage error={error} onRetry={() => listQuery.refetch()} />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Team Management"
         description="Manage staff accounts, roles, and access"

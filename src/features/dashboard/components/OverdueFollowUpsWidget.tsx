@@ -9,7 +9,7 @@ export function OverdueFollowUpsWidget() {
   const notes = data?.content ?? []
 
   return (
-    <div className="rounded-xl border bg-background overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="px-5 py-3 border-b bg-muted/40 flex items-center gap-2">
         <AlertCircle className="h-3.5 w-3.5 text-destructive" strokeWidth={1.5} />
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
