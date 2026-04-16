@@ -28,3 +28,22 @@ export const opportunityEditSchema = opportunityFormSchema.partial().extend({
 })
 
 export type OpportunityEditFormData = z.infer<typeof opportunityEditSchema>
+
+// ── Opportunity Line Items ────────────────────────────────────────────────────
+
+export const addOpportunityProductSchema = z.object({
+  productId:   z.string({ error: 'Select a product' }).min(1, 'Select a product'),
+  quantity:    z.coerce.number<number>().positive('Quantity must be greater than 0'),
+  unitPrice:   moneyField,
+  discountPct: z.coerce.number<number>().min(0, 'Must be 0 or greater').max(100, 'Must be 100 or less').optional(),
+  notes:       notesField,
+})
+
+export type AddOpportunityProductFormData = z.infer<typeof addOpportunityProductSchema>
+
+// Edit is a full partial of add (product cannot be changed — must remove + re-add)
+export const updateOpportunityProductSchema = addOpportunityProductSchema
+  .omit({ productId: true })
+  .partial()
+
+export type UpdateOpportunityProductFormData = z.infer<typeof updateOpportunityProductSchema>

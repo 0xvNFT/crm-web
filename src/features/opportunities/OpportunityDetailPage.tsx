@@ -1,11 +1,8 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, X, Check, TrendingUp } from 'lucide-react'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useOpportunity, useUpdateOpportunity, useAdvanceOpportunityStage } from '@/api/endpoints/opportunities'
+import { ArrowLeft, Pencil, TrendingUp } from 'lucide-react'
+import { useOpportunity, useAdvanceOpportunityStage } from '@/api/endpoints/opportunities'
 import { useRole } from '@/hooks/useRole'
-import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -14,18 +11,12 @@ import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { DateInput } from '@/components/ui/date-input'
-import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
-import { CheckboxField } from '@/components/shared/CheckboxField'
-import { FormRow } from '@/components/shared/FormRow'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
-import { opportunityEditSchema, type OpportunityEditFormData } from '@/schemas/opportunities'
 import { OpportunityActivitiesSection } from './components/OpportunityActivitiesSection'
 import { OpportunityVisitsSection } from './components/OpportunityVisitsSection'
+import { OpportunityProductsSection } from './components/OpportunityProductsSection'
 import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 // ─── Stage pipeline strip ───────────────────────────────────────────────────────
@@ -64,38 +55,14 @@ function StagePipeline({ current }: { current?: string }) {
 export default function OpportunityDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [editing, setEditing] = useState(false)
   const [stageTarget, setStageTarget] = useState<string | null>(null)
 
   const { data: opp, isLoading, isError } = useOpportunity(id ?? '')
-  const { mutate: updateOpp, isPending } = useUpdateOpportunity(id ?? '')
   const { mutate: advanceStage, isPending: isAdvancing } = useAdvanceOpportunityStage(id ?? '')
   const { isReadOnly } = useRole()
 
-  const salesStageOptions      = useConfigOptions('opportunity.salesStage')
-  const forecastCategoryOptions = useConfigOptions('opportunity.forecastCategory')
-
-  const { register, handleSubmit, reset, control, formState: { errors } } =
-    useForm<OpportunityEditFormData>({ resolver: zodResolver(opportunityEditSchema) })
-
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !opp) return <ErrorMessage message="Opportunity not found." />
-
-
-  function cancelEdit() {
-    setEditing(false)
-    reset()
-  }
-
-  function onSubmit(data: OpportunityEditFormData) {
-    updateOpp(data, {
-      onSuccess: () => {
-        toast('Opportunity updated', { variant: 'success' })
-        setEditing(false)
-      },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
-    })
-  }
 
   function confirmAdvanceStage(stage: string) {
     setStageTarget(stage)
@@ -124,7 +91,7 @@ export default function OpportunityDetailPage() {
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
@@ -146,25 +113,27 @@ export default function OpportunityDetailPage() {
                 <span>{opp.ownerName}</span>
               </>
             )}
-            {opp.estRevenue != null && (
+            {(opp.totalValue != null || opp.estRevenue != null) && (
               <>
                 <span>·</span>
-                <span className="font-medium text-foreground">{formatCurrency(opp.estRevenue)}</span>
+                <span className="font-medium text-foreground">
+                  {formatCurrency((opp.totalValue ?? opp.estRevenue) as number)}
+                </span>
               </>
             )}
           </div>
         </div>
 
-        {!editing && !isReadOnly && (
+        {!isReadOnly && (
           <div className="flex items-center gap-2 shrink-0">
             {nextStage && (
               <Button size="sm" onClick={() => confirmAdvanceStage(nextStage)}>
-                <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
+                <TrendingUp className="h-3.5 w-3.5 mr-1.5" strokeWidth={1.5} />
                 Advance to {formatLabel(nextStage)}
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={() => navigate(`/opportunities/${id}/edit`)}>
-              <Pencil className="h-3.5 w-3.5 mr-1.5" />
+              <Pencil className="h-3.5 w-3.5 mr-1.5" strokeWidth={1.5} />
               Edit
             </Button>
           </div>
@@ -174,143 +143,55 @@ export default function OpportunityDetailPage() {
       {/* Stage pipeline */}
       <StagePipeline current={opp.salesStage} />
 
-      {/* View mode */}
-      {!editing && (
-        <div className="space-y-5">
-          <DetailSection title="Overview">
-            <DetailField label="Topic"            value={opp.topic} />
-            <DetailField label="Stage"            value={formatLabel(opp.salesStage)} />
-            <DetailField label="Status"           value={formatLabel(opp.status)} />
-            <DetailField label="Forecast"         value={formatLabel(opp.forecastCategory)} />
-            <DetailField label="Type"             value={opp.type} />
-            <DetailField label="Lead Source"      value={opp.leadSource} />
-            <DetailField label="Budget Confirmed" value={opp.budgetConfirmed} />
+      {/* Detail sections */}
+      <div className="space-y-5">
+        <DetailSection title="Overview">
+          <DetailField label="Topic"            value={opp.topic} />
+          <DetailField label="Stage"            value={formatLabel(opp.salesStage)} />
+          <DetailField label="Status"           value={formatLabel(opp.status)} />
+          <DetailField label="Forecast"         value={formatLabel(opp.forecastCategory)} />
+          <DetailField label="Type"             value={opp.type} />
+          <DetailField label="Lead Source"      value={opp.leadSource} />
+          <DetailField label="Budget Confirmed" value={opp.budgetConfirmed} />
+        </DetailSection>
+
+        <DetailSection title="Financials">
+          <DetailField label="Total Value"     value={opp.totalValue != null ? formatCurrency(opp.totalValue as number) : undefined} />
+          <DetailField label="Est. Revenue"    value={opp.estRevenue != null ? formatCurrency(opp.estRevenue as number) : undefined} />
+          <DetailField label="Probability"     value={opp.probabilityPct != null ? `${opp.probabilityPct}%` : undefined} />
+          <DetailField label="Currency"        value={opp.currency} />
+          <DetailField label="Est. Close Date" value={formatDate(opp.estCloseDate)} />
+          <DetailField label="Actual Close"    value={formatDate(opp.actualCloseDate)} />
+        </DetailSection>
+
+        <DetailSection title="Relationships">
+          <DetailField label="Account"   value={opp.accountName} />
+          <DetailField label="Contact"   value={opp.contactName} />
+          <DetailField label="Owner"     value={opp.ownerName} />
+          <DetailField label="Territory" value={opp.territoryName} />
+        </DetailSection>
+
+        {opp.description && (
+          <DetailSection title="Description" noGrid>
+            <p className="text-sm text-foreground whitespace-pre-wrap">{opp.description}</p>
           </DetailSection>
+        )}
 
-          <DetailSection title="Financials">
-            <DetailField label="Est. Revenue"    value={opp.estRevenue != null ? formatCurrency(opp.estRevenue) : undefined} />
-            <DetailField label="Probability"     value={opp.probabilityPct != null ? `${opp.probabilityPct}%` : undefined} />
-            <DetailField label="Currency"        value={opp.currency} />
-            <DetailField label="Est. Close Date" value={formatDate(opp.estCloseDate)} />
-            <DetailField label="Actual Close"    value={formatDate(opp.actualCloseDate)} />
-          </DetailSection>
-
-          <DetailSection title="Relationships">
-            <DetailField label="Account"   value={opp.accountName} />
-            <DetailField label="Contact"   value={opp.contactName} />
-            <DetailField label="Owner"     value={opp.ownerName} />
-            <DetailField label="Territory" value={opp.territoryName} />
-          </DetailSection>
-
-          {opp.description && (
-            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</h2>
-              <p className="text-sm text-foreground whitespace-pre-wrap">{opp.description}</p>
-            </div>
-          )}
-
-          <div className="rounded-xl border border-border/60 bg-card p-5">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <DetailField label="Opportunity ID" value={opp.id} />
-              <DetailField label="Created"        value={formatDate(opp.createdAt)} />
-              <DetailField label="Last Updated"   value={formatDate(opp.updatedAt)} />
-            </div>
+        <DetailSection title="Record Info" noGrid>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <DetailField label="Opportunity ID" value={opp.id} />
+            <DetailField label="Created"        value={formatDate(opp.createdAt)} />
+            <DetailField label="Last Updated"   value={formatDate(opp.updatedAt)} />
           </div>
+        </DetailSection>
 
-          <OpportunityActivitiesSection opportunityId={opp.id ?? ''} />
-          <OpportunityVisitsSection opportunityId={opp.id ?? ''} />
-        </div>
-      )}
-
-      {/* Edit mode */}
-      {editing && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Overview</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormRow label="Topic *" error={errors.topic?.message}>
-                <Input {...register('topic')} />
-              </FormRow>
-              <FormRow label="Type" error={errors.type?.message}>
-                <Input {...register('type')} placeholder="e.g. New Business" />
-              </FormRow>
-              <FormRow label="Stage">
-                <Controller
-                  name="salesStage"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                      <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
-                      <SelectContent>
-                        {salesStageOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </FormRow>
-              <FormRow label="Forecast Category">
-                <Controller
-                  name="forecastCategory"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                      <SelectTrigger><SelectValue placeholder="Select forecast" /></SelectTrigger>
-                      <SelectContent>
-                        {forecastCategoryOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </FormRow>
-              <FormRow label="Lead Source">
-                <Input {...register('leadSource')} placeholder="e.g. Referral" />
-              </FormRow>
-              <CheckboxField label="Budget Confirmed" id="budgetConfirmed" {...register('budgetConfirmed')} />
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Financials</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormRow label="Est. Revenue" error={errors.estRevenue?.message}>
-                <Input {...register('estRevenue')} type="number" min={0} step={0.01} />
-              </FormRow>
-              <FormRow label="Probability (%)" error={errors.probabilityPct?.message}>
-                <Input {...register('probabilityPct')} type="number" min={0} max={100} />
-              </FormRow>
-              <FormRow label="Currency">
-                <Input {...register('currency')} placeholder="e.g. PHP" />
-              </FormRow>
-              <FormRow label="Est. Close Date" error={errors.estCloseDate?.message}>
-                <DateInput {...register('estCloseDate')} />
-              </FormRow>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Description</h2>
-            <TextareaWithCounter {...register('description')} rows={4} maxLength={2000} placeholder="Notes about this opportunity…" />
-          </div>
-
-          <div className="flex items-center gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={cancelEdit} disabled={isPending}>
-              <X className="h-3.5 w-3.5 mr-1.5" />
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              <Check className="h-3.5 w-3.5 mr-1.5" />
-              {isPending ? 'Saving…' : 'Save Changes'}
-            </Button>
-          </div>
-        </form>
-      )}
+        <OpportunityProductsSection opportunityId={opp.id ?? ''} accountId={opp.accountId ?? ''} />
+        <OpportunityActivitiesSection opportunityId={opp.id ?? ''} />
+        <OpportunityVisitsSection opportunityId={opp.id ?? ''} />
+      </div>
 
       <EntityTagsSection entityType="PharmaOpportunity" entityId={id ?? ''} />
-          <EntityNotesSection entityType="PharmaOpportunity" entityId={id ?? ''} />
+      <EntityNotesSection entityType="PharmaOpportunity" entityId={id ?? ''} />
       <EntityHistorySection entityType="PharmaOpportunity" entityId={id ?? ''} />
 
       {/* Stage advance confirmation */}

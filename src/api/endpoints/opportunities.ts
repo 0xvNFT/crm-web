@@ -6,6 +6,9 @@ import type {
   CreateOpportunityRequest,
   UpdateOpportunityRequest,
   StageRequest,
+  OpportunityProduct,
+  AddOpportunityProductRequest,
+  UpdateOpportunityProductRequest,
 } from '@/api/app-types'
 
 export function useOpportunities(page = 0, size = 20, filters: Record<string, string> = {}) {
@@ -76,7 +79,7 @@ export function useCreateOpportunity() {
   return useMutation({
     mutationFn: (data: CreateOpportunityRequest) =>
       client.post<PharmaOpportunity>('/api/v1/pharma/opportunities', data).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['opportunities', 'list'] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['opportunities'] }),
   })
 }
 
@@ -85,10 +88,7 @@ export function useUpdateOpportunity(id: string) {
   return useMutation({
     mutationFn: (data: UpdateOpportunityRequest) =>
       client.put<PharmaOpportunity>(`/api/v1/pharma/opportunities/${id}`, data).then((r) => r.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities'] })
-      qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['opportunities'] }),
   })
 }
 
@@ -99,9 +99,64 @@ export function useAdvanceOpportunityStage(id: string) {
       client
         .post<PharmaOpportunity>(`/api/v1/pharma/opportunities/${id}/stage`, data)
         .then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['opportunities'] }),
+  })
+}
+
+// ── Opportunity Line Items (Products) ──────────────────────────────────────────
+
+export function useOpportunityProducts(opportunityId: string) {
+  return useQuery({
+    queryKey: ['opportunities', opportunityId, 'products'],
+    queryFn: () =>
+      client
+        .get<OpportunityProduct[]>(`/api/v1/pharma/opportunities/${opportunityId}/products`)
+        .then((r) => r.data),
+    enabled: !!opportunityId,
+  })
+}
+
+export function useAddOpportunityProduct(opportunityId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AddOpportunityProductRequest) =>
+      client
+        .post<OpportunityProduct>(`/api/v1/pharma/opportunities/${opportunityId}/products`, data)
+        .then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['opportunities'] })
-      qc.invalidateQueries({ queryKey: ['opportunities', 'list'] })
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId, 'products'] })
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId] })
+    },
+  })
+}
+
+export function useUpdateOpportunityProduct(opportunityId: string, lineItemId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UpdateOpportunityProductRequest) =>
+      client
+        .put<OpportunityProduct>(
+          `/api/v1/pharma/opportunities/${opportunityId}/products/${lineItemId}`,
+          data,
+        )
+        .then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId, 'products'] })
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId] })
+    },
+  })
+}
+
+export function useRemoveOpportunityProduct(opportunityId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (lineItemId: string) =>
+      client
+        .delete(`/api/v1/pharma/opportunities/${opportunityId}/products/${lineItemId}`)
+        .then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId, 'products'] })
+      qc.invalidateQueries({ queryKey: ['opportunities', opportunityId] })
     },
   })
 }
