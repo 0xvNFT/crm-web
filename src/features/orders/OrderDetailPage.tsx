@@ -14,26 +14,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { formatCurrency, formatDate } from '@/utils/formatters'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-3 gap-4 py-2 border-b last:border-0">
-      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-      <dd className="col-span-2 text-sm">{value ?? '—'}</dd>
-    </div>
-  )
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <dl>{children}</dl>
-    </div>
-  )
-}
+import { DlSection, DetailRow } from '@/components/shared/DetailSection'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -72,15 +53,15 @@ export default function OrderDetailPage() {
   const canCancel  = isManager && order.status !== 'canceled' && order.status !== 'delivered'
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-start gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+      <div className="flex items-start gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold">{order.orderNumber}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{order.orderNumber}</h1>
             {order.status && <StatusBadge status={order.status} />}
           </div>
           {order.accountName && (
@@ -132,7 +113,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Order Info */}
-      <Section title="Order Info">
+      <DlSection title="Order Info">
         <DetailRow label="Order #"       value={order.orderNumber} />
         <DetailRow label="Status"        value={order.status ? <StatusBadge status={order.status} /> : '—'} />
         <DetailRow label="Order Date"    value={order.orderDate ? formatDate(order.orderDate) : null} />
@@ -152,16 +133,16 @@ export default function OrderDetailPage() {
           />
         )}
         {order.notes && <DetailRow label="Notes" value={order.notes} />}
-      </Section>
+      </DlSection>
 
       {/* Account */}
-      <Section title="Account">
+      <DlSection title="Account">
         <DetailRow label="Name"         value={order.accountName} />
-      </Section>
+      </DlSection>
 
       {/* Line Items */}
       {order.items && order.items.length > 0 && (
-        <div className="rounded-xl border bg-background p-5 space-y-3">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -193,25 +174,25 @@ export default function OrderDetailPage() {
       )}
 
       {/* Amounts */}
-      <Section title="Amounts">
+      <DlSection title="Amounts">
         <DetailRow label="Subtotal"  value={order.subtotal != null ? formatCurrency(order.subtotal) : null} />
         <DetailRow label="Discount"  value={order.discountAmount != null ? formatCurrency(order.discountAmount) : null} />
         <DetailRow label="Tax"       value={order.taxAmount != null ? formatCurrency(order.taxAmount) : null} />
         <DetailRow label="Total"     value={order.totalAmount != null ? formatCurrency(order.totalAmount) : null} />
-      </Section>
+      </DlSection>
 
       {/* Approval */}
-      <Section title="Approval">
+      <DlSection title="Approval">
         <DetailRow label="Approval Status" value={order.approvalStatus} />
         <DetailRow label="Approved By"     value={order.approvedByName} />
         <DetailRow label="Approved At"     value={order.approvedAt ? formatDate(order.approvedAt) : null} />
-      </Section>
+      </DlSection>
 
       {/* Timestamps */}
-      <Section title="Timestamps">
+      <DlSection title="Timestamps">
         <DetailRow label="Created" value={order.createdAt ? formatDate(order.createdAt) : null} />
         <DetailRow label="Updated" value={order.updatedAt ? formatDate(order.updatedAt) : null} />
-      </Section>
+      </DlSection>
 
       <EntityTagsSection entityType="PharmaOrder" entityId={id ?? ''} />
           <EntityNotesSection entityType="PharmaOrder" entityId={id ?? ''} />

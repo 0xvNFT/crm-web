@@ -20,30 +20,7 @@ import { materialEditSchema, type MaterialEditFormData } from '@/schemas/materia
 import { formatDate } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
-
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 export default function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -120,7 +97,7 @@ export default function MaterialDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
@@ -128,7 +105,7 @@ export default function MaterialDetailPage() {
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{material.title}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{material.title}</h1>
             {material.status && <StatusBadge status={material.status} />}
             {material.isCurrent && (
               <span className="inline-flex items-center rounded-full bg-green-50 border border-green-200 px-2.5 py-0.5 text-xs font-semibold text-green-700">
@@ -204,7 +181,7 @@ export default function MaterialDetailPage() {
       {/* Edit form */}
       {editing && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="rounded-xl border bg-background p-5 space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
             <h2 className="text-sm font-semibold text-foreground">Edit Material</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormRow label="Title" error={errors.title?.message} className="sm:col-span-2">
@@ -260,7 +237,7 @@ export default function MaterialDetailPage() {
 
       {/* View mode */}
       {!editing && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <DetailSection title="File Info">
             <DetailField label="Title" value={material.title} />
             <DetailField label="File Name" value={material.fileName} />
@@ -283,7 +260,7 @@ export default function MaterialDetailPage() {
           </DetailSection>
 
           {material.storageUrl && (
-            <div className="rounded-xl border bg-background p-5 flex items-center justify-between gap-4">
+            <div className="rounded-xl border border-border/60 bg-card p-5 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 min-w-0">
                 <FileText className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
                 <span className="text-sm text-muted-foreground truncate">{material.storageUrl}</span>
@@ -297,7 +274,7 @@ export default function MaterialDetailPage() {
           )}
 
           {material.description && (
-            <div className="rounded-xl border bg-background p-5 space-y-2">
+            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
               <h2 className="text-sm font-semibold text-foreground">Description</h2>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">{material.description}</p>
             </div>

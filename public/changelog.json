@@ -1,13 +1,12 @@
 [
   {
-    "version": "version 2.3.0",
-    "date": "2026-04-14",
-    "title": "What's new in version 2.3.0",
+    "version": "version 2.4.0",
+    "date": "2026-04-16",
+    "title": "What's new in version 2.4.0",
     "items": [
       "Notes section added in the pages",
-      "Sales performance report with rep-level breakdown",
-      "Audit trail logging for all entity changes",
-      "User interface improvements and bug fixes"
+      "UI/UX improvements",
+      "Audit trail logging for all entity changes"
     ]
   }
 ]

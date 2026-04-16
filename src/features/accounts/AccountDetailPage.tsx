@@ -19,32 +19,7 @@ import { AccountActivitiesSection } from './components/AccountActivitiesSection'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
 import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function AccountDetailPage() {
@@ -61,7 +36,7 @@ export default function AccountDetailPage() {
   if (isError || !account) return <ErrorMessage message="Account not found." />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
@@ -69,11 +44,11 @@ export default function AccountDetailPage() {
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{account.name}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{account.name}</h1>
             <StatusBadge status={account.status ?? 'active'} />
             {account.isSupplier && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
-                <Building2 className="h-3 w-3" />
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-200/80 bg-amber-50 px-2 py-0.5 text-[11px] font-medium tracking-wide text-amber-700">
+                <Building2 className="h-3 w-3" strokeWidth={1.75} />
                 Supplier
               </span>
             )}
@@ -160,7 +135,7 @@ export default function AccountDetailPage() {
 
       {/* View mode */}
       {!editing && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <DetailSection title="Account Info">
             <DetailField label="Account Type" value={formatLabel(account.accountType)} />
             <DetailField label="Customer Code" value={account.customerCode} />
@@ -195,7 +170,7 @@ export default function AccountDetailPage() {
             <DetailField label="User HCPs" value={account.userHcpCount} />
           </DetailSection>
 
-          <div className="rounded-xl border bg-background p-5">
+          <div className="rounded-xl border border-border/60 bg-card p-5">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <DetailField label="Account ID" value={account.id} />
               <DetailField label="Created" value={formatDate(account.createdAt)} />

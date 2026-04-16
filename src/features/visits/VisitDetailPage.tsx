@@ -20,33 +20,7 @@ import { VisitRejectDialog } from './components/VisitRejectDialog'
 import { VisitCheckOutDialog } from './components/VisitCheckOutDialog'
 import { VisitProductsSection } from './components/VisitProductsSection'
 import { VisitMaterialsSection } from './components/VisitMaterialsSection'
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function DetailSection({ title, icon: Icon, children }: {
-  title: string
-  icon: React.ElementType
-  children: React.ReactNode
-}) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-        {title}
-      </h2>
-      {children}
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | null }) {
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{value ?? '—'}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -118,15 +92,15 @@ export default function VisitDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-start gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/visits')} className="-ml-2 mt-0.5">
+      <div className="flex items-start gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground truncate">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground truncate">
               {visit.subject ?? visit.visitNumber ?? 'Visit'}
             </h1>
             <StatusBadge status={status} />
@@ -198,7 +172,7 @@ export default function VisitDetailPage() {
       {!editing && (
         <>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <DetailSection title="Visit Details" icon={MapPin}>
+            <DetailSection noGrid title="Visit Details" icon={MapPin}>
               <div className="grid grid-cols-2 gap-3">
                 <DetailField label="Account" value={visit.accountName} />
                 <DetailField label="Contact" value={visit.contactName} />
@@ -221,7 +195,7 @@ export default function VisitDetailPage() {
               </div>
             </DetailSection>
 
-            <DetailSection title="Schedule" icon={Clock}>
+            <DetailSection noGrid title="Schedule" icon={Clock}>
               <div className="grid grid-cols-2 gap-3">
                 <DetailField label="Scheduled Start" value={formatDateTime(visit.scheduledStart)} />
                 <DetailField label="Scheduled End" value={formatDateTime(visit.scheduledEnd)} />
@@ -233,7 +207,7 @@ export default function VisitDetailPage() {
             </DetailSection>
           </div>
 
-          <DetailSection title="Call Details" icon={FileSignature}>
+          <DetailSection noGrid title="Call Details" icon={FileSignature}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-0.5">
                 <p className="text-xs font-medium text-muted-foreground">Call Objectives</p>
@@ -257,7 +231,7 @@ export default function VisitDetailPage() {
           </DetailSection>
 
           {(visit.followUpRequired || visit.followUpNotes || visit.nextBestAction) && (
-            <DetailSection title="Follow-up" icon={CheckCircle}>
+            <DetailSection noGrid title="Follow-up" icon={CheckCircle}>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <DetailField label="Follow-up Required" value={visit.followUpRequired ? 'Yes' : 'No'} />
                 <DetailField label="Next Best Action" value={visit.nextBestAction} />
@@ -270,7 +244,7 @@ export default function VisitDetailPage() {
           )}
 
           {(visit.gpsLatitude || visit.locationName) && (
-            <DetailSection title="Location" icon={MapPin}>
+            <DetailSection noGrid title="Location" icon={MapPin}>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <DetailField label="Location Name" value={visit.locationName} />
                 <DetailField label="GPS Latitude" value={visit.gpsLatitude?.toString()} />
@@ -281,7 +255,7 @@ export default function VisitDetailPage() {
           )}
 
           {visit.signatureRequired && (
-            <DetailSection title="Signature" icon={FileSignature}>
+            <DetailSection noGrid title="Signature" icon={FileSignature}>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <DetailField label="Signature Required" value="Yes" />
                 <DetailField label="Signature Captured" value={visit.signatureCaptured ? 'Yes' : 'No'} />
@@ -302,7 +276,7 @@ export default function VisitDetailPage() {
           )}
 
           {(visit.reviewedById || visit.reviewedAt) && (
-            <DetailSection title="Review" icon={User}>
+            <DetailSection noGrid title="Review" icon={User}>
               <div className="grid grid-cols-2 gap-3">
                 <DetailField label="Reviewed By" value={visit.reviewedByName} />
                 <DetailField label="Reviewed At" value={visit.reviewedAt ? formatDateTime(visit.reviewedAt) : null} />
@@ -311,7 +285,7 @@ export default function VisitDetailPage() {
           )}
 
           {visit.notes && (
-            <DetailSection title="Notes" icon={FileSignature}>
+            <DetailSection noGrid title="Notes" icon={FileSignature}>
               <p className="text-sm text-foreground whitespace-pre-wrap">{visit.notes}</p>
             </DetailSection>
           )}

@@ -14,31 +14,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { formatDate, formatCurrency } from '@/utils/formatters'
-
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
-    </div>
-  )
-}
-
-function DetailField({ label, value }: { label: string; value?: string | number | boolean | null }) {
-  const display =
-    value === null || value === undefined || value === ''
-      ? '—'
-      : typeof value === 'boolean'
-      ? value ? 'Yes' : 'No'
-      : String(value)
-
-  return (
-    <div className="space-y-0.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm text-foreground">{display}</p>
-    </div>
-  )
-}
+import { DetailSection, DetailField } from '@/components/shared/DetailSection'
 
 export default function QuoteDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -64,14 +40,14 @@ export default function QuoteDetailPage() {
   const canConvert = isApproved && !isReadOnly
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{quote.quoteNumber}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{quote.quoteNumber}</h1>
             {quote.status && <StatusBadge status={quote.status} />}
           </div>
           {quote.accountName && (
@@ -130,7 +106,7 @@ export default function QuoteDetailPage() {
 
       {/* Line Items */}
       {quote.items && quote.items.length > 0 && (
-        <div className="rounded-xl border bg-background p-5 space-y-3">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
