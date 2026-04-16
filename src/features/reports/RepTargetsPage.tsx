@@ -118,7 +118,7 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
 
         <div className="sm:col-span-2">
           <Button type="submit" size="sm" disabled={isPending}>
-            <Plus className="h-4 w-4 mr-1.5" />
+            <Plus className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
             {isPending ? 'Saving…' : 'Set Target'}
           </Button>
         </div>
@@ -189,11 +189,11 @@ function TargetRow({ target: t, canEdit }: TargetRowProps) {
             </td>
             <td className="px-4 py-2 text-right">
               <div className="flex items-center justify-end gap-1">
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={saveEdit} disabled={isUpdating}>
-                  <Check className="h-3.5 w-3.5 text-green-600" />
+                <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Save" onClick={saveEdit} disabled={isUpdating}>
+                  <Check className="h-3.5 w-3.5 text-green-600" strokeWidth={1.5} />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={cancelEdit}>
-                  <X className="h-3.5 w-3.5 text-muted-foreground" />
+                <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Cancel" onClick={cancelEdit}>
+                  <X className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
                 </Button>
               </div>
             </td>
@@ -206,11 +206,11 @@ function TargetRow({ target: t, canEdit }: TargetRowProps) {
             {canEdit && (
               <td className="px-4 py-3 text-right">
                 <div className="flex items-center justify-end gap-1">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(true)}>
-                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                  <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Edit target" onClick={() => setEditing(true)}>
+                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setShowDelete(true)}>
-                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Delete target" onClick={() => setShowDelete(true)}>
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" strokeWidth={1.5} />
                   </Button>
                 </div>
               </td>
@@ -255,7 +255,7 @@ export default function RepTargetsPage() {
         description="Set monthly visit, contact, and call targets per rep per territory"
         actions={
           <Button variant="ghost" size="sm" onClick={() => navigate('/reports/kpi')}>
-            <ArrowLeft className="h-4 w-4 mr-1.5" />
+            <ArrowLeft className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
             KPI Reports
           </Button>
         }

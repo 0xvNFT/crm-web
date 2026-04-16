@@ -20,8 +20,8 @@ export default function KpiReportsPage() {
   const { isAdmin, isManager, isRep } = useRole()
   const isRepOnly = isRep && !isManager
 
-  const [year, setYear] = useState(CURRENT_YEAR)
-  const [month, setMonth] = useState(CURRENT_MONTH)
+  const [year, setYear]       = useState(CURRENT_YEAR)
+  const [month, setMonth]     = useState(CURRENT_MONTH)
   const [quarter, setQuarter] = useState(Math.ceil(CURRENT_MONTH / 3))
 
   const monthPeriod = { year, month }
@@ -45,20 +45,20 @@ export default function KpiReportsPage() {
           <div className="flex items-center gap-2">
             {(isAdmin || isManager) && (
               <Button variant="outline" size="sm" onClick={() => navigate('/reports/kpi/targets')}>
-                <Settings className="h-4 w-4 mr-1.5" />
+                <Settings className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
                 Manage Targets
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={() => navigate('/reports/kpi/my-doctors')}>
-              <BookUser className="h-4 w-4 mr-1.5" />
+              <BookUser className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
               My Doctors
             </Button>
             <Button variant="outline" size="sm" onClick={() => navigate('/reports/kpi/sales-performance')}>
-              <TrendingUp className="h-4 w-4 mr-1.5" />
+              <TrendingUp className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
               Sales Performance
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/reports')}>
-              <ArrowLeft className="h-4 w-4 mr-1.5" />
+              <ArrowLeft className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
               All Reports
             </Button>
           </div>
