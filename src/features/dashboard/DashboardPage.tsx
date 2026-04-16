@@ -10,6 +10,15 @@ import { usePipelineSummary, useLeadFunnelSummary, useActivitySummary } from '@/
 import { Building2, Target, ShoppingCart, Activity, CalendarCheck } from 'lucide-react'
 import { OverdueFollowUpsWidget } from './components/OverdueFollowUpsWidget'
 
+// Lightweight section divider used between analytics groups
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-0.5">
+      {children}
+    </p>
+  )
+}
+
 export default function DashboardPage() {
   const { user } = useAuth()
   const { isManager, isRep } = useRole()
@@ -35,98 +44,71 @@ export default function DashboardPage() {
         description={description}
       />
 
-      {/* KPI Stats — FIELD_REP sees personal stats; MANAGER/ADMIN sees org-wide */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* ── KPI Stats ─────────────────────────────────────────────────────────── */}
+      {/* FIELD_REP sees personal stats; MANAGER/ADMIN sees org-wide */}
+      <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
         {isRepOnly ? (
-          // FIELD_REP: personal stats that matter for daily field work
           <>
-            <StatCard
-              label="My Visits"
-              value={myVisits.data ?? '—'}
-              icon={CalendarCheck}
-              loading={myVisits.isLoading}
-            />
-            <StatCard
-              label="My Activities"
-              value={activities.data ?? '—'}
-              icon={Activity}
-              loading={activities.isLoading}
-            />
-            <StatCard
-              label="Accounts"
-              value={accounts.data ?? '—'}
-              icon={Building2}
-              loading={accounts.isLoading}
-            />
-            <StatCard
-              label="My Leads"
-              value={leads.data ?? '—'}
-              icon={Target}
-              loading={leads.isLoading}
-            />
+            <StatCard label="My Visits"      value={myVisits.data ?? '—'}   icon={CalendarCheck} loading={myVisits.isLoading} />
+            <StatCard label="My Activities"  value={activities.data ?? '—'} icon={Activity}      loading={activities.isLoading} />
+            <StatCard label="Accounts"       value={accounts.data ?? '—'}   icon={Building2}     loading={accounts.isLoading} />
+            <StatCard label="My Leads"       value={leads.data ?? '—'}      icon={Target}        loading={leads.isLoading} />
           </>
         ) : (
-          // MANAGER / ADMIN: org-wide overview
           <>
-            <StatCard
-              label="Total Accounts"
-              value={accounts.data ?? '—'}
-              icon={Building2}
-              loading={accounts.isLoading}
-            />
-            <StatCard
-              label="Total Leads"
-              value={leads.data ?? '—'}
-              icon={Target}
-              loading={leads.isLoading}
-            />
-            <StatCard
-              label="Pending Orders"
-              value={pendingOrders.data ?? '—'}
-              icon={ShoppingCart}
-              loading={pendingOrders.isLoading}
-            />
-            <StatCard
-              label="Activities"
-              value={activities.data ?? '—'}
-              icon={Activity}
-              loading={activities.isLoading}
-            />
+            <StatCard label="Total Accounts" value={accounts.data ?? '—'}      icon={Building2}    loading={accounts.isLoading} />
+            <StatCard label="Total Leads"    value={leads.data ?? '—'}         icon={Target}       loading={leads.isLoading} />
+            <StatCard label="Pending Orders" value={pendingOrders.data ?? '—'} icon={ShoppingCart} loading={pendingOrders.isLoading} />
+            <StatCard label="Activities"     value={activities.data ?? '—'}    icon={Activity}     loading={activities.isLoading} />
           </>
         )}
       </div>
 
-      {/* Pipeline chart — MANAGER/ADMIN only: org-level pipeline visibility */}
+      {/* ── Pipeline ──────────────────────────────────────────────────────────── */}
+      {/* MANAGER/ADMIN only: org-level pipeline visibility */}
       {isManager && (
-        <PipelineChart
-          data={pipeline.data}
-          isLoading={pipeline.isLoading}
-          isError={pipeline.isError}
-          error={pipeline.error}
-          onRetry={() => pipeline.refetch()}
-        />
+        <div className="space-y-3">
+          <SectionLabel>Pipeline</SectionLabel>
+          <PipelineChart
+            data={pipeline.data}
+            isLoading={pipeline.isLoading}
+            isError={pipeline.isError}
+            error={pipeline.error}
+            onRetry={() => pipeline.refetch()}
+          />
+        </div>
       )}
 
-      {/* Lead Funnel + Activity Breakdown — all roles see these (backend scopes REP data) */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <LeadFunnelChart
-          data={leadFunnel.data}
-          isLoading={leadFunnel.isLoading}
-          isError={leadFunnel.isError}
-          error={leadFunnel.error}
-          onRetry={() => leadFunnel.refetch()}
-        />
-        <ActivityChart
-          data={activitySummary.data}
-          isLoading={activitySummary.isLoading}
-          isError={activitySummary.isError}
-          error={activitySummary.error}
-          onRetry={() => activitySummary.refetch()}
-        />
+      {/* ── Lead Funnel + Activity ─────────────────────────────────────────────── */}
+      {/* All roles see these; backend scopes REP data server-side */}
+      <div className="space-y-3">
+        <SectionLabel>Leads &amp; Activity</SectionLabel>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <LeadFunnelChart
+            data={leadFunnel.data}
+            isLoading={leadFunnel.isLoading}
+            isError={leadFunnel.isError}
+            error={leadFunnel.error}
+            onRetry={() => leadFunnel.refetch()}
+          />
+          <ActivityChart
+            data={activitySummary.data}
+            isLoading={activitySummary.isLoading}
+            isError={activitySummary.isError}
+            error={activitySummary.error}
+            onRetry={() => activitySummary.refetch()}
+          />
+        </div>
       </div>
 
-      {/* Overdue follow-ups — MANAGER/ADMIN only: coaching oversight tool */}
-      {isManager && <OverdueFollowUpsWidget />}
+      {/* ── Overdue Follow-ups ─────────────────────────────────────────────────── */}
+      {/* MANAGER/ADMIN only: coaching oversight tool */}
+      {isManager && (
+        <div className="space-y-3">
+          <SectionLabel>Coaching Alerts</SectionLabel>
+          <OverdueFollowUpsWidget />
+        </div>
+      )}
     </div>
   )
 }

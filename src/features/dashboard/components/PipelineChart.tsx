@@ -8,8 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { PipelineSummary } from '@/api/app-types'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { ChartCard } from '@/components/shared/ChartCard'
 
 interface PipelineChartProps {
   data: PipelineSummary[] | undefined
@@ -29,62 +28,58 @@ function formatRevenue(value: number) {
   return `₱${value}`
 }
 
+const TOOLTIP_STYLE = {
+  fontSize: 12,
+  borderRadius: '8px',
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-card)',
+  color: 'var(--color-foreground)',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+}
+
 export function PipelineChart({ data, isLoading, isError, error, onRetry }: PipelineChartProps) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-5">
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold text-foreground">Pipeline by Stage</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">Estimated revenue across open opportunities</p>
-      </div>
-
-      {isLoading && <LoadingSpinner className="py-12" />}
-      {isError && <ErrorMessage className="py-12" error={error} onRetry={onRetry} />}
-
-      {data && data.length === 0 && (
-        <div className="flex items-center justify-center py-12">
-          <p className="text-sm text-muted-foreground">No pipeline data yet.</p>
-        </div>
-      )}
-
-      {data && data.length > 0 && (
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-            <XAxis
-              dataKey="salesStage"
-              tickFormatter={formatStage}
-              tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              tickFormatter={formatRevenue}
-              tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
-              axisLine={false}
-              tickLine={false}
-              width={60}
-            />
-            <Tooltip
-              formatter={(value) => [formatRevenue(Number(value)), 'Est. Revenue']}
-              labelFormatter={(label) => formatStage(String(label ?? ''))}
-              contentStyle={{
-                fontSize: 12,
-                borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                background: 'var(--color-background)',
-                color: 'var(--color-foreground)',
-              }}
-              cursor={{ fill: 'var(--color-secondary)' }}
-            />
-            <Bar
-              dataKey="totalEstRevenue"
-              fill="var(--color-primary)"
-              radius={[4, 4, 0, 0]}
-              maxBarSize={48}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </div>
+    <ChartCard
+      title="Pipeline by Stage"
+      description="Estimated revenue across open opportunities"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      onRetry={onRetry}
+      isEmpty={!!data && data.length === 0}
+      emptyMessage="No pipeline data yet."
+    >
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+          <XAxis
+            dataKey="salesStage"
+            tickFormatter={formatStage}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tickFormatter={formatRevenue}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+            axisLine={false}
+            tickLine={false}
+            width={60}
+          />
+          <Tooltip
+            formatter={(value) => [formatRevenue(Number(value)), 'Est. Revenue']}
+            labelFormatter={(label) => formatStage(String(label ?? ''))}
+            contentStyle={TOOLTIP_STYLE}
+            cursor={{ fill: 'var(--color-muted)', opacity: 0.5 }}
+          />
+          <Bar
+            dataKey="totalEstRevenue"
+            fill="var(--color-primary)"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={52}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartCard>
   )
 }

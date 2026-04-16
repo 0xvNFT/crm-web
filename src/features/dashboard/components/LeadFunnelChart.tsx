@@ -9,8 +9,7 @@ import {
   Cell,
 } from 'recharts'
 import type { LeadFunnelSummary } from '@/api/app-types'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { ChartCard } from '@/components/shared/ChartCard'
 
 interface LeadFunnelChartProps {
   data: LeadFunnelSummary[] | undefined
@@ -32,6 +31,15 @@ const STAGE_LABELS: Record<string, string> = {
 // Opacity steps to give a funnel feel
 const STAGE_OPACITY = [1, 0.85, 0.7, 0.55, 0.4]
 
+const TOOLTIP_STYLE = {
+  fontSize: 12,
+  borderRadius: '8px',
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-card)',
+  color: 'var(--color-foreground)',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+}
+
 export function LeadFunnelChart({ data, isLoading, isError, error, onRetry }: LeadFunnelChartProps) {
   const sorted = data
     ? STAGE_ORDER
@@ -43,66 +51,53 @@ export function LeadFunnelChart({ data, isLoading, isError, error, onRetry }: Le
     : []
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-5">
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold text-foreground">Lead Funnel</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">Lead counts by current status</p>
-      </div>
-
-      {isLoading && <LoadingSpinner className="py-10" />}
-      {isError && <ErrorMessage className="py-10" error={error} onRetry={onRetry} />}
-
-      {data && sorted.length === 0 && (
-        <div className="flex items-center justify-center py-10">
-          <p className="text-sm text-muted-foreground">No leads yet.</p>
-        </div>
-      )}
-
-      {sorted.length > 0 && (
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart
-            layout="vertical"
-            data={sorted}
-            margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
-            <XAxis
-              type="number"
-              tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
-              axisLine={false}
-              tickLine={false}
-              allowDecimals={false}
-            />
-            <YAxis
-              type="category"
-              dataKey="label"
-              tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
-              axisLine={false}
-              tickLine={false}
-              width={72}
-            />
-            <Tooltip
-              formatter={(value) => [Number(value), 'Leads']}
-              contentStyle={{
-                fontSize: 12,
-                borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                background: 'var(--color-background)',
-                color: 'var(--color-foreground)',
-              }}
-              cursor={{ fill: 'var(--color-secondary)' }}
-            />
-            <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={28}>
-              {sorted.map((_, i) => (
-                <Cell
-                  key={i}
-                  fill={`color-mix(in srgb, var(--color-primary) ${Math.round(STAGE_OPACITY[i] * 100)}%, transparent)`}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </div>
+    <ChartCard
+      title="Lead Funnel"
+      description="Lead counts by current status"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      onRetry={onRetry}
+      isEmpty={!!data && sorted.length === 0}
+      emptyMessage="No leads yet."
+    >
+      <ResponsiveContainer width="100%" height={220}>
+        <BarChart
+          layout="vertical"
+          data={sorted}
+          margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+            axisLine={false}
+            tickLine={false}
+            allowDecimals={false}
+          />
+          <YAxis
+            type="category"
+            dataKey="label"
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+            axisLine={false}
+            tickLine={false}
+            width={72}
+          />
+          <Tooltip
+            formatter={(value) => [Number(value), 'Leads']}
+            contentStyle={TOOLTIP_STYLE}
+            cursor={{ fill: 'var(--color-muted)', opacity: 0.5 }}
+          />
+          <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={28}>
+            {sorted.map((_, i) => (
+              <Cell
+                key={i}
+                fill={`color-mix(in srgb, var(--color-primary) ${Math.round(STAGE_OPACITY[i] * 100)}%, transparent)`}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartCard>
   )
 }

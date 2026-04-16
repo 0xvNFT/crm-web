@@ -1,7 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { ActivitySummary } from '@/api/app-types'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { ChartCard } from '@/components/shared/ChartCard'
 
 interface ActivityChartProps {
   data: ActivitySummary[] | undefined
@@ -35,60 +34,56 @@ const COLORS = [
   'hsl(231 30% 85%)',
 ]
 
+const TOOLTIP_STYLE = {
+  fontSize: 12,
+  borderRadius: '8px',
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-card)',
+  color: 'var(--color-foreground)',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+}
+
 export function ActivityChart({ data, isLoading, isError, error, onRetry }: ActivityChartProps) {
   const chartData = data ? aggregateByType(data) : []
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-5">
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold text-foreground">Activity Breakdown</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">Total activities by type</p>
-      </div>
-
-      {isLoading && <LoadingSpinner className="py-10" />}
-      {isError && <ErrorMessage className="py-10" error={error} onRetry={onRetry} />}
-
-      {data && chartData.length === 0 && (
-        <div className="flex items-center justify-center py-10">
-          <p className="text-sm text-muted-foreground">No activities yet.</p>
-        </div>
-      )}
-
-      {chartData.length > 0 && (
-        <ResponsiveContainer width="100%" height={200}>
-          <PieChart>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              innerRadius={55}
-              outerRadius={80}
-              paddingAngle={3}
-              dataKey="value"
-            >
-              {chartData.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value, name) => [Number(value), formatType(String(name ?? ''))]}
-              contentStyle={{
-                fontSize: 12,
-                borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                background: 'var(--color-background)',
-                color: 'var(--color-foreground)',
-              }}
-            />
-            <Legend
-              formatter={(value) => formatType(value)}
-              iconType="circle"
-              iconSize={8}
-              wrapperStyle={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      )}
-    </div>
+    <ChartCard
+      title="Activity Breakdown"
+      description="Total activities by type"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      onRetry={onRetry}
+      isEmpty={!!data && chartData.length === 0}
+      emptyMessage="No activities yet."
+    >
+      <ResponsiveContainer width="100%" height={220}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={58}
+            outerRadius={85}
+            paddingAngle={3}
+            dataKey="value"
+          >
+            {chartData.map((_, i) => (
+              <Cell key={i} fill={COLORS[i % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip
+            formatter={(value, name) => [Number(value), formatType(String(name ?? ''))]}
+            contentStyle={TOOLTIP_STYLE}
+          />
+          <Legend
+            formatter={(value) => formatType(value)}
+            iconType="circle"
+            iconSize={8}
+            wrapperStyle={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </ChartCard>
   )
 }
