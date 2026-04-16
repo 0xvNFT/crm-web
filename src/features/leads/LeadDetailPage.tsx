@@ -37,7 +37,7 @@ export default function LeadDetailPage() {
     <div className="space-y-5">
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">

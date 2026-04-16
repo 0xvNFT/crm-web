@@ -39,7 +39,7 @@ export function ActivityChart({ data, isLoading, isError, error, onRetry }: Acti
   const chartData = data ? aggregateByType(data) : []
 
   return (
-    <div className="rounded-xl border bg-background p-5">
+    <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-foreground">Activity Breakdown</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Total activities by type</p>

@@ -308,7 +308,7 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
         </FormRow>
       </FormSection>
 
-      <div className="rounded-xl border bg-background p-5 space-y-2">
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
         <Label className="text-sm font-semibold text-foreground">Notes</Label>
         <TextareaWithCounter {...register('notes')} rows={3} maxLength={2000} />
       </div>

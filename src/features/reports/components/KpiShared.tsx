@@ -43,7 +43,7 @@ interface KpiSectionProps {
 
 export function KpiSection({ title, icon: Icon, children, isLoading }: KpiSectionProps) {
   return (
-    <div className="rounded-xl border bg-background overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="flex items-center gap-2 px-5 py-4 border-b">
         <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
         <h2 className="text-sm font-semibold text-foreground">{title}</h2>

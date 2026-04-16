@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CheckboxField } from '@/components/shared/CheckboxField'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
@@ -49,8 +48,8 @@ export function InvoiceEditForm({ invoiceId, defaultValues }: InvoiceEditFormPro
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
-      <div className="rounded-xl border bg-background p-5 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-3xl">
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invoice Info</h2>
 
         <p className="text-xs text-muted-foreground">
@@ -121,15 +120,14 @@ export function InvoiceEditLoader({ id }: { id: string }) {
   const navigate = useNavigate()
   const { data: invoice, isLoading, isError } = useInvoice(id)
 
-  useEffect(() => {
-    if (invoice && invoice.status !== 'draft') {
-      toast('Only draft invoices can be edited', { variant: 'destructive' })
-      navigate(`/invoices/${id}`, { replace: true })
-    }
-  }, [invoice, id, navigate])
-
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <DetailPageSkeleton />
   if (isError || !invoice) return <ErrorMessage message="Invoice not found." />
+
+  if (invoice.status !== 'draft') {
+    toast('Only draft invoices can be edited', { variant: 'destructive' })
+    navigate(`/invoices/${id}`, { replace: true })
+    return null
+  }
 
   const defaultValues: InvoiceEditFormData = {
     subject: invoice.subject ?? '',
@@ -145,9 +143,9 @@ export function InvoiceEditLoader({ id }: { id: string }) {
 
   return (
     <>
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-3 mb-5">
         <Button variant="ghost" size="icon" onClick={() => navigate(`/invoices/${id}`)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Edit Invoice</h1>

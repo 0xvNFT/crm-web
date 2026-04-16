@@ -99,8 +99,8 @@ export function InvoiceCreateForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
-      <div className="rounded-xl border bg-background p-5 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-3xl">
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invoice Info</h2>
 
         <FormRow label="Subject" required error={errors.subject?.message}>
@@ -207,7 +207,7 @@ export function InvoiceCreateForm() {
         <CheckboxField label="Tax Exempt" id="taxExempt" {...register('taxExempt')} />
       </div>
 
-      <div className="rounded-xl border bg-background p-5 space-y-4">
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
           <Button

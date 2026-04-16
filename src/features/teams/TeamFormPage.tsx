@@ -63,7 +63,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -74,7 +74,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
         />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <FormSection title="Team Info">
           <FormRow label="Team Name" required error={errors.name?.message}>
             <Input {...register('name')} placeholder="e.g. Metro Manila Sales Team" autoFocus />
@@ -108,7 +108,7 @@ function TeamForm({ team, isEdit }: { team?: PharmaTeam; isEdit: boolean }) {
         </FormSection>
 
         {/* Sticky footer */}
-        <div className="sticky bottom-0 -mx-6 border-t bg-background px-6 py-3 flex items-center justify-end gap-2">
+        <div className="sticky bottom-0 -mx-6 border-t border-border/50 bg-background/95 backdrop-blur-sm px-6 py-3 flex items-center justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>

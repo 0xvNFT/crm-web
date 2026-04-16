@@ -407,7 +407,7 @@ export function EntityNotesSection({ entityType, entityId }: EntityNotesSectionP
   const totalPages = data?.totalPages ?? 0
 
   return (
-    <div className="rounded-xl border bg-background overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
       {/* Header */}
       <div className="px-5 py-3 border-b bg-muted/40 flex items-center justify-between">
         <div className="flex items-center gap-2">

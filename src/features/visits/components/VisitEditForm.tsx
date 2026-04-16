@@ -81,8 +81,8 @@ export function VisitEditForm({ visitId, visit, onSuccess, onCancel }: VisitEdit
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="rounded-xl border bg-background p-5 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground">Edit Visit</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormRow label="Subject" required error={errors.subject?.message} className="sm:col-span-2">

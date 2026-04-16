@@ -156,7 +156,7 @@ export default function InvoiceDetailPage() {
 
       {/* Line Items */}
       {invoice.items && invoice.items.length > 0 && (
-        <div className="rounded-xl border bg-background overflow-hidden">
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
           <div className="p-5 border-b">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Line Items</h2>
           </div>

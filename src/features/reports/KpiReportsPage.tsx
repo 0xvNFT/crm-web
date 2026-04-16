@@ -37,7 +37,7 @@ export default function KpiReportsPage() {
     : 'Your call rate, compliance, and doctor reach for the selected period'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="KPI Reports"
         description={description}
@@ -65,7 +65,7 @@ export default function KpiReportsPage() {
         }
       />
 
-      <div className="rounded-xl border bg-background p-4">
+      <div className="rounded-xl border border-border/60 bg-card p-4">
         <PeriodSelector
           year={year}
           month={month}

@@ -10,6 +10,7 @@ import { useTerritorySearch } from '@/api/endpoints/territories'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -63,10 +64,8 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="rounded-xl border bg-background p-5 space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Add / Update Target</h2>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormSection title="Add / Update Target">
         <FormRow label="Rep" required error={errors.repId?.message}>
           <Controller
             name="repId"
@@ -116,12 +115,14 @@ function AddTargetForm({ year, month }: AddTargetFormProps) {
         <FormRow label="Target Calls" required error={errors.targetCalls?.message}>
           <Input type="number" min={1} {...register('targetCalls')} className={errors.targetCalls ? 'border-destructive' : ''} />
         </FormRow>
-      </div>
 
-      <Button type="submit" size="sm" disabled={isPending}>
-        <Plus className="h-4 w-4 mr-1.5" />
-        {isPending ? 'Saving…' : 'Set Target'}
-      </Button>
+        <div className="sm:col-span-2">
+          <Button type="submit" size="sm" disabled={isPending}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            {isPending ? 'Saving…' : 'Set Target'}
+          </Button>
+        </div>
+      </FormSection>
     </form>
   )
 }
@@ -248,7 +249,7 @@ export default function RepTargetsPage() {
   const targets = targetsPage?.content ?? []
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-5 max-w-4xl">
       <PageHeader
         title="Rep Targets"
         description="Set monthly visit, contact, and call targets per rep per territory"
@@ -294,7 +295,7 @@ export default function RepTargetsPage() {
       {canEdit && <AddTargetForm year={year} month={month} />}
 
       {/* Existing targets table */}
-      <div className="rounded-xl border bg-background overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
         <div className="px-5 py-4 border-b">
           <h2 className="text-sm font-semibold text-foreground">
             Targets — {MONTHS[month - 1]} {year}

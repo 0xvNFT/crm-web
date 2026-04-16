@@ -92,10 +92,10 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <PageHeader
           title={isEdit ? 'Edit Lead' : 'New Lead'}
@@ -103,7 +103,7 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
         />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <FormSection title="Contact Info">
           <FormRow label="First Name" error={errors.firstName?.message}>
             {prefill?.firstName
@@ -186,7 +186,7 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
           </FormRow>
         </FormSection>
 
-        <div className="flex items-center gap-2 justify-end">
+        <div className="sticky bottom-0 -mx-6 border-t border-border/50 bg-background/95 backdrop-blur-sm px-6 py-3 flex items-center justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>

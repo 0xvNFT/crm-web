@@ -16,6 +16,7 @@ import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FormSection } from '@/components/shared/FormSection'
 import type { PharmaAccount } from '@/api/app-types'
 
 export default function OrderFormPage() {
@@ -76,20 +77,18 @@ export default function OrderFormPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         <PageHeader title="New Order" description="Create a new sales order" />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-3xl">
         {/* Order Info */}
-        <div className="rounded-xl border bg-background p-5 space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Order Info</h2>
-
-          <div className="space-y-1">
+        <FormSection title="Order Info">
+          <div className="sm:col-span-2 space-y-1">
             <Label>Account *</Label>
             <Controller
               name="accountId"
@@ -120,52 +119,50 @@ export default function OrderFormPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <Label htmlFor="discountPercent">Order Discount %</Label>
-              <Input
-                id="discountPercent"
-                type="number"
-                min={0}
-                max={100}
-                step={0.01}
-                placeholder="0"
-                {...register('discountPercent')}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="taxAmount">Tax Amount (₱)</Label>
-              <Input
-                id="taxAmount"
-                type="number"
-                min={0}
-                step={0.01}
-                placeholder="0.00"
-                {...register('taxAmount')}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="deliveryDate">Delivery Date</Label>
-              <Input
-                id="deliveryDate"
-                type="datetime-local"
-                {...register('deliveryDate')}
-              />
-            </div>
+          <div className="space-y-1">
+            <Label htmlFor="discountPercent">Order Discount %</Label>
+            <Input
+              id="discountPercent"
+              type="number"
+              min={0}
+              max={100}
+              step={0.01}
+              placeholder="0"
+              {...register('discountPercent')}
+            />
           </div>
 
           <div className="space-y-1">
+            <Label htmlFor="taxAmount">Tax Amount (₱)</Label>
+            <Input
+              id="taxAmount"
+              type="number"
+              min={0}
+              step={0.01}
+              placeholder="0.00"
+              {...register('taxAmount')}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="deliveryDate">Delivery Date</Label>
+            <Input
+              id="deliveryDate"
+              type="datetime-local"
+              {...register('deliveryDate')}
+            />
+          </div>
+
+          <div className="sm:col-span-2 space-y-1">
             <Label htmlFor="notes">Notes</Label>
             <TextareaWithCounter id="notes" placeholder="Order notes..." rows={3} maxLength={2000} {...register('notes')} />
           </div>
-        </div>
+        </FormSection>
 
         {/* Line Items */}
-        <div className="rounded-xl border bg-background p-5">
+        <FormSection title="Line Items" noGrid>
           <LineItemsField control={control} errors={errors} accountId={watchedAccountId ?? ''} />
-        </div>
+        </FormSection>
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isPending}>

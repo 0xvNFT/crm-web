@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CheckboxField } from '@/components/shared/CheckboxField'
 import { FormRow } from '@/components/shared/FormRow'
+import { FormSection } from '@/components/shared/FormSection'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { accountEditSchema, type AccountEditFormData } from '@/schemas/accounts'
@@ -92,174 +93,159 @@ export function AccountEditForm({ accountId, account, onSuccess, onCancel }: Acc
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-foreground">Account Info</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormRow label="Name" error={errors.name?.message}>
-            <Input {...register('name')} />
-          </FormRow>
-          <FormRow label="Account Type" error={errors.accountType?.message}>
-            <Controller
-              name="accountType"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
-                  <SelectContent>
-                    {accountTypeOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </FormRow>
-          <FormRow label="Status" error={errors.status?.message}>
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
-                  <SelectContent>
-                    {accountStatusOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </FormRow>
-          <FormRow label="Customer Class" error={errors.primaryCustomerClass?.message}>
-            <Controller
-              name="primaryCustomerClass"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
-                  <SelectContent>
-                    {customerClassOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </FormRow>
-          <FormRow label="Owner (Rep)" error={errors.ownerId?.message}>
-            <Controller
-              name="ownerId"
-              control={control}
-              render={({ field }) => (
-                <Combobox
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
-                  options={ownerOptions}
-                  selectedOption={selectedOwnerOption}
-                  placeholder="Search rep..."
-                  searchPlaceholder="Type name..."
-                  onSearchChange={setOwnerQuery}
-                  isLoading={isSearchingOwners}
-                />
-              )}
-            />
-          </FormRow>
-          <FormRow label="Parent Account" error={errors.parentAccountId?.message}>
-            <Controller
-              name="parentAccountId"
-              control={control}
-              render={({ field }) => (
-                <Combobox
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
-                  options={parentOptions}
-                  selectedOption={selectedParentOption}
-                  placeholder="Search account..."
-                  searchPlaceholder="Type account name..."
-                  onSearchChange={setParentQuery}
-                  isLoading={isSearchingParents}
-                />
-              )}
-            />
-          </FormRow>
-          <CheckboxField label="Is Supplier" id="isSupplier" className="sm:col-span-2" {...register('isSupplier')} />
-        </div>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <FormSection title="Account Info">
+        <FormRow label="Name" error={errors.name?.message}>
+          <Input {...register('name')} />
+        </FormRow>
+        <FormRow label="Account Type" error={errors.accountType?.message}>
+          <Controller
+            name="accountType"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                <SelectContent>
+                  {accountTypeOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormRow>
+        <FormRow label="Status" error={errors.status?.message}>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                <SelectContent>
+                  {accountStatusOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormRow>
+        <FormRow label="Customer Class" error={errors.primaryCustomerClass?.message}>
+          <Controller
+            name="primaryCustomerClass"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                <SelectContent>
+                  {customerClassOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormRow>
+        <FormRow label="Owner (Rep)" error={errors.ownerId?.message}>
+          <Controller
+            name="ownerId"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                value={field.value ?? ''}
+                onChange={field.onChange}
+                options={ownerOptions}
+                selectedOption={selectedOwnerOption}
+                placeholder="Search rep..."
+                searchPlaceholder="Type name..."
+                onSearchChange={setOwnerQuery}
+                isLoading={isSearchingOwners}
+              />
+            )}
+          />
+        </FormRow>
+        <FormRow label="Parent Account" error={errors.parentAccountId?.message}>
+          <Controller
+            name="parentAccountId"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                value={field.value ?? ''}
+                onChange={field.onChange}
+                options={parentOptions}
+                selectedOption={selectedParentOption}
+                placeholder="Search account..."
+                searchPlaceholder="Type account name..."
+                onSearchChange={setParentQuery}
+                isLoading={isSearchingParents}
+              />
+            )}
+          />
+        </FormRow>
+        <CheckboxField label="Is Supplier" id="isSupplier" className="sm:col-span-2" {...register('isSupplier')} />
+      </FormSection>
 
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-foreground">Contact Details</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormRow label="Phone" error={errors.phoneMain?.message}>
-            <Input {...register('phoneMain')} placeholder="+63 2 8XXX XXXX" />
-          </FormRow>
-          <FormRow label="Email" error={errors.emailGeneral?.message}>
-            <Input {...register('emailGeneral')} placeholder="contact@hospital.com" />
-          </FormRow>
-          <FormRow label="Website" error={errors.website?.message} className="sm:col-span-2">
-            <Input {...register('website')} placeholder="https://..." />
-          </FormRow>
-        </div>
-      </div>
+      <FormSection title="Contact Details">
+        <FormRow label="Phone" error={errors.phoneMain?.message}>
+          <Input {...register('phoneMain')} placeholder="+63 2 8XXX XXXX" />
+        </FormRow>
+        <FormRow label="Email" error={errors.emailGeneral?.message}>
+          <Input {...register('emailGeneral')} placeholder="contact@hospital.com" />
+        </FormRow>
+        <FormRow label="Website" error={errors.website?.message} className="sm:col-span-2">
+          <Input {...register('website')} placeholder="https://..." />
+        </FormRow>
+      </FormSection>
 
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-foreground">Financials</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormRow label="Credit Limit" error={errors.creditLimit?.message}>
-            <Input {...register('creditLimit')} type="number" min={0} step={0.01} />
-          </FormRow>
-          <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
-            <Controller
-              name="paymentTerms"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select terms" /></SelectTrigger>
-                  <SelectContent>
-                    {paymentTermsOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </FormRow>
-          <FormRow label="Annual Revenue" error={errors.annualRevenue?.message}>
-            <Input {...register('annualRevenue')} type="number" min={0} step={0.01} />
-          </FormRow>
-          <FormRow label="Employees" error={errors.employees?.message}>
-            <Input {...register('employees')} type="number" min={0} />
-          </FormRow>
-          <FormRow label="Tax ID" error={errors.taxId?.message}>
-            <Input {...register('taxId')} />
-          </FormRow>
-        </div>
-      </div>
+      <FormSection title="Financials">
+        <FormRow label="Credit Limit" error={errors.creditLimit?.message}>
+          <Input {...register('creditLimit')} type="number" min={0} step={0.01} />
+        </FormRow>
+        <FormRow label="Payment Terms" error={errors.paymentTerms?.message}>
+          <Controller
+            name="paymentTerms"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                <SelectTrigger><SelectValue placeholder="Select terms" /></SelectTrigger>
+                <SelectContent>
+                  {paymentTermsOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormRow>
+        <FormRow label="Annual Revenue" error={errors.annualRevenue?.message}>
+          <Input {...register('annualRevenue')} type="number" min={0} step={0.01} />
+        </FormRow>
+        <FormRow label="Employees" error={errors.employees?.message}>
+          <Input {...register('employees')} type="number" min={0} />
+        </FormRow>
+        <FormRow label="Tax ID" error={errors.taxId?.message}>
+          <Input {...register('taxId')} />
+        </FormRow>
+      </FormSection>
 
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-foreground">Addresses</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormRow label="Billing Address" error={errors.billingAddress?.message}>
-            <Input {...register('billingAddress')} />
-          </FormRow>
-          <FormRow label="Shipping Address" error={errors.shippingAddress?.message}>
-            <Input {...register('shippingAddress')} />
-          </FormRow>
-        </div>
-      </div>
+      <FormSection title="Addresses">
+        <FormRow label="Billing Address" error={errors.billingAddress?.message}>
+          <Input {...register('billingAddress')} />
+        </FormRow>
+        <FormRow label="Shipping Address" error={errors.shippingAddress?.message}>
+          <Input {...register('shippingAddress')} />
+        </FormRow>
+      </FormSection>
 
-      <div className="rounded-xl border bg-background p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-foreground">Compliance & Licensing</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormRow label="DEA Number" error={errors.deaNumber?.message}>
-            <Input {...register('deaNumber')} />
-          </FormRow>
-          <FormRow label="State License Number" error={errors.stateLicenseNumber?.message}>
-            <Input {...register('stateLicenseNumber')} />
-          </FormRow>
-          <CheckboxField label="Controlled Substance Approved" id="controlledSubstanceApproved" className="sm:col-span-2" {...register('controlledSubstanceApproved')} />
-        </div>
-      </div>
+      <FormSection title="Compliance & Licensing">
+        <FormRow label="DEA Number" error={errors.deaNumber?.message}>
+          <Input {...register('deaNumber')} />
+        </FormRow>
+        <FormRow label="State License Number" error={errors.stateLicenseNumber?.message}>
+          <Input {...register('stateLicenseNumber')} />
+        </FormRow>
+        <CheckboxField label="Controlled Substance Approved" id="controlledSubstanceApproved" className="sm:col-span-2" {...register('controlledSubstanceApproved')} />
+      </FormSection>
 
       <div className="flex items-center gap-2 justify-end">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>

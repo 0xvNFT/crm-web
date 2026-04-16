@@ -20,7 +20,7 @@ export function AccountInvoicesSection({ accountId }: AccountInvoicesSectionProp
   const totalPages = data?.totalPages ?? 0
 
   return (
-    <div className="rounded-xl border bg-background overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="px-5 py-3 border-b bg-muted/40">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invoices</h2>
       </div>

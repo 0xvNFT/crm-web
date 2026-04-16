@@ -107,7 +107,7 @@ export default function ContactFormPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -115,7 +115,7 @@ export default function ContactFormPage() {
         <PageHeader title="New Contact" description="Add a doctor, pharmacist, or other HCP" />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Primary Account — required */}
         <FormSection title="Primary Account">
           <FormRow label="Account" required error={errors.accountId?.message} className="sm:col-span-2">
@@ -325,7 +325,7 @@ export default function ContactFormPage() {
         </FormSection>
 
         {/* Notes */}
-        <div className="rounded-xl border bg-background p-5 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-2">
           <Label className="text-sm font-semibold text-foreground">Notes</Label>
           <TextareaWithCounter
             {...register('notes')}
@@ -336,7 +336,7 @@ export default function ContactFormPage() {
         </div>
 
         {/* Sticky footer — always visible regardless of form length */}
-        <div className="sticky bottom-0 -mx-6 border-t bg-background px-6 py-3 flex items-center justify-end gap-2">
+        <div className="sticky bottom-0 -mx-6 border-t border-border/50 bg-background/95 backdrop-blur-sm px-6 py-3 flex items-center justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
             Cancel
           </Button>

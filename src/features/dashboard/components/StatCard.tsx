@@ -21,7 +21,7 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <div className={cn('rounded-xl border bg-background p-5 space-y-3', className)}>
+    <div className={cn('rounded-xl border border-border/60 bg-card p-5 space-y-3', className)}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">

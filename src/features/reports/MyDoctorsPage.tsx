@@ -261,7 +261,7 @@ export default function MyDoctorsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title={isRepOnly ? 'My Doctors' : 'Doctor Call List'}
         description={
@@ -278,7 +278,7 @@ export default function MyDoctorsPage() {
       />
 
       {/* Filters */}
-      <div className="rounded-xl border bg-background p-4 flex flex-wrap items-end gap-4">
+      <div className="rounded-xl border border-border/60 bg-card p-4 flex flex-wrap items-end gap-4">
         <PeriodSelector
           year={year}
           month={month}
@@ -335,7 +335,7 @@ export default function MyDoctorsPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border bg-background overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
         {isLoading ? (
           <div className="py-16 flex justify-center"><LoadingSpinner /></div>
         ) : isError ? (

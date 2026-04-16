@@ -32,7 +32,7 @@ export function StaffTable({
   onResendInvite,
 }: StaffTableProps) {
   return (
-    <div className="rounded-xl border bg-background overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/40">

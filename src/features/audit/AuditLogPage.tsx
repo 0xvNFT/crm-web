@@ -159,7 +159,7 @@ export default function AuditLogPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border bg-background overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
         {events.length === 0 ? (
           <div className="px-5 py-12">
             <EmptyState

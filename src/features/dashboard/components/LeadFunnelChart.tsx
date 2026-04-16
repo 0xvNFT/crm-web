@@ -43,7 +43,7 @@ export function LeadFunnelChart({ data, isLoading, isError, error, onRetry }: Le
     : []
 
   return (
-    <div className="rounded-xl border bg-background p-5">
+    <div className="rounded-xl border border-border/60 bg-card p-5">
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-foreground">Lead Funnel</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Lead counts by current status</p>

@@ -87,7 +87,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
@@ -103,7 +103,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-        <div className="rounded-xl border bg-background p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Info</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -166,7 +166,7 @@ function ProductForm({ existing, isEdit }: { existing?: PharmaProduct; isEdit: b
           </div>
         </div>
 
-        <div className="rounded-xl border bg-background p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Regulatory</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
