@@ -350,7 +350,7 @@ export default function MyDoctorsPage() {
               empty={{ icon: Users, title: 'No doctors found', description: 'Try a different period, rep, or territory.' }}
               totalElements={allRows.length}
             />
-            <div className="flex items-center justify-between px-4 py-3 border-t">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border/40">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Rows per page:</span>
                 <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
