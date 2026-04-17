@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateTimeInput } from '@/components/ui/date-time-input'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -143,10 +144,10 @@ export default function VisitScheduleFormPage() {
 
         <FormSection title="Schedule">
           <FormRow label="Scheduled Start" required error={errors.scheduledStart?.message}>
-            <Input {...register('scheduledStart')} type="datetime-local" />
+            <DateTimeInput {...register('scheduledStart')} />
           </FormRow>
           <FormRow label="Scheduled End" error={errors.scheduledEnd?.message}>
-            <Input {...register('scheduledEnd')} type="datetime-local" />
+            <DateTimeInput {...register('scheduledEnd')} />
           </FormRow>
         </FormSection>
 

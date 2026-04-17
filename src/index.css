@@ -43,6 +43,15 @@
   --color-auth-panel-subtle: hsl(231 30% 70%);
 }
 
+/* Tie native browser controls (date picker icon, scrollbars) to the app theme */
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
 /* Dark mode tokens via class strategy */
 .dark {
   --color-background: hsl(224 71% 4%);
