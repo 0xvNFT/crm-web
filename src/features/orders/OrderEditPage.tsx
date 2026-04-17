@@ -11,6 +11,7 @@ import { LineItemsField } from './components/LineItemsField'
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateTimeInput } from '@/components/ui/date-time-input'
 import { Label } from '@/components/ui/label'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
@@ -156,9 +157,8 @@ function OrderEditForm({ order }: OrderEditFormProps) {
 
         <div className="space-y-1">
           <Label htmlFor="deliveryDate">Delivery Date</Label>
-          <Input
+          <DateTimeInput
             id="deliveryDate"
-            type="datetime-local"
             {...register('deliveryDate')}
           />
         </div>
