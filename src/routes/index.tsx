@@ -80,6 +80,7 @@ const BillingPage = lazy(() => import('@/features/billing/BillingPage'))
 const MaterialListPage = lazy(() => import('@/features/materials/MaterialListPage'))
 const AuditLogPage = lazy(() => import('@/features/audit/AuditLogPage'))
 const MaterialDetailPage = lazy(() => import('@/features/materials/MaterialDetailPage'))
+const PipelineSettingsPage = lazy(() => import('@/features/pipeline/PipelineSettingsPage'))
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -377,6 +378,16 @@ export function AppRouter() {
             element={
               <RoleRoute roles={['ADMIN', 'MANAGER']}>
                 <Wrap><AuditLogPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+
+          {/* Pipeline stage settings — ADMIN/MANAGER only */}
+          <Route
+            path="/settings/pipeline"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><PipelineSettingsPage /></Wrap>
               </RoleRoute>
             }
           />

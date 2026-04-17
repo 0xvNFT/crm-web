@@ -59,7 +59,7 @@ export default function OpportunityDetailPage() {
 
   const { data: opp, isLoading, isError } = useOpportunity(id ?? '')
   const { mutate: advanceStage, isPending: isAdvancing } = useAdvanceOpportunityStage(id ?? '')
-  const { isReadOnly } = useRole()
+  const { isManager } = useRole()
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !opp) return <ErrorMessage message="Opportunity not found." />
@@ -117,6 +117,7 @@ export default function OpportunityDetailPage() {
               <>
                 <span>·</span>
                 <span className="font-medium text-foreground">
+                  {/* Why: OpenAPI codegen types monetary fields as unknown */}
                   {formatCurrency((opp.totalValue ?? opp.estRevenue) as number)}
                 </span>
               </>
@@ -124,7 +125,7 @@ export default function OpportunityDetailPage() {
           </div>
         </div>
 
-        {!isReadOnly && (
+        {isManager && (
           <div className="flex items-center gap-2 shrink-0">
             {nextStage && (
               <Button size="sm" onClick={() => confirmAdvanceStage(nextStage)}>
@@ -156,6 +157,7 @@ export default function OpportunityDetailPage() {
         </DetailSection>
 
         <DetailSection title="Financials">
+          {/* Why: OpenAPI codegen types monetary fields as unknown */}
           <DetailField label="Total Value"     value={opp.totalValue != null ? formatCurrency(opp.totalValue as number) : undefined} />
           <DetailField label="Est. Revenue"    value={opp.estRevenue != null ? formatCurrency(opp.estRevenue as number) : undefined} />
           <DetailField label="Probability"     value={opp.probabilityPct != null ? `${opp.probabilityPct}%` : undefined} />
