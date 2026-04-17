@@ -51,6 +51,20 @@ export function useVisitSearch(query: string) {
   })
 }
 
+export function useVisitsByCampaign(campaignId: string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['visits', 'by-campaign', campaignId, { page, size }],
+    queryFn: () =>
+      client
+        .get<PagePharmaFieldVisit>(`/api/v1/pharma/visits/by-campaign/${campaignId}`, {
+          params: { page, size, sort: 'scheduledStart,desc' },
+        })
+        .then((r) => r.data),
+    enabled: !!campaignId,
+    placeholderData: (prev) => prev,
+  })
+}
+
 export function useVisitsByOpportunity(opportunityId: string, page = 0, size = 10) {
   return useQuery({
     queryKey: ['visits', 'by-opportunity', opportunityId, { page, size }],
