@@ -46,6 +46,7 @@ export type NoteEntityType =
   | 'PharmaInvoice'
   | 'PharmaFieldVisit'
   | 'PharmaProduct'
+  | 'PharmaCampaign'
 
 // ─── Note type chip ───────────────────────────────────────────────────────────
 // NOTE: colours are static by design — config drives the type values but not their visual weight.

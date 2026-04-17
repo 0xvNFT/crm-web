@@ -104,6 +104,18 @@ export type PageApprovalRule       = components['schemas']['PageApprovalRule']
 export type AuditEvent             = components['schemas']['AuditEventResponse']
 export type PageAuditEvent         = components['schemas']['PageAuditEventResponse']
 
+// ─── Campaigns ────────────────────────────────────────────────────────────────
+export type PharmaCampaign             = components['schemas']['PharmaCampaignResponse']
+export type PagePharmaCampaign         = components['schemas']['PagePharmaCampaignResponse']
+export type CampaignContact            = components['schemas']['CampaignContactResponse']
+export type PageCampaignContact        = components['schemas']['PageCampaignContactResponse']
+export type CampaignProduct            = components['schemas']['CampaignProductResponse']
+export type CreateCampaignRequest      = components['schemas']['CreateCampaignRequest']
+export type UpdateCampaignRequest      = components['schemas']['UpdateCampaignRequest']
+export type AddCampaignContactRequest  = components['schemas']['AddCampaignContactRequest']
+export type UpdateCampaignContactRequest = Omit<components['schemas']['UpdateCampaignContactRequest'], 'status'> & { status?: string }
+export type AddCampaignProductRequest  = components['schemas']['AddCampaignProductRequest']
+
 // ─── Reporting (GET /api/pharma/reports/*) ────────────────────────────────────
 export type PipelineSummary    = components['schemas']['PipelineSummary']
 export type LeadFunnelSummary  = components['schemas']['LeadFunnelSummary']

@@ -34,6 +34,7 @@ export type TagEntityType =
   | 'PharmaInvoice'
   | 'PharmaFieldVisit'
   | 'PharmaProduct'
+  | 'PharmaCampaign'
 
 // ─── Tag chip ─────────────────────────────────────────────────────────────────
 interface TagChipProps {
