@@ -23,6 +23,7 @@ import { EntityNotesSection } from '@/components/shared/EntityNotesSection'
 import { EntityTagsSection } from '@/components/shared/EntityTagsSection'
 import { CampaignContactsSection } from './components/CampaignContactsSection'
 import { CampaignProductsSection } from './components/CampaignProductsSection'
+import { CampaignVisitsSection } from './components/CampaignVisitsSection'
 
 export default function CampaignDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -161,6 +162,9 @@ export default function CampaignDetailPage() {
       {/* Sub-sections */}
       <CampaignContactsSection campaignId={id ?? ''} isActive={isActive} />
       <CampaignProductsSection campaignId={id ?? ''} isTerminal={isTerminal} />
+
+      {/* Linked visits */}
+      <CampaignVisitsSection campaignId={id ?? ''} />
 
       {/* Shared sections */}
       <EntityNotesSection entityType="PharmaCampaign" entityId={id ?? ''} />

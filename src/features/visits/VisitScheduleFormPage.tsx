@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useScheduleVisit } from '@/api/endpoints/visits'
 import { useAccountSearch } from '@/api/endpoints/accounts'
 import { useOpportunitySearch } from '@/api/endpoints/opportunities'
+import { useCampaignSearch } from '@/api/endpoints/campaigns'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,11 @@ export default function VisitScheduleFormPage() {
   const { data: oppResults, isLoading: isSearchingOpps } = useOpportunitySearch(debouncedOppQuery)
   const oppOptions: ComboboxOption[] = (oppResults ?? []).map((o) => ({ value: o.id!, label: o.topic ?? o.id! }))
 
+  const [campaignQuery, setCampaignQuery] = useState('')
+  const debouncedCampaignQuery = useDebounce(campaignQuery, 300)
+  const { data: campaignResults, isLoading: isSearchingCampaigns } = useCampaignSearch(debouncedCampaignQuery)
+  const campaignOptions: ComboboxOption[] = (campaignResults ?? []).map((c) => ({ value: c.id!, label: c.name ?? c.id! }))
+
   const { register, handleSubmit, control, formState: { errors } } = useForm<ScheduleVisitFormData>({
     resolver: zodResolver(scheduleVisitSchema),
   })
@@ -51,6 +57,7 @@ export default function VisitScheduleFormPage() {
         contactId: data.contactId || undefined,
         territoryId: data.territoryId || undefined,
         opportunityId: data.opportunityId || undefined,
+        campaignId: data.campaignId || undefined,
         subject: data.subject,
         visitType: data.visitType,
         scheduledStart: data.scheduledStart,
@@ -136,6 +143,25 @@ export default function VisitScheduleFormPage() {
                   onSearchChange={setOppQuery}
                   isLoading={isSearchingOpps}
                   error={!!errors.opportunityId}
+                />
+              )}
+            />
+          </FormRow>
+
+          <FormRow label="Campaign" error={errors.campaignId?.message}>
+            <Controller
+              name="campaignId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  options={campaignOptions}
+                  placeholder="Link a campaign…"
+                  searchPlaceholder="Search campaigns…"
+                  onSearchChange={setCampaignQuery}
+                  isLoading={isSearchingCampaigns}
+                  error={!!errors.campaignId}
                 />
               )}
             />

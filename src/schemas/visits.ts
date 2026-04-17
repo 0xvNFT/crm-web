@@ -6,6 +6,7 @@ export const scheduleVisitSchema = z.object({
   contactId:      z.string().optional(),
   territoryId:    z.string().optional(),
   opportunityId:  z.string().optional(),
+  campaignId:     z.string().optional(),
   subject:        z.string().trim().min(1, 'Subject is required').max(255),
   visitType:      z.string().min(1, 'Visit type is required'),
   scheduledStart: z.string().min(1, 'Start date/time is required'),
