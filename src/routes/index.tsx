@@ -67,6 +67,9 @@ const InvoiceFormPage = lazy(() => import('@/features/invoices/InvoiceFormPage')
 const OpportunityListPage = lazy(() => import('@/features/opportunities/OpportunityListPage'))
 const OpportunityDetailPage = lazy(() => import('@/features/opportunities/OpportunityDetailPage'))
 
+const CampaignListPage   = lazy(() => import('@/features/campaigns/CampaignListPage'))
+const CampaignDetailPage = lazy(() => import('@/features/campaigns/CampaignDetailPage'))
+const CampaignFormPage   = lazy(() => import('@/features/campaigns/CampaignFormPage'))
 const CoachingListPage = lazy(() => import('@/features/coaching/CoachingListPage'))
 const CoachingDetailPage = lazy(() => import('@/features/coaching/CoachingDetailPage'))
 const CoachingFormPage = lazy(() => import('@/features/coaching/CoachingFormPage'))
@@ -154,6 +157,39 @@ export function AppRouter() {
           <Route path="/opportunities/new" element={<Wrap><OpportunityFormPage /></Wrap>} />
           <Route path="/opportunities/:id/edit" element={<Wrap><OpportunityFormPage /></Wrap>} />
           <Route path="/opportunities/:id" element={<Wrap><OpportunityDetailPage /></Wrap>} />
+          {/* Campaigns — all roles including CSR can view; write: ADMIN/MANAGER only */}
+          <Route
+            path="/campaigns"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
+                <Wrap><CampaignListPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/campaigns/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><CampaignFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/campaigns/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><CampaignFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/campaigns/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
+                <Wrap><CampaignDetailPage /></Wrap>
+              </RoleRoute>
+            }
+          />
           <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
           <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
           <Route path="/visits/:id" element={<Wrap><VisitDetailPage /></Wrap>} />

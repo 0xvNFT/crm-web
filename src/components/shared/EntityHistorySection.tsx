@@ -41,6 +41,7 @@ export type AuditEntityType =
   | 'PharmaTerritory'
   | 'PharmaAccountTerritory'
   | 'RepTarget'
+  | 'PharmaCampaign'
 
 // ─── Safe JSON parse helpers (no JSX in try/catch) ───────────────────────────
 const SKIP_FIELDS = new Set(['id', 'tenantId', 'createdAt', 'updatedAt', 'version', 'passwordHash'])

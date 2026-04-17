@@ -24,6 +24,7 @@ import {
   CreditCard,
   BookUser,
   ShieldCheck,
+  Megaphone,
 } from 'lucide-react'
 
 interface NavItem {
@@ -52,6 +53,7 @@ const NAV_MAIN: NavItem[] = [
   { to: '/opportunities', label: 'Opportunities', icon: TrendingUp,  roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/visits',        label: 'Visits',        icon: MapPin,      roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/activities',    label: 'Activities',    icon: Activity,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
+  { to: '/campaigns',     label: 'Campaigns',     icon: Megaphone,   roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] },
   // Commercial documents
   { to: '/quotes',        label: 'Quotes',        icon: FileText,    roles: ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY'] },
   { to: '/orders',        label: 'Orders',        icon: ShoppingCart },
