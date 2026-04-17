@@ -116,6 +116,12 @@ export type AddCampaignContactRequest  = components['schemas']['AddCampaignConta
 export type UpdateCampaignContactRequest = Omit<components['schemas']['UpdateCampaignContactRequest'], 'status'> & { status?: string }
 export type AddCampaignProductRequest  = components['schemas']['AddCampaignProductRequest']
 
+// ─── Pipeline Stages (GET /api/v1/pharma/pipeline-stages) ────────────────────
+// Lombok strips the `is` prefix from boolean getters → JSON uses won/lost/default/active
+export type PipelineStage = components['schemas']['PipelineStageResponse']
+export type CreatePipelineStageRequest = components['schemas']['CreatePipelineStageRequest']
+export type UpdatePipelineStageRequest = components['schemas']['UpdatePipelineStageRequest']
+
 // ─── Reporting (GET /api/pharma/reports/*) ────────────────────────────────────
 export type PipelineSummary    = components['schemas']['PipelineSummary']
 export type LeadFunnelSummary  = components['schemas']['LeadFunnelSummary']

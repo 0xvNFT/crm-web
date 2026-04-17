@@ -285,7 +285,7 @@ interface OpportunityProductsSectionProps {
 export function OpportunityProductsSection({ opportunityId, accountId }: OpportunityProductsSectionProps) {
   const { data: lineItems = [], isLoading } = useOpportunityProducts(opportunityId)
   const { mutate: removeProduct } = useRemoveOpportunityProduct(opportunityId)
-  const { isReadOnly } = useRole()
+  const { isManager } = useRole()
 
   const [showAddForm, setShowAddForm]   = useState(false)
   const [editingId, setEditingId]       = useState<string | null>(null)
@@ -320,7 +320,7 @@ export function OpportunityProductsSection({ opportunityId, accountId }: Opportu
             </span>
           )}
         </div>
-        {!isReadOnly && !showAddForm && (
+        {isManager && !showAddForm && (
           <Button variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
             <Plus className="h-3.5 w-3.5 mr-1.5" strokeWidth={1.5} />
             Add Product
@@ -385,16 +385,18 @@ export function OpportunityProductsSection({ opportunityId, accountId }: Opportu
                   {item.quantity != null ? item.quantity : '—'}
                 </div>
                 <div className="col-span-2 text-right text-sm text-foreground">
+                  {/* Why: OpenAPI codegen types monetary fields as unknown */}
                   {item.unitPrice != null ? formatCurrency(item.unitPrice as number) : '—'}
                 </div>
                 <div className="col-span-1 text-right text-sm text-muted-foreground">
                   {item.discountPct ? `${item.discountPct}%` : '—'}
                 </div>
                 <div className="col-span-2 text-right text-sm font-semibold text-foreground">
+                  {/* Why: OpenAPI codegen types monetary fields as unknown */}
                   {item.lineTotal != null ? formatCurrency(item.lineTotal as number) : '—'}
                 </div>
                 <div className="col-span-1 flex justify-end gap-1">
-                  {!isReadOnly && (
+                  {isManager && (
                     <>
                       <Button
                         variant="ghost"
@@ -429,7 +431,7 @@ export function OpportunityProductsSection({ opportunityId, accountId }: Opportu
               </div>
               <div className="col-span-1" />
               <div className="col-span-3 text-right text-sm font-bold text-foreground">
-                {grandTotal != null ? formatCurrency(grandTotal) : '—'}
+                {formatCurrency(grandTotal)}
               </div>
               <div className="col-span-1" />
             </div>

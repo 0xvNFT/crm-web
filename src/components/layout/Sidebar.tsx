@@ -79,8 +79,9 @@ const NAV_MANAGER: NavItem[] = [
 const billingEnabled = import.meta.env.VITE_BILLING_ENABLED === 'true'
 
 const NAV_ADMIN: NavItem[] = [
-  { to: '/audit',   label: 'Audit Log', icon: ShieldCheck, roles: ['ADMIN', 'MANAGER'] },
-  { to: '/admin',   label: 'Admin',     icon: Settings,    roles: ['ADMIN'] },
+  { to: '/audit',              label: 'Audit Log',        icon: ShieldCheck, roles: ['ADMIN', 'MANAGER'] },
+  { to: '/settings/pipeline',  label: 'Pipeline Stages',  icon: TrendingUp,  roles: ['ADMIN', 'MANAGER'] },
+  { to: '/admin',              label: 'Admin',            icon: Settings,    roles: ['ADMIN'] },
   ...(billingEnabled ? [{ to: '/billing', label: 'Billing', icon: CreditCard, roles: ['ADMIN'] } as NavItem] : []),
 ]
 
