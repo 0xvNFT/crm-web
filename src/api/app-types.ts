@@ -40,7 +40,7 @@ export type PharmaCoachingNote       = components['schemas']['PharmaCoachingNote
 export type PharmaVisitAudit         = components['schemas']['PharmaVisitAuditResponse']
 export type PharmaAccountTerritory   = components['schemas']['PharmaAccountTerritoryResponse']
 export type PharmaContactAffiliation = components['schemas']['PharmaContactAffiliationResponse']
-export type LeadConversionResult     = components['schemas']['LeadConversionResult']
+export type LeadConversionResult     = components['schemas']['LeadConversionResponse']
 
 // ─── Territory lifecycle types ────────────────────────────────────────────────
 export type SecondaryRepInfo         = components['schemas']['SecondaryRepInfo']
@@ -53,9 +53,10 @@ export type VisitProductInfo         = components['schemas']['VisitProductInfo']
 export type VisitMaterialInfo        = components['schemas']['VisitMaterialInfo']
 export type AddVisitProductRequest   = components['schemas']['AddVisitProductRequest']
 export type AddVisitMaterialRequest  = components['schemas']['AddVisitMaterialRequest']
-export type User                     = components['schemas']['User']
-// PageStaffResponse content typed as User[] so the roles object shape flows through list/search results
-export type PageUser                 = Omit<components['schemas']['PageStaffResponse'], 'content'> & { content?: User[] }
+// Backend now ships a proper StaffResponse DTO — roles is string[] (no longer Role objects with .name).
+// User is kept as an alias so users.ts and all importers compile without changes.
+export type User                     = components['schemas']['StaffResponse']
+export type PageUser                 = components['schemas']['PageStaffResponse']
 export type Notification             = components['schemas']['Notification']
 export type CreateStaffRequest       = Omit<components['schemas']['CreateStaffRequest'], 'role'> & { role: string }
 export type UpdateStaffRequest       = Omit<components['schemas']['UpdateStaffRequest'], 'role'> & { role?: string }
