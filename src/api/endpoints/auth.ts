@@ -28,8 +28,11 @@ export function useLogin() {
   })
 }
 
-// Logout is handled by AuthProvider.logout() — not a hook — because it must also
-// clear the React Query cache and navigate. Do not re-add useLogout here.
+export function useLogout() {
+  return useMutation({
+    mutationFn: () => client.post('/api/v1/auth/logout').then((r) => r.data),
+  })
+}
 
 // Only active when VITE_REGISTRATION_ENABLED=true.
 // POST /api/v1/auth/register is hidden (APP_REGISTRATION_ENABLED=false) in deployments where tenant provisioning is managed externally.

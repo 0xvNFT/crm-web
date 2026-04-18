@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { z } from 'zod'
+import { z } from 'zod'
 import {
   phoneField,
   emailField,

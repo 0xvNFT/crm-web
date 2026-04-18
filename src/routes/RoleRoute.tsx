@@ -8,9 +8,6 @@ interface RoleRouteProps {
   children: ReactNode
 }
 
-// RoleRoute must always be nested inside PrivateRoute.
-// PrivateRoute blocks rendering while isLoading=true, so by the time RoleRoute
-// evaluates `user`, it is always resolved (null = not authenticated, or a real AuthUser).
 export function RoleRoute({ roles, children }: RoleRouteProps) {
   const { user } = useAuth()
 
