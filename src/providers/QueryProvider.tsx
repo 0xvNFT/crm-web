@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { QueryClient, QueryClientProvider, QueryCache } from '@tanstack/react-query'
 import { type ReactNode } from 'react'
 import axios from 'axios'
+import * as Sentry from '@sentry/react'
 import { toast } from '@/hooks/useToast'
 
 interface QueryProviderProps {
@@ -23,10 +24,12 @@ export function QueryProvider({ children }: QueryProviderProps) {
             if (!axios.isAxiosError(error)) return
             const status = error.response?.status
             if (status === 401) return // handled by authEvents in client.ts
-            if (!error.response) {
-              toast('Network error — check your connection', { variant: 'destructive' })
-            } else if (status !== undefined && status >= 500) {
+            // Report unexpected server errors to Sentry — 4xx are user/app errors, not bugs.
+            if (status !== undefined && status >= 500) {
+              Sentry.captureException(error)
               toast('Server error — please try again later', { variant: 'destructive' })
+            } else if (!error.response) {
+              toast('Network error — check your connection', { variant: 'destructive' })
             }
           },
         }),
