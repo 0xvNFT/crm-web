@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import axios from 'axios'
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { parseApiError, parseValidationErrors } from './errors'
 
 function makeAxiosError(status?: number, data?: object, message?: string) {
   const response = status
-    ? ({ status, data: data ?? {}, statusText: '', headers: {}, config: {} as import('axios').InternalAxiosRequestConfig } satisfies import('axios').AxiosResponse)
+    ? ({ status, data: data ?? {}, statusText: '', headers: {}, config: {} as InternalAxiosRequestConfig } satisfies AxiosResponse)
     : undefined
   return new axios.AxiosError(message ?? 'Request failed', 'ERR_BAD_RESPONSE', undefined, undefined, response)
 }
