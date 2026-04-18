@@ -15,7 +15,7 @@ import { DateTimeInput } from '@/components/ui/date-time-input'
 import { Label } from '@/components/ui/label'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { toast } from '@/hooks/useToast'
-import { parseApiError } from '@/utils/errors'
+import { applyServerErrors } from '@/utils/errors'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FormSection } from '@/components/shared/FormSection'
 import type { PharmaAccount } from '@/api/app-types'
@@ -48,6 +48,7 @@ export default function OrderFormPage() {
     control,
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -73,7 +74,7 @@ export default function OrderFormPage() {
         toast('Order created successfully', { variant: 'success' })
         navigate('/orders')
       },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
     })
   }
 

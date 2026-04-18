@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import axios from 'axios'
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { parseApiError, parseValidationErrors } from './errors'
+import { parseApiError, parseValidationErrors, applyServerErrors } from './errors'
 
 function makeAxiosError(status?: number, data?: object, message?: string) {
   const response = status
@@ -92,5 +92,34 @@ describe('parseValidationErrors', () => {
   it('returns null for non-Axios errors', () => {
     expect(parseValidationErrors(new Error('other'))).toBeNull()
     expect(parseValidationErrors(null)).toBeNull()
+  })
+})
+
+describe('applyServerErrors', () => {
+  it('calls setError for each field when validationErrors present', () => {
+    const err = makeAxiosError(422, { validationErrors: { email: 'Invalid email', name: 'Required' } })
+    const setError = vi.fn()
+    const fallback = vi.fn()
+    applyServerErrors(err, setError, fallback)
+    expect(setError).toHaveBeenCalledWith('email', { type: 'server', message: 'Invalid email' })
+    expect(setError).toHaveBeenCalledWith('name', { type: 'server', message: 'Required' })
+    expect(fallback).not.toHaveBeenCalled()
+  })
+
+  it('calls fallback with parseApiError when no validationErrors', () => {
+    const err = makeAxiosError(500, {})
+    const setError = vi.fn()
+    const fallback = vi.fn()
+    applyServerErrors(err, setError, fallback)
+    expect(setError).not.toHaveBeenCalled()
+    expect(fallback).toHaveBeenCalledWith('A server error occurred. Please try again later.')
+  })
+
+  it('calls fallback for non-Axios errors', () => {
+    const setError = vi.fn()
+    const fallback = vi.fn()
+    applyServerErrors(new Error('something'), setError, fallback)
+    expect(setError).not.toHaveBeenCalled()
+    expect(fallback).toHaveBeenCalledWith('An unexpected error occurred. Please try again.')
   })
 })

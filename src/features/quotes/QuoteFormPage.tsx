@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormSection } from '@/components/shared/FormSection'
 import { toast } from '@/hooks/useToast'
-import { parseApiError } from '@/utils/errors'
+import { applyServerErrors } from '@/utils/errors'
 import type { PharmaAccount, PharmaContact } from '@/api/app-types'
 
 export default function QuoteFormPage() {
@@ -70,6 +70,7 @@ export default function QuoteFormPage() {
     control,
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<QuoteFormData>({
     resolver: zodResolver(quoteSchema),
@@ -103,7 +104,7 @@ export default function QuoteFormPage() {
         toast('Quote created successfully', { variant: 'success' })
         navigate(`/quotes/${quote.id}`)
       },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
     })
   }
 

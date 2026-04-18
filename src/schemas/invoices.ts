@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { notesField } from './primitives'
+import { notesField, dateRequired } from './primitives'
 
 export const invoiceItemSchema = z.object({
   productId:      z.string().optional(),
@@ -14,8 +14,8 @@ export const invoiceCreateSchema = z.object({
   accountId:       z.string().min(1, 'Account is required'),
   contactId:       z.string().optional(),
   subject:         z.string().trim().min(1, 'Subject is required'),
-  invoiceDate:     z.string().min(1, 'Invoice date is required'),
-  dueDate:         z.string().min(1, 'Due date is required'),
+  invoiceDate:     dateRequired('Invoice date'),
+  dueDate:         dateRequired('Due date'),
   billingAddress:  z.string().trim().min(1, 'Billing address is required'),
   paymentTerms:    z.string().optional(),
   currency:        z.string().optional(),
@@ -27,8 +27,8 @@ export const invoiceCreateSchema = z.object({
 
 export const invoiceEditSchema = z.object({
   subject:         z.string().trim().min(1, 'Subject is required'),
-  invoiceDate:     z.string().min(1, 'Invoice date is required'),
-  dueDate:         z.string().min(1, 'Due date is required'),
+  invoiceDate:     dateRequired('Invoice date'),
+  dueDate:         dateRequired('Due date'),
   billingAddress:  z.string().trim().min(1, 'Billing address is required'),
   paymentTerms:    z.string().optional(),
   currency:        z.string().optional(),
