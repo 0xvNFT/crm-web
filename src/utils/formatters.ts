@@ -14,7 +14,7 @@ export function formatCurrency(amount: number, currency = 'PHP'): string {
 
 export function formatLabel(value: string | undefined): string {
   if (!value) return '—'
-  return value.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
+  return value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 export function formatNumber(value: number): string {
