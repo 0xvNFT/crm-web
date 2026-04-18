@@ -9,10 +9,10 @@ function flushDebounce() {
 }
 
 describe('useListSearch', () => {
-  let goToPage: ReturnType<typeof vi.fn>
+  let goToPage: (page: number) => void
 
   beforeEach(() => {
-    goToPage = vi.fn()
+    goToPage = vi.fn() as (page: number) => void
   })
 
   it('starts with empty query and isSearching false', () => {
