@@ -89,8 +89,9 @@ export function useDeactivateStaff() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post(`/api/v1/pharma/users/${id}/deactivate`).then((r) => r.data),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ['users', 'list'] })
+      qc.invalidateQueries({ queryKey: ['users', id] })
     },
   })
 }
@@ -100,8 +101,9 @@ export function useReactivateStaff() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post(`/api/v1/pharma/users/${id}/reactivate`).then((r) => r.data),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ['users', 'list'] })
+      qc.invalidateQueries({ queryKey: ['users', id] })
     },
   })
 }

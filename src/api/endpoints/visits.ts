@@ -138,10 +138,7 @@ export function useUpdateVisit(id: string) {
   return useMutation({
     mutationFn: (data: UpdateVisitRequest) =>
       client.put<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}`, data).then((r) => r.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['visits', id] })
-      qc.invalidateQueries({ queryKey: ['visits', 'list'] })
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['visits'] }),
   })
 }
 
@@ -152,7 +149,10 @@ export function useSubmitVisit() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/submit`).then((r) => r.data),
-    onSuccess: (_data, id) => qc.invalidateQueries({ queryKey: ['visits', id] }),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ['visits', id] })
+      qc.invalidateQueries({ queryKey: ['visits', 'list'] })
+    },
   })
 }
 
@@ -189,7 +189,10 @@ export function useCheckInVisit() {
       client
         .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/check-in`, payload)
         .then((r) => r.data),
-    onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
+    onSuccess: (_data, { id }) => {
+      qc.invalidateQueries({ queryKey: ['visits', id] })
+      qc.invalidateQueries({ queryKey: ['visits', 'list'] })
+    },
   })
 }
 
@@ -200,7 +203,10 @@ export function useCheckOutVisit() {
       client
         .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/check-out`, payload)
         .then((r) => r.data),
-    onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
+    onSuccess: (_data, { id }) => {
+      qc.invalidateQueries({ queryKey: ['visits', id] })
+      qc.invalidateQueries({ queryKey: ['visits', 'list'] })
+    },
   })
 }
 
@@ -271,6 +277,9 @@ export function useCaptureSignature() {
       client
         .post<PharmaFieldVisit>(`/api/v1/pharma/visits/${id}/signature`, payload)
         .then((r) => r.data),
-    onSuccess: (_data, { id }) => qc.invalidateQueries({ queryKey: ['visits', id] }),
+    onSuccess: (_data, { id }) => {
+      qc.invalidateQueries({ queryKey: ['visits', id] })
+      qc.invalidateQueries({ queryKey: ['visits', 'list'] })
+    },
   })
 }

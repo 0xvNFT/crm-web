@@ -24,6 +24,7 @@ export function useQuoteSearch(q: string) {
         .get<PagePharmaQuote>('/api/v1/pharma/quotes/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
   })
 }
 
@@ -67,10 +68,7 @@ export function useUpdateQuote(id: string) {
   return useMutation({
     mutationFn: (data: UpdateQuoteRequest) =>
       client.put<PharmaQuote>(`/api/v1/pharma/quotes/${id}`, data).then((r) => r.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['quotes'] })
-      qc.invalidateQueries({ queryKey: ['quotes', 'list'] })
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['quotes'] }),
   })
 }
 

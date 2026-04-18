@@ -31,6 +31,7 @@ export function useLeadSearch(q: string) {
         .get<PagePharmaLead>('/api/v1/pharma/leads/search', { params: { q }, signal })
         .then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
   })
 }
 
@@ -59,6 +60,10 @@ export function useConvertLead() {
       client.post<LeadConversionResult>(`/api/v1/pharma/leads/${id}/convert`, data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['leads'] })
+      // Conversion may create a contact, account, and/or opportunity — invalidate all three
+      qc.invalidateQueries({ queryKey: ['contacts'] })
+      qc.invalidateQueries({ queryKey: ['accounts'] })
+      qc.invalidateQueries({ queryKey: ['opportunities'] })
     },
   })
 }

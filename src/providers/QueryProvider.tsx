@@ -14,7 +14,8 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
+            // staleTime: 0 (default) — entity data changes under concurrent users.
+            // Config and auth override this with Infinity at the hook level.
             retry: 1,
           },
         },
