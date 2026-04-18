@@ -14,7 +14,7 @@ import { useEntityHistory } from '@/api/endpoints/audit'
 import { usePagination } from '@/hooks/usePagination'
 import { Pagination } from '@/components/shared/Pagination'
 import { EmptyState } from '@/components/shared/EmptyState'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { Skeleton } from '@/components/ui/skeleton'
 import { AuditActionBadge } from '@/components/shared/AuditActionBadge'
 import { formatDateTime } from '@/utils/formatters'
 import type { AuditEvent } from '@/api/app-types'
@@ -145,8 +145,8 @@ export function EntityHistorySection({ entityType, entityId }: EntityHistorySect
       </div>
 
       {isLoading ? (
-        <div className="px-5 py-8 flex justify-center">
-          <LoadingSpinner />
+        <div className="p-4 space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
         </div>
       ) : events.length === 0 ? (
         <div className="px-5 py-8">

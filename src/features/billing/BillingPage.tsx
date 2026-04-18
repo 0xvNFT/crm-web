@@ -2,7 +2,7 @@ import { CreditCard, Zap, Users, Database, CheckCircle2, ArrowUpRight, ExternalL
 import { useSubscription, useListPlans, useCreateCheckout, useCreatePortal } from '@/api/endpoints/billing'
 import { useRole } from '@/hooks/useRole'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -231,7 +231,11 @@ export default function BillingPage() {
         }
       />
 
-      {isLoading && <LoadingSpinner />}
+      {isLoading && (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
+        </div>
+      )}
 
       {!isLoading && (
         <div className="space-y-6">
