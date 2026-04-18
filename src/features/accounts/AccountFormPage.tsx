@@ -16,7 +16,7 @@ import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { toast } from '@/hooks/useToast'
-import { parseApiError } from '@/utils/errors'
+import { applyServerErrors } from '@/utils/errors'
 import { accountSchema, type AccountFormData } from '@/schemas/accounts'
 import type { CreatePharmaAccountRequest } from '@/api/app-types'
 
@@ -46,7 +46,7 @@ export default function AccountFormPage() {
     label: a.name ?? a.id!,
   }))
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<AccountFormData>({
+  const { register, handleSubmit, control, setError, formState: { errors } } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     defaultValues: { controlledSubstanceApproved: false, isSupplier: false },
   })
@@ -62,7 +62,7 @@ export default function AccountFormPage() {
         toast('Account created', { variant: 'success' })
         navigate(`/accounts/${account.id}`)
       },
-      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
+      onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
     })
   }
 

@@ -12,6 +12,7 @@ import {
   moneyRequired,
   countField,
   dateField,
+  dateRequired,
 } from './primitives'
 
 function valid(schema: z.ZodTypeAny, value: unknown) {
@@ -256,5 +257,29 @@ describe('dateField', () => {
 
   it('produces a human-readable error message', () => {
     expect(errorMsg(dateField, 'bad')).toContain('YYYY-MM-DD')
+  })
+})
+
+describe('dateRequired', () => {
+  it('accepts valid YYYY-MM-DD format', () => {
+    expect(valid(dateRequired('Start date'), '2025-01-15')).toBe(true)
+  })
+
+  it('rejects empty string with label-specific message', () => {
+    expect(valid(dateRequired('Start date'), '')).toBe(false)
+    expect(errorMsg(dateRequired('Start date'), '')).toContain('Start date is required')
+  })
+
+  it('rejects undefined', () => {
+    expect(valid(dateRequired('Due date'), undefined)).toBe(false)
+  })
+
+  it('rejects non-YYYY-MM-DD format', () => {
+    expect(valid(dateRequired('Due date'), '01/15/2025')).toBe(false)
+    expect(errorMsg(dateRequired('Due date'), '01/15/2025')).toContain('YYYY-MM-DD')
+  })
+
+  it('rejects plain text', () => {
+    expect(valid(dateRequired('Due date'), 'today')).toBe(false)
   })
 })
