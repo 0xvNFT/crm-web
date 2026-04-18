@@ -40,9 +40,8 @@ export default defineConfig({
     setupFiles: [],
     coverage: {
       provider: 'v8',
-      // Include only source files that have a corresponding test file.
-      // When you add src/foo/Bar.test.ts, add 'src/foo/Bar.ts' here too.
-      // Keeping this explicit prevents untested files from diluting the thresholds.
+      // Only measure coverage on the files that have tests — not the whole app.
+      // Expand this list as new test files are added.
       include: [
         'src/utils/formatters.ts',
         'src/utils/errors.ts',
@@ -65,7 +64,7 @@ export default defineConfig({
       // This avoids the cross-origin cookie restriction (localhost ↔ remote IP).
       // In production, VITE_API_BASE_URL points directly to the backend — no proxy needed.
       '/api': {
-        target: process.env.VITE_DEV_PROXY_TARGET ?? 'http://localhost:8080',
+        target: 'https://crm-server.cdts.com.ph',
         changeOrigin: true,
       },
     },
