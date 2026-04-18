@@ -22,7 +22,7 @@ import { usePagination } from '@/hooks/usePagination'
 import { Pagination } from '@/components/shared/Pagination'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { FormRow } from '@/components/shared/FormRow'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -437,8 +437,8 @@ export function EntityNotesSection({ entityType, entityId }: EntityNotesSectionP
 
       {/* Content */}
       {isLoading ? (
-        <div className="p-4 space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+        <div className="px-5 py-8 flex justify-center">
+          <LoadingSpinner />
         </div>
       ) : notes.length === 0 ? (
         <div className="px-5 py-8">

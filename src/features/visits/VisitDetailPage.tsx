@@ -30,7 +30,7 @@ export default function VisitDetailPage() {
   const { isManager, isReadOnly } = useRole()
   const { user } = useAuth()
 
-  const { data: visit, isLoading, isError, error, refetch } = useVisit(id ?? '')
+  const { data: visit, isLoading, isError } = useVisit(id ?? '')
 
   const { mutate: submitVisit, isPending: isSubmitting } = useSubmitVisit()
   const { mutate: approveVisit, isPending: isApproving } = useApproveVisit()
@@ -44,7 +44,7 @@ export default function VisitDetailPage() {
   const [showCheckOut, setShowCheckOut] = useState(false)
 
   if (isLoading) return <DetailPageSkeleton />
-  if (isError || !visit) return <ErrorMessage message="Visit not found." error={error} onRetry={() => refetch()} />
+  if (isError || !visit) return <ErrorMessage />
 
   const status = visit.status?.toUpperCase() ?? ''
   const isOwnVisit = visit.assignedRepId === user?.userId

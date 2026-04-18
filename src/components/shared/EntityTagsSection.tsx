@@ -18,7 +18,7 @@ import { useRole } from '@/hooks/useRole'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import type { PharmaTag } from '@/api/app-types'
@@ -171,8 +171,8 @@ function TagPicker({ entityType, entityId, appliedTagIds, canCreate, onClose }: 
       {/* Tag list */}
       <div className="max-h-48 overflow-y-auto py-1">
         {loadingTags ? (
-          <div className="space-y-1.5">
-            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-7 w-full" />)}
+          <div className="flex justify-center py-4">
+            <LoadingSpinner />
           </div>
         ) : filtered.length > 0 ? (
           filtered.map((tag) => (
@@ -326,8 +326,8 @@ export function EntityTagsSection({ entityType, entityId }: EntityTagsSectionPro
       {/* Content */}
       <div className="px-5 py-4">
         {isLoading ? (
-          <div className="space-y-1.5">
-            {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-7 w-24 rounded-full" />)}
+          <div className="flex justify-center py-2">
+            <LoadingSpinner />
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-2">

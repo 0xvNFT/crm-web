@@ -6,7 +6,7 @@ import { useStaffSearch } from '@/api/endpoints/users'
 import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EntityHistorySection } from '@/components/shared/EntityHistorySection'
@@ -207,9 +207,7 @@ export default function TeamDetailPage() {
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Members</h2>
         {isLoadingMembers ? (
-          <div className="space-y-2">
-            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-          </div>
+          <LoadingSpinner />
         ) : !members?.length ? (
           <EmptyState
             icon={Users2}

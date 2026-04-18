@@ -17,7 +17,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { FormRow } from '@/components/shared/FormRow'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { formatCurrency } from '@/utils/formatters'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
@@ -339,8 +339,8 @@ export function OpportunityProductsSection({ opportunityId, accountId }: Opportu
 
       {/* Line items */}
       {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+        <div className="flex justify-center py-4">
+          <LoadingSpinner />
         </div>
       ) : lineItems.length === 0 && !showAddForm ? (
         <p className="text-sm text-muted-foreground">

@@ -15,7 +15,7 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { FormRow } from '@/components/shared/FormRow'
 import { CheckboxField } from '@/components/shared/CheckboxField'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
 import { addCampaignProductSchema, type AddCampaignProductFormData } from '@/schemas/campaigns'
@@ -178,8 +178,8 @@ export function CampaignProductsSection({ campaignId, isTerminal }: CampaignProd
 
       {/* List */}
       {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+        <div className="flex justify-center py-4">
+          <LoadingSpinner />
         </div>
       ) : products.length === 0 && !showAddForm ? (
         <p className="text-sm text-muted-foreground">

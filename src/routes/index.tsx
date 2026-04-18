@@ -9,7 +9,8 @@ import { RoleRoute } from './RoleRoute'
 // Roles that can perform write operations (create/edit/delete)
 const WRITE_ROLES: Role[] = ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'CSR']
 import { AppShell } from '@/components/layout/AppShell'
-import { Skeleton } from '@/components/ui/skeleton'
+ import { Skeleton } from '@/components/ui/skeleton'
+// import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
 // Auth pages
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'))
@@ -87,7 +88,8 @@ const PipelineSettingsPage = lazy(() => import('@/features/pipeline/PipelineSett
 
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<Skeleton className="h-screen w-full" />}>{children}</Suspense>
+   return <Suspense fallback={< Skeleton />}>{children}</Suspense>
+  // return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 }
 
 export function AppRouter() {

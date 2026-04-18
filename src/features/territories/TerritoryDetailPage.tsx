@@ -13,7 +13,7 @@ import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -170,9 +170,7 @@ export default function TerritoryDetailPage() {
               Reps
             </h2>
             {isLoadingReps ? (
-              <div className="space-y-2">
-                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-              </div>
+              <LoadingSpinner />
             ) : !reps || reps.length === 0 ? (
               <p className="text-sm text-muted-foreground">No reps assigned to this territory.</p>
             ) : (
@@ -241,9 +239,7 @@ export default function TerritoryDetailPage() {
             )}
 
             {isLoadingAccounts ? (
-              <div className="space-y-2">
-                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-              </div>
+              <LoadingSpinner />
             ) : !accounts || accounts.length === 0 ? (
               <p className="text-sm text-muted-foreground">No accounts assigned to this territory.</p>
             ) : (

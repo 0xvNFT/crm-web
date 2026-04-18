@@ -6,7 +6,7 @@ import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -86,9 +86,7 @@ export function TerritorySecondaryRepsSection({ territoryId }: TerritorySecondar
       )}
 
       {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-        </div>
+        <LoadingSpinner />
       ) : !reps || reps.length === 0 ? (
         <p className="text-sm text-muted-foreground">No secondary reps assigned.</p>
       ) : (
