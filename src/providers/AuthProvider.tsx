@@ -1,6 +1,7 @@
 import { createContext, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import * as Sentry from '@sentry/react'
 import { useMe } from '@/api/endpoints/auth'
 import { authEvents } from '@/api/authEvents'
 import type { AuthUser } from '@/api/app-types'
@@ -63,6 +64,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       navigateRef.current('/login', { replace: true })
     }
   }, [qc])
+
+  // Keep Sentry user context in sync with auth state — errors are attributable to a real user.
+  useEffect(() => {
+    if (user) {
+      Sentry.setUser({ id: user.userId, email: user.email, username: user.fullName })
+    } else {
+      Sentry.setUser(null)
+    }
+  }, [user])
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
