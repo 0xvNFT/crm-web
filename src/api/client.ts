@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { toast } from '@/hooks/useToast'
 import { authEvents } from '@/api/authEvents'
 
 // In dev: VITE_API_BASE_URL is empty — requests go to localhost:5173/api (Vite proxy forwards to backend)
@@ -29,21 +28,12 @@ client.interceptors.response.use(
       // 401 — session expired or unauthenticated; trigger soft redirect via React Router.
       // AuthProvider listens to authEvents.onUnauthorized and calls navigate('/login').
       // This preserves all React state and query cache (no full page reload).
-      if (
-        status === 401 &&
-        !['/login', '/verify-email', '/reset-password', '/forgot-password', '/accept-invite'].includes(window.location.pathname)
-      ) {
+      // Exclude auth endpoints themselves — a failed login/reset must not redirect to /login.
+      const requestUrl = error.config?.url ?? ''
+      if (status === 401 && !requestUrl.includes('/api/v1/auth/')) {
         authEvents.emitUnauthorized()
       }
 
-      // 5xx or no response (network down) — show a global toast.
-      // Individual mutations still receive the rejection and show their own toasts via onError.
-      // This covers background queries that have no onError handler.
-      if (!error.response) {
-        toast('Network error — check your connection', { variant: 'destructive' })
-      } else if (status !== undefined && status >= 500) {
-        toast('Server error — please try again later', { variant: 'destructive' })
-      }
     }
 
     return Promise.reject(error)
