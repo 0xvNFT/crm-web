@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Pagination } from '@/components/shared/Pagination'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import type { PharmaActivity } from '@/api/app-types'
 
@@ -35,7 +36,9 @@ export function ActivitiesSection({
       </div>
 
       {isLoading ? (
-        <div className="px-5 py-8 text-center text-sm text-muted-foreground">Loading…</div>
+        <div className="p-4 space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+        </div>
       ) : activities.length === 0 ? (
         <div className="px-5 py-8">
           <EmptyState icon={Icon} title="No activities yet" description={emptyDescription} />

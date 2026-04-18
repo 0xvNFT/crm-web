@@ -72,7 +72,7 @@ export function DataTable<T extends { id?: string }>({
   className,
   emptyMessage = 'No records found.',
   empty,
-  totalElements: _totalElements,
+  totalElements,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -88,6 +88,8 @@ export function DataTable<T extends { id?: string }>({
   })
 
   const rows = table.getRowModel().rows
+
+  const showFooter = totalElements !== undefined && rows.length > 0
 
   return (
     <div className={cn('w-full', className)}>
@@ -177,6 +179,11 @@ export function DataTable<T extends { id?: string }>({
           </tbody>
         </table>
       </div>
+      {showFooter && (
+        <div className="border-t border-border/40 px-4 py-2 text-xs text-muted-foreground tabular-nums">
+          Showing {rows.length} of {totalElements} record{totalElements !== 1 ? 's' : ''}
+        </div>
+      )}
     </div>
   )
 }
