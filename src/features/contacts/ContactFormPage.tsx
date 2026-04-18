@@ -21,7 +21,7 @@ import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
-import { applyServerErrors } from '@/utils/errors'
+import { parseApiError } from '@/utils/errors'
 import { contactSchema, type ContactFormData } from '@/schemas/contacts'
 
 export default function ContactFormPage() {
@@ -47,7 +47,6 @@ export default function ContactFormPage() {
     handleSubmit,
     control,
     setValue,
-    setError,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -103,7 +102,7 @@ export default function ContactFormPage() {
         toast('Contact created', { variant: 'success' })
         navigate(`/contacts/${contact.id}`)
       },
-      onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
+      onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
     })
   }
 

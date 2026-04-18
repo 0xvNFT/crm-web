@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { toast } from '@/hooks/useToast'
-import { applyServerErrors } from '@/utils/errors'
+import { parseApiError } from '@/utils/errors'
 import { scheduleVisitSchema, type ScheduleVisitFormData } from '@/schemas/visits'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { FormSection } from '@/components/shared/FormSection'
@@ -44,7 +44,7 @@ export default function VisitScheduleFormPage() {
   const { data: campaignResults, isLoading: isSearchingCampaigns } = useCampaignSearch(debouncedCampaignQuery)
   const campaignOptions: ComboboxOption[] = (campaignResults ?? []).map((c) => ({ value: c.id!, label: c.name ?? c.id! }))
 
-  const { register, handleSubmit, control, setError, formState: { errors } } = useForm<ScheduleVisitFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<ScheduleVisitFormData>({
     resolver: zodResolver(scheduleVisitSchema),
   })
 
@@ -70,7 +70,7 @@ export default function VisitScheduleFormPage() {
           toast('Visit scheduled', { variant: 'success' })
           navigate(`/visits/${visit.id}`)
         },
-        onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       }
     )
   }

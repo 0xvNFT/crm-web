@@ -15,7 +15,7 @@ import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { toast } from '@/hooks/useToast'
-import { applyServerErrors } from '@/utils/errors'
+import { parseApiError } from '@/utils/errors'
 
 interface LeadPrefill {
   accountId?: string
@@ -39,7 +39,7 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
   const ratingOptions     = useConfigOptions('lead.rating')
   const leadSourceOptions = useConfigOptions('lead.source')
 
-  const { register, handleSubmit, control, setError, formState: { errors } } = useForm<LeadFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<LeadFormData>({
     // Why: RHF v7 infers Resolver<FieldValues> from zodResolver; cast narrows to the concrete form type
     resolver: zodResolver(leadSchema) as Resolver<LeadFormData>,
     defaultValues: isEdit && lead ? {
@@ -72,7 +72,7 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
           toast('Lead updated', { variant: 'success' })
           navigate(`/leads/${id}`)
         },
-        onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     } else {
       // Why: Object.fromEntries loses static type info; shape is guaranteed by Zod leadSchema
@@ -86,7 +86,7 @@ function LeadForm({ lead, isEdit, prefill }: { lead?: PharmaLead; isEdit: boolea
           toast('Lead created', { variant: 'success' })
           navigate(`/leads/${created.id}`)
         },
-        onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' })),
+        onError: (err) => toast(parseApiError(err), { variant: 'destructive' }),
       })
     }
   }

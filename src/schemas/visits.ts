@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { notesField, dateRequired } from './primitives'
+import { notesField } from './primitives'
 
 export const scheduleVisitSchema = z.object({
   accountId:      z.string().min(1, 'Account is required'),
@@ -9,7 +9,7 @@ export const scheduleVisitSchema = z.object({
   campaignId:     z.string().optional(),
   subject:        z.string().trim().min(1, 'Subject is required').max(255),
   visitType:      z.string().min(1, 'Visit type is required'),
-  scheduledStart: dateRequired('Start date/time'),
+  scheduledStart: z.string().min(1, 'Start date/time is required'),
   scheduledEnd:   z.string().optional(),
   callObjectives: notesField,
   notes:          notesField,
@@ -35,7 +35,7 @@ export const visitEditSchema = z.object({
   visitType:        z.string().min(1, 'Visit type is required'),
   priority:         z.string().optional(),
   sentiment:        z.string().optional(),
-  scheduledStart:   dateRequired('Start date/time'),
+  scheduledStart:   z.string().min(1, 'Start date/time is required'),
   scheduledEnd:     z.string().optional(),
   callObjectives:   notesField,
   notes:            notesField,

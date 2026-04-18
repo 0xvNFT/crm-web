@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { notesField, dateRequired } from './primitives'
+import { notesField } from './primitives'
 
 export const quoteItemSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
@@ -13,8 +13,8 @@ export const quoteSchema = z.object({
   accountId: z.string().min(1, 'Account is required'),
   contactId: z.string().optional(),
   opportunityId: z.string().optional(),
-  validFrom: dateRequired('Valid from'),
-  validUntil: dateRequired('Valid until'),
+  validFrom: z.string().min(1, 'Valid from date is required'),
+  validUntil: z.string().min(1, 'Valid until date is required'),
   items: z.array(quoteItemSchema).min(1, 'At least one item is required'),
   discountPercent: z.coerce.number<number>().min(0).max(100).optional(),
   taxAmount: z.coerce.number<number>().min(0).optional(),

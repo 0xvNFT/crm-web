@@ -1,5 +1,4 @@
 import axios from 'axios'
-import type { FieldPath, FieldValues, UseFormSetError } from 'react-hook-form'
 import type { ApiError } from '@/api/app-types'
 
 export function parseApiError(error: unknown): string {
@@ -26,26 +25,4 @@ export function parseValidationErrors(error: unknown): Record<string, string> | 
     if (data?.validationErrors) return data.validationErrors
   }
   return null
-}
-
-/**
- * Call in mutation onError to pin server validation errors to form fields.
- * Falls back to a toast for non-field errors (network, 500s, etc.).
- *
- * Usage:
- *   onError: (err) => applyServerErrors(err, setError, (msg) => toast(msg, { variant: 'destructive' }))
- */
-export function applyServerErrors<T extends FieldValues>(
-  error: unknown,
-  setError: UseFormSetError<T>,
-  onFallback: (message: string) => void,
-): void {
-  const fieldErrors = parseValidationErrors(error)
-  if (fieldErrors && Object.keys(fieldErrors).length > 0) {
-    for (const [field, message] of Object.entries(fieldErrors)) {
-      setError(field as FieldPath<T>, { type: 'server', message })
-    }
-  } else {
-    onFallback(parseApiError(error))
-  }
 }
