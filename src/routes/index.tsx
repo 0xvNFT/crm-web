@@ -1,9 +1,13 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import type { Role } from '@/api/app-types'
 
 const NotFoundPage = lazy(() => import('@/features/errors/NotFoundPage'))
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
+
+// Roles that can perform write operations (create/edit/delete)
+const WRITE_ROLES: Role[] = ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'CSR']
 import { AppShell } from '@/components/layout/AppShell'
  import { Skeleton } from '@/components/ui/skeleton'
 // import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -132,41 +136,125 @@ export function AppRouter() {
 
           {/* Intern pages — replace PlaceholderPage as each feature is completed */}
           <Route path="/contacts" element={<Wrap><ContactListPage /></Wrap>} />
-          <Route path="/contacts/new" element={<Wrap><ContactFormPage /></Wrap>} />
-          <Route path="/contacts/:id" element={<Wrap><ContactDetailPage /></Wrap>} />
-          <Route path="/leads" element={<Wrap><LeadListPage /></Wrap>} />
-          <Route path="/leads/new" element={<Wrap><LeadFormPage /></Wrap>} />
-          <Route path="/leads/:id/edit" element={<Wrap><LeadFormPage /></Wrap>} />
-          <Route path="/leads/:id" element={<Wrap><LeadDetailPage /></Wrap>} />
-          <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
-          <Route path="/orders/new" element={<Wrap><OrderFormPage /></Wrap>} />
-          <Route path="/orders/:id/edit" element={<Wrap><OrderEditPage /></Wrap>} />
-          <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
-          <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
-          <Route path="/quotes/new" element={<Wrap><QuoteFormPage /></Wrap>} />
-          <Route path="/quotes/:id/edit" element={<Wrap><QuoteEditPage /></Wrap>} />
-          <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
-          <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
-          <Route path="/activities/new" element={<Wrap><ActivityFormPage /></Wrap>} />
-          <Route path="/activities/:id/edit" element={<Wrap><ActivityFormPage /></Wrap>} />
-          <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
-          <Route path="/invoices" element={<Wrap><InvoiceListPage /></Wrap>} />
-          <Route path="/invoices/new" element={<Wrap><InvoiceFormPage /></Wrap>} />
-          <Route path="/invoices/:id/edit" element={<Wrap><InvoiceFormPage /></Wrap>} />
-          <Route path="/invoices/:id" element={<Wrap><InvoiceDetailPage /></Wrap>} />
-          <Route path="/opportunities" element={<Wrap><OpportunityListPage /></Wrap>} />
-          <Route path="/opportunities/new" element={<Wrap><OpportunityFormPage /></Wrap>} />
-          <Route path="/opportunities/:id/edit" element={<Wrap><OpportunityFormPage /></Wrap>} />
-          <Route path="/opportunities/:id" element={<Wrap><OpportunityDetailPage /></Wrap>} />
-          {/* Campaigns — all roles including CSR can view; write: ADMIN/MANAGER only */}
           <Route
-            path="/campaigns"
+            path="/contacts/new"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><CampaignListPage /></Wrap>
+              <RoleRoute roles={WRITE_ROLES}>
+                <Wrap><ContactFormPage /></Wrap>
               </RoleRoute>
             }
           />
+          <Route path="/contacts/:id" element={<Wrap><ContactDetailPage /></Wrap>} />
+          <Route path="/leads" element={<Wrap><LeadListPage /></Wrap>} />
+          <Route
+            path="/leads/new"
+            element={
+              <RoleRoute roles={WRITE_ROLES}>
+                <Wrap><LeadFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/leads/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><LeadFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/leads/:id" element={<Wrap><LeadDetailPage /></Wrap>} />
+          <Route path="/orders" element={<Wrap><OrderListPage /></Wrap>} />
+          <Route
+            path="/orders/new"
+            element={
+              <RoleRoute roles={WRITE_ROLES}>
+                <Wrap><OrderFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/orders/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'CSR']}>
+                <Wrap><OrderEditPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/orders/:id" element={<Wrap><OrderDetailPage /></Wrap>} />
+          <Route path="/quotes" element={<Wrap><QuoteListPage /></Wrap>} />
+          <Route
+            path="/quotes/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><QuoteFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/quotes/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><QuoteEditPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/quotes/:id" element={<Wrap><QuoteDetailPage /></Wrap>} />
+          <Route path="/activities" element={<Wrap><ActivityListPage /></Wrap>} />
+          <Route
+            path="/activities/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><ActivityFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/activities/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><ActivityFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/activities/:id" element={<Wrap><ActivityDetailPage /></Wrap>} />
+          <Route path="/invoices" element={<Wrap><InvoiceListPage /></Wrap>} />
+          <Route
+            path="/invoices/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'CSR']}>
+                <Wrap><InvoiceFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/invoices/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'CSR']}>
+                <Wrap><InvoiceFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/invoices/:id" element={<Wrap><InvoiceDetailPage /></Wrap>} />
+          <Route path="/opportunities" element={<Wrap><OpportunityListPage /></Wrap>} />
+          <Route
+            path="/opportunities/new"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><OpportunityFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/opportunities/:id/edit"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><OpportunityFormPage /></Wrap>
+              </RoleRoute>
+            }
+          />
+          <Route path="/opportunities/:id" element={<Wrap><OpportunityDetailPage /></Wrap>} />
+          {/* Campaigns — all authenticated roles can view; write: ADMIN/MANAGER only */}
+          <Route path="/campaigns" element={<Wrap><CampaignListPage /></Wrap>} />
           <Route
             path="/campaigns/new"
             element={
@@ -183,16 +271,16 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
+          <Route path="/campaigns/:id" element={<Wrap><CampaignDetailPage /></Wrap>} />
+          <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
           <Route
-            path="/campaigns/:id"
+            path="/visits/new"
             element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><CampaignDetailPage /></Wrap>
+              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER']}>
+                <Wrap><VisitScheduleFormPage /></Wrap>
               </RoleRoute>
             }
           />
-          <Route path="/visits" element={<Wrap><VisitListPage /></Wrap>} />
-          <Route path="/visits/new" element={<Wrap><VisitScheduleFormPage /></Wrap>} />
           <Route path="/visits/:id" element={<Wrap><VisitDetailPage /></Wrap>} />
 
           {/* Coaching notes — list/create/edit MANAGER+ only, detail all roles */}
@@ -212,7 +300,14 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          <Route path="/coaching/:id" element={<Wrap><CoachingDetailPage /></Wrap>} />
+          <Route
+            path="/coaching/:id"
+            element={
+              <RoleRoute roles={['ADMIN', 'MANAGER']}>
+                <Wrap><CoachingDetailPage /></Wrap>
+              </RoleRoute>
+            }
+          />
           <Route
             path="/coaching/:id/edit"
             element={
@@ -280,32 +375,11 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          {/* Materials — all roles including CSR can view */}
-          <Route
-            path="/materials"
-            element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><MaterialListPage /></Wrap>
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/materials/:id"
-            element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><MaterialDetailPage /></Wrap>
-              </RoleRoute>
-            }
-          />
-          {/* Products — all roles including CSR can view; write: ADMIN only */}
-          <Route
-            path="/products"
-            element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><ProductListPage /></Wrap>
-              </RoleRoute>
-            }
-          />
+          {/* Materials — all authenticated roles can view */}
+          <Route path="/materials" element={<Wrap><MaterialListPage /></Wrap>} />
+          <Route path="/materials/:id" element={<Wrap><MaterialDetailPage /></Wrap>} />
+          {/* Products — all authenticated roles can view; write: ADMIN only */}
+          <Route path="/products" element={<Wrap><ProductListPage /></Wrap>} />
           <Route
             path="/products/new"
             element={
@@ -314,14 +388,7 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
-          <Route
-            path="/products/:id"
-            element={
-              <RoleRoute roles={['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR']}>
-                <Wrap><ProductDetailPage /></Wrap>
-              </RoleRoute>
-            }
-          />
+          <Route path="/products/:id" element={<Wrap><ProductDetailPage /></Wrap>} />
           <Route
             path="/products/:id/edit"
             element={
