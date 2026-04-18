@@ -6,7 +6,7 @@ import { useRole } from '@/hooks/useRole'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormRow } from '@/components/shared/FormRow'
@@ -125,7 +125,9 @@ export function TerritoryProductFocusSection({ territoryId }: TerritoryProductFo
       )}
 
       {isLoading ? (
-        <LoadingSpinner />
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+        </div>
       ) : !items || items.length === 0 ? (
         <p className="text-sm text-muted-foreground">No product focus items added.</p>
       ) : (

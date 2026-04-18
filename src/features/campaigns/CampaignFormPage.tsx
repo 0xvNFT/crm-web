@@ -20,7 +20,7 @@ import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { FormRow } from '@/components/shared/FormRow'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
-import { DetailPageSkeleton } from '@/components/shared/DetailPageSkeleton'
+import { FormPageSkeleton } from '@/components/shared/FormPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { FormSection } from '@/components/shared/FormSection'
 import { toast } from '@/hooks/useToast'
@@ -238,7 +238,7 @@ export default function CampaignFormPage() {
 
   const { data: campaign, isLoading, isError } = useCampaign(id ?? '')
 
-  if (isLoading && isEdit) return <DetailPageSkeleton />
+  if (isLoading && isEdit) return <FormPageSkeleton />
   if (isError && isEdit) return <ErrorMessage message="Campaign not found." />
 
   return (
