@@ -3,10 +3,16 @@ import axios from 'axios'
 import { parseApiError, parseValidationErrors } from './errors'
 
 function makeAxiosError(status?: number, data?: object, message?: string) {
-  const response = status
-    ? ({ status, data: data ?? {}, statusText: '', headers: {}, config: {} as import('axios').InternalAxiosRequestConfig } satisfies import('axios').AxiosResponse)
-    : undefined
-  return new axios.AxiosError(message ?? 'Request failed', 'ERR_BAD_RESPONSE', undefined, undefined, response)
+  const err = new axios.AxiosError(
+    message ?? 'Request failed',
+    'ERR_BAD_RESPONSE',
+    undefined,
+    undefined,
+    status
+      ? ({ status, data: data ?? {} } as ReturnType<typeof axios.create>['defaults'] & { status: number; data: object })
+      : undefined,
+  )
+  return err
 }
 
 describe('parseApiError', () => {

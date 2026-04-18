@@ -3,7 +3,6 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSidebarContext } from '@/hooks/useSidebarContext'
 import { cn } from '@/lib/utils'
-import type { Role } from '@/api/app-types'
 import {
   LayoutDashboard,
   Building2,
@@ -32,7 +31,7 @@ interface NavItem {
   to: string
   label: string
   icon: React.ElementType
-  roles?: Role[]
+  roles?: string[]
 }
 
 // No roles array = visible to all authenticated users.
@@ -94,7 +93,7 @@ function NavGroup({
 }: {
   label: string
   items: NavItem[]
-  userRoles: Role[]
+  userRoles: string[]
   onNavigate: () => void
 }) {
   const visible = items.filter(
@@ -141,7 +140,7 @@ function getInitials(name: string) {
 function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const userRoles: Role[] = user?.roles ?? []
+  const userRoles = user?.roles ?? []
 
   async function handleLogout() {
     await logout()
