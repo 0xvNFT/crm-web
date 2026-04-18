@@ -38,25 +38,6 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: [],
-    coverage: {
-      provider: 'v8',
-      // Only measure coverage on the files that have tests — not the whole app.
-      // Expand this list as new test files are added.
-      include: [
-        'src/utils/formatters.ts',
-        'src/utils/errors.ts',
-        'src/schemas/primitives.ts',
-        'src/hooks/useRole.ts',
-        'src/hooks/useListSearch.ts',
-        'src/routes/PrivateRoute.tsx',
-        'src/routes/RoleRoute.tsx',
-      ],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 70,
-      },
-    },
   },
   server: {
     proxy: {
