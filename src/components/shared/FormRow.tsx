@@ -8,8 +8,6 @@ interface FormRowProps {
   error?: string
   /** Pass fieldId when children is a native input so the label is programmatically associated. */
   fieldId?: string
-  /** Inline hint text rendered beside the label (e.g. "(optional)", "e.g. YYYY-MM-DD") */
-  hint?: string
   children: React.ReactNode
   className?: string
 }
@@ -21,7 +19,7 @@ interface FormRowProps {
  * For native inputs: pass the input's id as `fieldId` so the label is linked via htmlFor.
  * For Controller-wrapped components (Select, Combobox): omit fieldId — they manage their own focus.
  */
-export function FormRow({ label, required, error, fieldId, hint, children, className }: FormRowProps) {
+export function FormRow({ label, required, error, fieldId, children, className }: FormRowProps) {
   const generatedId = useId()
   const id = fieldId ?? generatedId
 
@@ -30,7 +28,6 @@ export function FormRow({ label, required, error, fieldId, hint, children, class
       <Label htmlFor={id} className="text-xs font-medium text-muted-foreground">
         {label}
         {required && <span className="ml-0.5 text-destructive">*</span>}
-        {hint && <span className="ml-1 font-normal text-muted-foreground/70">{hint}</span>}
       </Label>
       {/* Pass aria-describedby to native inputs via cloneElement when an error exists */}
       {error && fieldId

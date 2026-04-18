@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { Pagination } from '@/components/shared/Pagination'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { formatDate, formatCurrency, formatLabel } from '@/utils/formatters'
 import type { PharmaOpportunity } from '@/api/app-types'
 
@@ -36,9 +35,7 @@ export function OpportunitiesSection({
       </div>
 
       {isLoading ? (
-        <div className="p-4 space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-        </div>
+        <div className="px-5 py-8 text-center text-sm text-muted-foreground">Loading…</div>
       ) : opportunities.length === 0 ? (
         <div className="px-5 py-8">
           <EmptyState icon={Icon} title="No opportunities yet" description={emptyDescription} />
