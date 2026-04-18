@@ -3,15 +3,19 @@ import client from '@/api/client'
 import type { User, PageUser, StaffMember, CreateStaffRequest, UpdateStaffRequest } from '@/api/app-types'
 
 // ─── Normalizer ───────────────────────────────────────────────────────────────
-// Backend now returns StaffResponse DTO — roles is string[], manager is flat (managerId/managerName).
+// Backend returns raw User JPA entity — roles is Role[] (objects with .name).
+// /api/auth/me returns roles as string[]; /api/pharma/users returns Role objects.
+// When backend ships a proper StaffResponse DTO (roles: string[]), only update here.
 export function mapStaffMember(raw: User): StaffMember {
+  const roleObj = raw.roles?.[0]
+  const role = typeof roleObj === 'string' ? roleObj : (roleObj?.name ?? '')
   return {
     id:           raw.id ?? '',
     firstName:    raw.firstName ?? '',
     lastName:     raw.lastName ?? '',
     fullName:     raw.fullName ?? `${raw.firstName ?? ''} ${raw.lastName ?? ''}`.trim(),
     email:        raw.email ?? '',
-    role:         raw.roles?.[0] ?? '',
+    role,
     jobTitle:     raw.jobTitle,
     department:   raw.department,
     phoneWork:    raw.phoneWork,
@@ -19,9 +23,11 @@ export function mapStaffMember(raw: User): StaffMember {
     status:       raw.status,
     emailVerified: raw.emailVerified,
     createdAt:    raw.createdAt,
-    manager:      raw.managerId ? {
-      id:       raw.managerId,
-      fullName: raw.managerName,
+    manager:      raw.manager ? {
+      id:        raw.manager.id,
+      fullName:  raw.manager.fullName,
+      firstName: raw.manager.firstName,
+      lastName:  raw.manager.lastName,
     } : undefined,
   }
 }

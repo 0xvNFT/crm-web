@@ -1744,26 +1744,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Refresh access token
-         * @description Rotates the refresh token and issues a new access token. Both cookies are updated.
-         */
-        post: operations["refresh"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -1775,7 +1755,7 @@ export interface paths {
         put?: never;
         /**
          * Logout
-         * @description Clears auth cookies and revokes the refresh token.
+         * @description Clears the authentication cookie and revokes the JWT.
          */
         post: operations["logout"];
         delete?: never;
@@ -5120,11 +5100,342 @@ export interface components {
             /** Format: uuid */
             opportunityId?: string;
         };
-        LeadConversionResponse: {
-            lead?: components["schemas"]["PharmaLeadResponse"];
-            account?: components["schemas"]["PharmaAccountResponse"];
-            contact?: components["schemas"]["PharmaContactResponse"];
-            opportunity?: components["schemas"]["PharmaOpportunityResponse"];
+        BusinessUnit: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            code?: string;
+            name?: string;
+            description?: string;
+            parentBusinessUnit?: components["schemas"]["BusinessUnit"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        LeadConversionResult: {
+            lead?: components["schemas"]["PharmaLead"];
+            account?: components["schemas"]["PharmaAccount"];
+            contact?: components["schemas"]["PharmaContact"];
+            opportunity?: components["schemas"]["PharmaOpportunity"];
+        };
+        PharmaAccount: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            accountType?: string;
+            parentAccount?: components["schemas"]["PharmaAccount"];
+            owner?: components["schemas"]["User"];
+            createdBy?: components["schemas"]["User"];
+            website?: string;
+            phoneMain?: string;
+            emailGeneral?: string;
+            billingAddress?: string;
+            shippingAddress?: string;
+            taxId?: string;
+            creditLimit?: number;
+            paymentTerms?: string;
+            /** Format: int32 */
+            employees?: number;
+            annualRevenue?: number;
+            isSupplier?: boolean;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            controlledSubstanceApproved?: boolean;
+            customerCode?: string;
+            productPortfolio?: Record<string, never>;
+            primaryCustomerClass?: string;
+            /** Format: int32 */
+            totalHcpCount?: number;
+            /** Format: int32 */
+            advocateHcpCount?: number;
+            /** Format: int32 */
+            userHcpCount?: number;
+            status?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaContact: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            account?: components["schemas"]["PharmaAccount"];
+            owner?: components["schemas"]["User"];
+            createdBy?: components["schemas"]["User"];
+            salutation?: string;
+            firstName: string;
+            middleName?: string;
+            lastName: string;
+            title?: string;
+            email?: string;
+            phone?: string;
+            mobile?: string;
+            faxNumber?: string;
+            contactType: string;
+            specialty?: string;
+            prcNumber?: string;
+            /** Format: date */
+            prcExpiryDate?: string;
+            npiNumber?: string;
+            deaNumber?: string;
+            stateLicenseNumber?: string;
+            prescribingAuthority?: boolean;
+            customerClass?: string;
+            adoptionStage?: string;
+            customerType?: string;
+            professionalSociety?: string;
+            productPortfolio?: Record<string, never>;
+            addressStreet?: string;
+            addressRegion?: string;
+            addressProvince?: string;
+            addressCity?: string;
+            addressBarangay?: string;
+            addressPostalCode?: string;
+            addressCountry?: string;
+            /** Format: int32 */
+            yearsOfExperience?: number;
+            /** Format: int32 */
+            patientVolumeMonthly?: number;
+            preferredContactMethod?: string;
+            preferredContactTime?: string;
+            leadSource?: string;
+            consentConfirmedStatus?: string;
+            /** Format: date */
+            consentConfirmedDate?: string;
+            doNotCall?: boolean;
+            emailOptOut?: boolean;
+            contactCode?: string;
+            status?: string;
+            notes?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            fullName?: string;
+            healthcareProfessional?: boolean;
+        };
+        PharmaLead: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            topic?: string;
+            salutation?: string;
+            firstName?: string;
+            middleName?: string;
+            lastName: string;
+            companyName?: string;
+            email?: string;
+            phone?: string;
+            leadStatus?: string;
+            rating?: string;
+            /** Format: int32 */
+            leadScore?: number;
+            leadSource?: string;
+            industry?: string;
+            estimatedBudget?: number;
+            decisionTimeframe?: string;
+            purchaseProcess?: string;
+            emailOptOut?: boolean;
+            assignedUser?: components["schemas"]["User"];
+            createdBy?: components["schemas"]["User"];
+            isConverted?: boolean;
+            /** Format: date-time */
+            convertedDate?: string;
+            relatedAccount?: components["schemas"]["PharmaAccount"];
+            relatedContact?: components["schemas"]["PharmaContact"];
+            relatedOpportunity?: components["schemas"]["PharmaOpportunity"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaOpportunity: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            topic: string;
+            description?: string;
+            account: components["schemas"]["PharmaAccount"];
+            contact?: components["schemas"]["PharmaContact"];
+            owner: components["schemas"]["User"];
+            createdBy?: components["schemas"]["User"];
+            territory?: components["schemas"]["PharmaTerritory"];
+            salesStage?: string;
+            status?: string;
+            estRevenue?: number;
+            /** Format: int32 */
+            probabilityPct?: number;
+            currency?: string;
+            /** Format: date */
+            estCloseDate?: string;
+            /** Format: date */
+            actualCloseDate?: string;
+            forecastCategory?: string;
+            leadSource?: string;
+            type?: string;
+            budgetConfirmed?: boolean;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaProduct: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            ndcNumber: string;
+            name: string;
+            genericName?: string;
+            manufacturer?: string;
+            strength?: string;
+            dosageForm?: string;
+            packageSize?: string;
+            unitPrice: number;
+            status?: string;
+            createdBy?: components["schemas"]["User"];
+            /** Format: int64 */
+            version?: number;
+            controlledSubstance?: boolean;
+            deaSchedule?: string;
+            requiresRefrigeration?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PharmaTerritory: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            territoryCode: string;
+            territoryName: string;
+            description?: string;
+            businessUnit?: components["schemas"]["BusinessUnit"];
+            parentTerritory?: components["schemas"]["PharmaTerritory"];
+            /** Format: int32 */
+            territoryLevel?: number;
+            hierarchyPath?: string;
+            region: string;
+            provinces?: Record<string, never>;
+            cities?: Record<string, never>;
+            countryCode?: string;
+            geographicBounds?: Record<string, never>;
+            primaryRep?: components["schemas"]["User"];
+            secondaryReps?: components["schemas"]["TerritorySecondaryRep"][];
+            manager?: components["schemas"]["User"];
+            productFocusItems?: components["schemas"]["TerritoryProductFocus"][];
+            /** Format: int32 */
+            totalAccountsCount?: number;
+            /** Format: int32 */
+            activeAccountsCount?: number;
+            /** Format: int32 */
+            totalHcpsCount?: number;
+            /** Format: int32 */
+            totalVisitsYtd?: number;
+            targetRevenueAnnual?: number;
+            /** Format: int32 */
+            targetVisitsMonthly?: number;
+            /** Format: int32 */
+            targetNewAccountsQuarterly?: number;
+            status?: string;
+            /** Format: date */
+            effectiveFrom?: string;
+            /** Format: date */
+            effectiveTo?: string;
+            aiTerritorySummary?: string;
+            aiGrowthPotential?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: components["schemas"]["User"];
+        };
+        Role: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            description?: string;
+            permissions?: string;
+        };
+        TerritoryProductFocus: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            product?: components["schemas"]["PharmaProduct"];
+            /** Format: int32 */
+            priority?: number;
+            notes?: string;
+            /** Format: date-time */
+            assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        TerritorySecondaryRep: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            user?: components["schemas"]["User"];
+            /** Format: date-time */
+            assignedAt?: string;
+            /** Format: int64 */
+            version?: number;
+        };
+        User: {
+            /** Format: uuid */
+            tenantId?: string;
+            /** Format: uuid */
+            id?: string;
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            status?: string;
+            emailVerified?: boolean;
+            manager?: components["schemas"]["User"];
+            jobTitle?: string;
+            department?: string;
+            phoneWork?: string;
+            phoneMobile?: string;
+            isFieldRep?: boolean;
+            /** Format: uuid */
+            homeTerritory?: string;
+            mustChangePassword?: boolean;
+            /** Format: date-time */
+            lastLoginAt?: string;
+            timeZone?: string;
+            preferredLanguage?: string;
+            roles?: components["schemas"]["Role"][];
+            /** Format: int64 */
+            version?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            fullName?: string;
         };
         CreateInvoiceRequest: {
             subject: string;
@@ -9070,7 +9381,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["LeadConversionResponse"];
+                    "*/*": components["schemas"]["LeadConversionResult"];
                 };
             };
         };
@@ -9850,26 +10161,6 @@ export interface operations {
                 "application/json": components["schemas"]["EmailOnlyRequest"];
             };
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": Record<string, never>;
-                };
-            };
-        };
-    };
-    refresh: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
