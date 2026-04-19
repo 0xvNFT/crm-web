@@ -21,10 +21,10 @@ interface VisitMaterialsSectionProps {
 }
 
 export function VisitMaterialsSection({ visitId, visit }: VisitMaterialsSectionProps) {
-  const { isManager, isReadOnly } = useRole()
+  const { isReadOnly } = useRole()
   const { user } = useAuth()
   const isOwnVisit = visit.assignedRepId === user?.userId
-  const canManage = (isOwnVisit || isManager) && !isReadOnly
+  const canManage = isOwnVisit && visit.status?.toUpperCase() === 'IN_PROGRESS' && !isReadOnly
 
   const { data: materials, isLoading } = useVisitMaterials(visitId)
   const { mutate: addMaterial, isPending: isAdding } = useAddVisitMaterial(visitId)
