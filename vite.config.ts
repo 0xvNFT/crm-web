@@ -51,6 +51,9 @@ export default defineConfig({
         'src/hooks/useListSearch.ts',
         'src/routes/PrivateRoute.tsx',
         'src/routes/RoleRoute.tsx',
+        'src/hooks/useDebounce.ts',
+        'src/hooks/useSessionWarning.ts',
+        'src/components/shared/SessionWarningDialog.tsx',
       ],
       thresholds: {
         lines: 80,
