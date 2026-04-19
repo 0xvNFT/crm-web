@@ -21,10 +21,10 @@ interface VisitProductsSectionProps {
 }
 
 export function VisitProductsSection({ visitId, visit }: VisitProductsSectionProps) {
-  const { isManager, isReadOnly } = useRole()
+  const { isReadOnly } = useRole()
   const { user } = useAuth()
   const isOwnVisit = visit.assignedRepId === user?.userId
-  const canManage = (isOwnVisit || isManager) && !isReadOnly
+  const canManage = isOwnVisit && visit.status?.toUpperCase() === 'IN_PROGRESS' && !isReadOnly
 
   const { data: products, isLoading } = useVisitProducts(visitId)
   const { mutate: addProduct, isPending: isAdding } = useAddVisitProduct(visitId)

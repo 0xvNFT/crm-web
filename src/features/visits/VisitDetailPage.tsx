@@ -18,6 +18,7 @@ import { toast } from '@/hooks/useToast'
 import { VisitEditForm } from './components/VisitEditForm'
 import { VisitRejectDialog } from './components/VisitRejectDialog'
 import { VisitCheckOutDialog } from './components/VisitCheckOutDialog'
+import { SignatureCaptureDialog } from './components/SignatureCaptureDialog'
 import { VisitProductsSection } from './components/VisitProductsSection'
 import { VisitMaterialsSection } from './components/VisitMaterialsSection'
 import { DetailSection, DetailField } from '@/components/shared/DetailSection'
@@ -42,19 +43,23 @@ export default function VisitDetailPage() {
   const [showSubmit, setShowSubmit] = useState(false)
   const [showCheckIn, setShowCheckIn] = useState(false)
   const [showCheckOut, setShowCheckOut] = useState(false)
+  const [showSignature, setShowSignature] = useState(false)
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !visit) return <ErrorMessage message="Visit not found." error={error} onRetry={() => refetch()} />
 
   const status = visit.status?.toUpperCase() ?? ''
+  const submissionStatus = visit.submissionStatus?.toUpperCase() ?? ''
   const isOwnVisit = visit.assignedRepId === user?.userId
-
+  const isApproved = submissionStatus === 'APPROVED'
 
   const canCheckIn = isOwnVisit && status === 'SCHEDULED' && !visit.checkInTime && !isReadOnly
-  const canCheckOut = isOwnVisit && !!visit.checkInTime && !visit.checkOutTime && !isReadOnly
-  const canSubmit = isOwnVisit && (status === 'COMPLETED' || status === 'DRAFT') && !['PENDING_APPROVAL', 'APPROVED'].includes(status) && !isReadOnly
-  const canApproveReject = isManager && status === 'PENDING_APPROVAL' && !isReadOnly
-  const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED' && !isReadOnly
+  const canCheckOut = isOwnVisit && status === 'IN_PROGRESS' && !visit.checkOutTime && !isReadOnly
+  const signatureBlocking = !!visit.signatureRequired && !visit.signatureCaptured
+  const canCaptureSignature = isOwnVisit && status === 'COMPLETED' && signatureBlocking && !isReadOnly
+  const canSubmit = isOwnVisit && status === 'COMPLETED' && !signatureBlocking && submissionStatus !== 'SUBMITTED' && !isApproved && !isReadOnly
+  const canApproveReject = isManager && submissionStatus === 'SUBMITTED' && !isReadOnly
+  const canEdit = (isOwnVisit || isManager) && status === 'SCHEDULED' && !isApproved && !isReadOnly
 
   function handleCheckIn() {
     if (!id) return
@@ -128,6 +133,12 @@ export default function VisitDetailPage() {
             <Button size="sm" onClick={() => setShowCheckOut(true)}>
               <LogOut className="h-4 w-4 mr-1.5" />
               Check Out
+            </Button>
+          )}
+          {canCaptureSignature && (
+            <Button size="sm" variant="outline" onClick={() => setShowSignature(true)}>
+              <FileSignature className="h-4 w-4 mr-1.5" />
+              Capture Signature
             </Button>
           )}
           {canSubmit && (
@@ -359,6 +370,12 @@ export default function VisitDetailPage() {
         open={showCheckOut}
         visitId={id ?? ''}
         onClose={() => setShowCheckOut(false)}
+      />
+
+      <SignatureCaptureDialog
+        open={showSignature}
+        visitId={id ?? ''}
+        onClose={() => setShowSignature(false)}
       />
     </div>
   )
