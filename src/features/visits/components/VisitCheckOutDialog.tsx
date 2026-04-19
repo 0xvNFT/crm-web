@@ -1,9 +1,10 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCheckOutVisit } from '@/api/endpoints/visits'
+import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
 import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
@@ -17,8 +18,9 @@ interface VisitCheckOutDialogProps {
 
 export function VisitCheckOutDialog({ open, visitId, onClose }: VisitCheckOutDialogProps) {
   const { mutate: checkOut, isPending } = useCheckOutVisit()
+  const outcomeOptions = useConfigOptions('visit.outcome')
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CheckOutFormData>({
+  const { control, register, handleSubmit, reset, formState: { errors } } = useForm<CheckOutFormData>({
     resolver: zodResolver(checkOutSchema),
   })
 
@@ -50,10 +52,25 @@ export function VisitCheckOutDialog({ open, visitId, onClose }: VisitCheckOutDia
             <Label className="text-xs font-medium text-muted-foreground">
               Outcome <span className="text-destructive">*</span>
             </Label>
-            <Input
-              {...register('outcome')}
-              placeholder="e.g. Productive — script discussed, samples left"
-              autoFocus
+            <Controller
+              name="outcome"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value ?? ''}
+                  onValueChange={field.onChange}
+                  disabled={outcomeOptions.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={outcomeOptions.length === 0 ? 'Loading…' : 'Select outcome…'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {outcomeOptions.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
             {errors.outcome && (
               <p className="text-xs text-destructive">{errors.outcome.message}</p>

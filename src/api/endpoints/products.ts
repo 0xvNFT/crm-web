@@ -18,6 +18,7 @@ export function useProductSearch(q: string) {
     queryFn: ({ signal }) =>
       client.get<PagePharmaProduct>('/api/v1/pharma/products/search', { params: { name: q }, signal }).then((r) => r.data.content ?? []),
     enabled: q.trim().length >= 2,
+    placeholderData: (prev) => prev,
   })
 }
 
