@@ -28,6 +28,12 @@ export function useLogin() {
   })
 }
 
+export function useRefreshSession() {
+  return useMutation({
+    mutationFn: () => client.post<AuthUser>('/api/v1/auth/refresh').then((r) => r.data),
+  })
+}
+
 // Logout is handled by AuthProvider.logout() — not a hook — because it must also
 // clear the React Query cache and navigate. Do not re-add useLogout here.
 
