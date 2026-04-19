@@ -2,8 +2,10 @@ import { createContext, useEffect, useCallback, useRef, type ReactNode } from 'r
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
-import { useMe } from '@/api/endpoints/auth'
+import { useMe, useRefreshSession } from '@/api/endpoints/auth'
 import { authEvents } from '@/api/authEvents'
+import { useSessionWarning, WARN_BEFORE_MS } from '@/hooks/useSessionWarning'
+import { SessionWarningDialog } from '@/components/shared/SessionWarningDialog'
 import type { AuthUser } from '@/api/app-types'
 
 export type { AuthUser }
@@ -31,6 +33,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // useUpdateProfile invalidates ['me'] → this query refetches → user.fullName stays in sync.
   // staleTime: Infinity means it only refetches when explicitly invalidated, not on every focus.
   const { data: user = null, isLoading } = useMe()
+  const { mutate: refreshSession, isPending: isRefreshing } = useRefreshSession()
+  const { show: showWarning, secondsLeft } = useSessionWarning(user?.expiresAt)
+  const silentRefreshRef = useRef(false)
+
+  // Proactive silent refresh — fires halfway between now and the warn window.
+  // With a 15-min token: refreshes ~12.5 min in, before the 2-min warning ever shows.
+  // Resets on every successful refresh (expiresAt updates → effect re-runs with new value).
+  useEffect(() => {
+    if (!user?.expiresAt) return
+    const msUntilWarn = user.expiresAt - Date.now() - WARN_BEFORE_MS
+    if (msUntilWarn <= 0) return  // already in warning window — let dialog handle it
+    const delay = msUntilWarn / 2
+    silentRefreshRef.current = false
+    const id = setTimeout(() => {
+      if (silentRefreshRef.current) return  // already refreshed manually
+      refreshSession(undefined, {
+        onSuccess: (fresh) => qc.setQueryData(['me'], fresh),
+      })
+    }, delay)
+    return () => clearTimeout(id)
+  }, [user?.expiresAt, refreshSession, qc])
 
   // H-3: Listen for 401 events from Axios interceptor and do a soft React Router navigation.
   // Using a ref for navigate to avoid stale closure issues in the effect.
@@ -74,9 +97,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [user])
 
+  function handleStaySignedIn() {
+    silentRefreshRef.current = true
+    refreshSession(undefined, {
+      onSuccess: (fresh) => qc.setQueryData(['me'], fresh),
+    })
+  }
+
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
       {children}
+      <SessionWarningDialog
+        open={showWarning}
+        secondsLeft={secondsLeft}
+        isPending={isRefreshing}
+        onStay={handleStaySignedIn}
+        onSignOut={() => void logout()}
+      />
     </AuthContext.Provider>
   )
 }

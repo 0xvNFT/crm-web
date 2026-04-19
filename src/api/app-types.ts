@@ -154,14 +154,14 @@ export interface KpiPeriod {
 export const ROLES = ['ADMIN', 'MANAGER', 'FIELD_REP', 'ACCOUNT_MANAGER', 'READ_ONLY', 'CSR'] as const
 export type Role = typeof ROLES[number]
 
-// Manually defined — backend login returns token=null in body (it's in the httpOnly cookie)
-export interface AuthUser {
+// Derived from MeResponse — required fields asserted, roles widened to Role[]
+// MeResponse has all fields optional (OpenAPI default) but they are always present at runtime
+export type AuthUser = Omit<components['schemas']['MeResponse'], 'roles' | 'userId' | 'tenantId' | 'email' | 'fullName'> & {
   userId: string
   tenantId: string
   email: string
   fullName: string
   roles: Role[]
-  mustChangePassword?: boolean
 }
 
 // ─── Auth request types ───────────────────────────────────────────────────────
