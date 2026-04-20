@@ -13,6 +13,18 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Spring expects repeated params (roles=ADMIN&roles=MANAGER), not bracket notation (roles[]=ADMIN)
+  paramsSerializer: (params) => {
+    const search = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => search.append(key, v))
+      } else if (value !== undefined && value !== null) {
+        search.append(key, String(value))
+      }
+    }
+    return search.toString()
+  },
 })
 
 // Response interceptor: handle auth errors and surface network/server failures
