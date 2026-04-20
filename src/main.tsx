@@ -8,6 +8,7 @@ import { QueryProvider } from './providers/QueryProvider'
 import { AuthProvider } from './providers/AuthProvider'
 import { AppRouter } from './routes'
 import { Toaster } from './components/ui/toaster'
+import { TooltipProvider } from './components/ui/tooltip'
 
 // Sentry is only active when VITE_SENTRY_DSN is set (production builds).
 // In dev/test it is a no-op — no DSN means no network requests, no side effects.
@@ -35,8 +36,10 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <QueryProvider>
           <AuthProvider>
-            <AppRouter />
-            <Toaster />
+            <TooltipProvider delayDuration={300}>
+              <AppRouter />
+              <Toaster />
+            </TooltipProvider>
           </AuthProvider>
         </QueryProvider>
       </BrowserRouter>
