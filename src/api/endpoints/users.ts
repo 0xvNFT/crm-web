@@ -40,12 +40,12 @@ export function useStaff(page = 0, size = 20) {
   })
 }
 
-export function useStaffSearch(q: string) {
+export function useStaffSearch(q: string, roles?: string[]) {
   return useQuery({
-    queryKey: ['users', 'search', q],
+    queryKey: ['users', 'search', q, roles],
     queryFn: ({ signal }) =>
       client
-        .get<User[]>('/api/v1/pharma/users/search', { params: { q }, signal })
+        .get<User[]>('/api/v1/pharma/users/search', { params: { q, roles }, signal })
         .then((r) => r.data.map(mapStaffMember)),
     enabled: q.trim().length >= 2,
     placeholderData: (prev) => prev,

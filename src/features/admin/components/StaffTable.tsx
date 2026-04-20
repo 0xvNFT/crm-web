@@ -1,4 +1,5 @@
 import { MailCheck, UserX, UserCheck, Pencil } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatLabel } from '@/utils/formatters'
@@ -17,6 +18,8 @@ function roleLabel(roleName: string | undefined) {
 interface StaffTableProps {
   users: StaffMember[]
   emptyMessage: string
+  isAdmin: boolean
+  currentUserId?: string
   onEdit: (user: StaffMember) => void
   onDeactivate: (user: StaffMember) => void
   onReactivate: (user: StaffMember) => void
@@ -26,13 +29,15 @@ interface StaffTableProps {
 export function StaffTable({
   users,
   emptyMessage,
+  isAdmin,
+  currentUserId,
   onEdit,
   onDeactivate,
   onReactivate,
   onResendInvite,
 }: StaffTableProps) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+    <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/40">
@@ -53,8 +58,9 @@ export function StaffTable({
             </tr>
           )}
           {users.map((user) => {
-            const isActive      = user.status !== 'inactive'
+            const isActive        = user.status !== 'inactive'
             const isPendingInvite = !user.emailVerified
+            const isSelf          = user.id === currentUserId
 
             return (
               <tr key={user.id} className="hover:bg-muted/30 transition-colors">
@@ -84,15 +90,17 @@ export function StaffTable({
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(user)}
-                      aria-label="Edit"
-                    >
-                      <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    </Button>
-                    {isPendingInvite && (
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit(user)}
+                        aria-label="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      </Button>
+                    )}
+                    {isAdmin && isPendingInvite && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -102,18 +110,36 @@ export function StaffTable({
                         <MailCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
                       </Button>
                     )}
-                    {!isPendingInvite && isActive && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDeactivate(user)}
-                        className="text-destructive hover:text-destructive"
-                        aria-label="Deactivate"
-                      >
-                        <UserX className="h-3.5 w-3.5" strokeWidth={1.5} />
-                      </Button>
+                    {isAdmin && !isPendingInvite && isActive && (
+                      isSelf ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled
+                              className="text-destructive hover:text-destructive pointer-events-auto"
+                              aria-label="Deactivate"
+                              aria-disabled="true"
+                            >
+                              <UserX className="h-3.5 w-3.5" strokeWidth={1.5} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>You cannot deactivate your own account</TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onDeactivate(user)}
+                          className="text-destructive hover:text-destructive"
+                          aria-label="Deactivate"
+                        >
+                          <UserX className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        </Button>
+                      )
                     )}
-                    {!isPendingInvite && !isActive && (
+                    {isAdmin && !isPendingInvite && !isActive && (
                       <Button
                         variant="ghost"
                         size="sm"

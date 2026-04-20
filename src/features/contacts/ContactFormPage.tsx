@@ -319,7 +319,8 @@ export default function ContactFormPage() {
           <FormRow label="Street" error={errors.addressStreet?.message}>
             <Input {...register('addressStreet')} />
           </FormRow>
-          <PhAddressFields control={control} setValue={setValue} errors={errors} />
+          {/* Why: PhAddressFields is schema-agnostic (dynamic field names via prefix); Control<any> is the documented RHF pattern for reusable sub-field components */}
+          <PhAddressFields control={control as never} setValue={setValue as never} errors={errors} />
           <FormRow label="Postal Code" error={errors.addressPostalCode?.message}>
             <Input {...register('addressPostalCode')} />
           </FormRow>

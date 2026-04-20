@@ -9,6 +9,8 @@ import {
 } from '@/api/endpoints/users'
 import { useListParams } from '@/hooks/useListParams'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useRole } from '@/hooks/useRole'
+import { useAuth } from '@/hooks/useAuth'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ListPageSkeleton } from '@/components/shared/ListPageSkeleton'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
@@ -26,6 +28,8 @@ import { StaffTable } from './components/StaffTable'
 type ConfirmAction = { type: 'deactivate' | 'reactivate'; user: StaffMember }
 
 export default function AdminPage() {
+  const { isAdmin } = useRole()
+  const { user: currentUser } = useAuth()
   const { page, goToPage } = useListParams([])
   const [query, setQuery]           = useState('')
   const [showInvite, setShowInvite] = useState(false)
@@ -83,32 +87,47 @@ export default function AdminPage() {
         title="Team Management"
         description="Manage staff accounts, roles, and access"
         actions={
-          <Button size="sm" onClick={() => setShowInvite(true)}>
-            <UserPlus className="h-4 w-4 mr-1.5" />
-            Invite Staff
-          </Button>
+          isAdmin && (
+            <Button size="sm" onClick={() => setShowInvite(true)}>
+              <UserPlus className="h-4 w-4 mr-1.5" />
+              Invite Staff
+            </Button>
+          )
         }
       />
 
-      <SearchInput
-        value={query}
-        onChange={(v) => { setQuery(v); goToPage(0) }}
-        placeholder="Search by name or email…"
-        className="max-w-sm"
-      />
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/20 px-4 py-3">
+          <SearchInput
+            value={query}
+            onChange={(v) => { setQuery(v); goToPage(0) }}
+            placeholder="Search by name or email…"
+            className="w-60 shrink-0"
+          />
+          {!isSearching && listQuery.data?.totalElements !== undefined && (
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {listQuery.data.totalElements.toLocaleString()} {listQuery.data.totalElements === 1 ? 'member' : 'members'}
+            </span>
+          )}
+        </div>
 
-      <StaffTable
-        users={users}
-        emptyMessage={isSearching ? `No staff found for "${debouncedQuery}"` : 'No staff members yet.'}
-        onEdit={setEditUser}
-        onDeactivate={(user) => setConfirm({ type: 'deactivate', user })}
-        onReactivate={(user) => setConfirm({ type: 'reactivate', user })}
-        onResendInvite={handleResendInvite}
-      />
+        <StaffTable
+          users={users}
+          emptyMessage={isSearching ? `No staff found for "${debouncedQuery}"` : 'No staff members yet.'}
+          isAdmin={isAdmin}
+          currentUserId={currentUser?.userId}
+          onEdit={setEditUser}
+          onDeactivate={(user) => setConfirm({ type: 'deactivate', user })}
+          onReactivate={(user) => setConfirm({ type: 'reactivate', user })}
+          onResendInvite={handleResendInvite}
+        />
 
-      {!isSearching && (
-        <Pagination page={page} totalPages={listQuery.data?.totalPages ?? 0} onChange={goToPage} />
-      )}
+        {!isSearching && (listQuery.data?.totalPages ?? 0) > 1 && (
+          <div className="border-t border-border/40 px-4">
+            <Pagination page={page} totalPages={listQuery.data?.totalPages ?? 0} onChange={goToPage} />
+          </div>
+        )}
+      </div>
 
       <InviteDialog open={showInvite} onClose={() => setShowInvite(false)} />
 
