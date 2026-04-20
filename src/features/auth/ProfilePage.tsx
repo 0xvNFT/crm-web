@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, X, Check, Shield, User, GraduationCap } from 'lucide-react'
+import { Pencil, X, Check, Shield, User, GraduationCap, Users, MapPin } from 'lucide-react'
+import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
 import { useUpdateProfile, useChangePassword } from '@/api/endpoints/auth'
+import { useMyProfile } from '@/api/endpoints/users'
 import { useCoachingByRep } from '@/api/endpoints/coaching'
 import { usePagination } from '@/hooks/usePagination'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -39,6 +41,78 @@ function Field({ label, value }: { label: string; value?: string | null }) {
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className="text-sm text-foreground">{value ?? '—'}</p>
     </div>
+  )
+}
+
+// ─── Teams & Territories ──────────────────────────────────────────────────────
+function TeamsSection({ userId }: { userId: string }) {
+  const { data: profile, isLoading } = useMyProfile()
+
+  // Only render for the current user's own profile
+  if (!userId) return null
+
+  return (
+    <Section title="Teams" icon={Users}>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : !profile?.teams?.length ? (
+        <p className="text-sm text-muted-foreground">No team assigned yet.</p>
+      ) : (
+        <div className="divide-y rounded-lg border overflow-hidden">
+          {profile.teams.map((team) => (
+            <div key={team.teamId} className="px-4 py-3 space-y-0.5">
+              <p className="text-sm font-medium text-foreground">{team.teamName ?? '—'}</p>
+              {team.administratorName && (
+                <p className="text-xs text-muted-foreground">Manager: {team.administratorName}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  )
+}
+
+function TerritoriesSection({ userId }: { userId: string }) {
+  const { isManager } = useRole()
+  const { data: profile, isLoading } = useMyProfile()
+
+  if (!userId) return null
+
+  // MANAGER sees territories they supervise; FIELD_REP sees territories they are assigned to
+  const isManagerView = isManager
+  const items = isManagerView ? (profile?.managedTerritories ?? []) : (profile?.territories ?? [])
+  const emptyMessage = isManagerView ? 'No territories to manage yet.' : 'No territories assigned yet.'
+
+  return (
+    <Section title="Territories" icon={MapPin}>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : !items.length ? (
+        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+      ) : (
+        <div className="divide-y rounded-lg border overflow-hidden">
+          {items.map((territory) => (
+            <div key={territory.territoryId} className="px-4 py-3 space-y-0.5">
+              <p className="text-sm font-medium text-foreground">
+                {territory.territoryName ?? '—'}
+                {territory.territoryCode && (
+                  <span className="ml-2 text-xs text-muted-foreground tabular-nums">{territory.territoryCode}</span>
+                )}
+              </p>
+              {isManagerView
+                ? 'primaryRepName' in territory && territory.primaryRepName && (
+                    <p className="text-xs text-muted-foreground">Primary Rep: {territory.primaryRepName}</p>
+                  )
+                : 'managerName' in territory && territory.managerName && (
+                    <p className="text-xs text-muted-foreground">Manager: {territory.managerName}</p>
+                  )
+              }
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
   )
 }
 
@@ -183,6 +257,10 @@ export default function ProfilePage() {
           </form>
         )}
       </Section>
+
+      {/* Teams & Territories — from /me/profile, not cached with session */}
+      {user?.userId && <TeamsSection userId={user.userId} />}
+      {user?.userId && <TerritoriesSection userId={user.userId} />}
 
       {/* Coaching History — visible to all roles */}
       {user?.userId && <CoachingHistorySection userId={user.userId} />}

@@ -48,6 +48,12 @@ export type TerritoryRepInfo         = components['schemas']['TerritoryRepInfo']
 export type ProductFocusInfo         = components['schemas']['ProductFocusInfo']
 export type AddProductFocusRequest   = components['schemas']['AddProductFocusRequest']
 
+// ─── User profile types ───────────────────────────────────────────────────────
+export type UserProfile                  = components['schemas']['UserProfileResponse']
+export type UserProfileTeam              = components['schemas']['TeamInfo']
+export type UserProfileTerritory         = components['schemas']['TerritoryInfo']
+export type UserProfileManagedTerritory  = components['schemas']['ManagedTerritoryInfo']
+
 // ─── Visit lifecycle types ────────────────────────────────────────────────────
 export type VisitProductInfo         = components['schemas']['VisitProductInfo']
 export type VisitMaterialInfo        = components['schemas']['VisitMaterialInfo']
