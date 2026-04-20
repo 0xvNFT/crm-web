@@ -12,6 +12,7 @@ import { parseApiError } from '@/utils/errors'
 import { toast } from '@/hooks/useToast'
 import { useState } from 'react'
 import { DetailSection, DetailField } from '@/components/shared/DetailSection'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function CoachingDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -77,17 +78,17 @@ export default function CoachingDetailPage() {
 
       {/* Follow-up status banner */}
       {note.followUpRequired && (
-        <div className={[
-          'rounded-xl border px-5 py-3 text-sm flex items-center gap-2',
-          note.followUpCompleted
-            ? 'bg-green-50 border-green-200 text-green-800'
-            : 'bg-amber-50 border-amber-200 text-amber-800',
-        ].join(' ')}>
-          <CheckCircle className="h-4 w-4 shrink-0" />
-          {note.followUpCompleted
-            ? 'Follow-up completed.'
-            : `Follow-up required${note.followUpDate ? ` by ${formatDate(note.followUpDate)}` : ''}.`}
-        </div>
+        <Alert className={note.followUpCompleted
+          ? 'border-green-200 bg-green-50 text-green-800 [&>svg]:text-green-600'
+          : 'border-amber-200 bg-amber-50 text-amber-800 [&>svg]:text-amber-600'
+        }>
+          <CheckCircle className="h-4 w-4" />
+          <AlertDescription>
+            {note.followUpCompleted
+              ? 'Follow-up completed.'
+              : `Follow-up required${note.followUpDate ? ` by ${formatDate(note.followUpDate)}` : ''}.`}
+          </AlertDescription>
+        </Alert>
       )}
 
       <DetailSection title="Coaching Info">

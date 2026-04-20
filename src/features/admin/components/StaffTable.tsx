@@ -1,6 +1,8 @@
 import { MailCheck, UserX, UserCheck, Pencil } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatLabel } from '@/utils/formatters'
 import type { StaffMember } from '@/api/app-types'
@@ -65,22 +67,27 @@ export function StaffTable({
             return (
               <tr key={user.id} className="hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3">
-                  <div>
-                    <p className="font-medium text-foreground">{user.fullName ?? '—'}</p>
-                    {user.jobTitle && <p className="text-xs text-muted-foreground">{user.jobTitle}</p>}
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarFallback className="text-xs font-medium">
+                        {(user.fullName ?? '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-foreground">{user.fullName ?? '—'}</p>
+                      {user.jobTitle && <p className="text-xs text-muted-foreground">{user.jobTitle}</p>}
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{user.email}</td>
                 <td className="px-4 py-3">
-                  <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                    {roleLabel(user.role)}
-                  </span>
+                  <Badge variant="secondary">{roleLabel(user.role)}</Badge>
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   {isPendingInvite ? (
-                    <span className="inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
+                    <Badge className="border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50">
                       Invite Pending
-                    </span>
+                    </Badge>
                   ) : (
                     <StatusBadge status={isActive ? 'ACTIVE' : 'INACTIVE'} />
                   )}

@@ -5,6 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, X, Check, Shield, User, GraduationCap, Users, MapPin } from 'lucide-react'
 import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
 import { useUpdateProfile, useChangePassword } from '@/api/endpoints/auth'
 import { useMyProfile } from '@/api/endpoints/users'
 import { useCoachingByRep } from '@/api/endpoints/coaching'
@@ -58,13 +61,16 @@ function TeamsSection({ userId }: { userId: string }) {
       ) : !profile?.teams?.length ? (
         <p className="text-sm text-muted-foreground">No team assigned yet.</p>
       ) : (
-        <div className="divide-y rounded-lg border overflow-hidden">
-          {profile.teams.map((team) => (
-            <div key={team.teamId} className="px-4 py-3 space-y-0.5">
-              <p className="text-sm font-medium text-foreground">{team.teamName ?? '—'}</p>
-              {team.administratorName && (
-                <p className="text-xs text-muted-foreground">Manager: {team.administratorName}</p>
-              )}
+        <div className="rounded-lg border overflow-hidden">
+          {profile.teams.map((team, i) => (
+            <div key={team.teamId}>
+              {i > 0 && <Separator />}
+              <div className="px-4 py-3 space-y-0.5">
+                <p className="text-sm font-medium text-foreground">{team.teamName ?? '—'}</p>
+                {team.administratorName && (
+                  <p className="text-xs text-muted-foreground">Manager: {team.administratorName}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -91,23 +97,26 @@ function TerritoriesSection({ userId }: { userId: string }) {
       ) : !items.length ? (
         <p className="text-sm text-muted-foreground">{emptyMessage}</p>
       ) : (
-        <div className="divide-y rounded-lg border overflow-hidden">
-          {items.map((territory) => (
-            <div key={territory.territoryId} className="px-4 py-3 space-y-0.5">
-              <p className="text-sm font-medium text-foreground">
-                {territory.territoryName ?? '—'}
-                {territory.territoryCode && (
-                  <span className="ml-2 text-xs text-muted-foreground tabular-nums">{territory.territoryCode}</span>
-                )}
-              </p>
-              {isManagerView
-                ? 'primaryRepName' in territory && territory.primaryRepName && (
-                    <p className="text-xs text-muted-foreground">Primary Rep: {territory.primaryRepName}</p>
-                  )
-                : 'managerName' in territory && territory.managerName && (
-                    <p className="text-xs text-muted-foreground">Manager: {territory.managerName}</p>
-                  )
-              }
+        <div className="rounded-lg border overflow-hidden">
+          {items.map((territory, i) => (
+            <div key={territory.territoryId}>
+              {i > 0 && <Separator />}
+              <div className="px-4 py-3 space-y-0.5">
+                <p className="text-sm font-medium text-foreground">
+                  {territory.territoryName ?? '—'}
+                  {territory.territoryCode && (
+                    <span className="ml-2 text-xs text-muted-foreground tabular-nums">{territory.territoryCode}</span>
+                  )}
+                </p>
+                {isManagerView
+                  ? 'primaryRepName' in territory && territory.primaryRepName && (
+                      <p className="text-xs text-muted-foreground">Primary Rep: {territory.primaryRepName}</p>
+                    )
+                  : 'managerName' in territory && territory.managerName && (
+                      <p className="text-xs text-muted-foreground">Manager: {territory.managerName}</p>
+                    )
+                }
+              </div>
             </div>
           ))}
         </div>
@@ -132,30 +141,36 @@ function CoachingHistorySection({ userId }: { userId: string }) {
         <p className="text-sm text-muted-foreground">No coaching notes yet.</p>
       ) : (
         <div className="space-y-3">
-          <div className="rounded-lg border divide-y overflow-hidden">
-            {notes.map((note) => (
-              <button
-                key={note.id}
-                onClick={() => navigate(`/coaching/${note.id}`)}
-                className="w-full flex items-start justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors"
-              >
-                <div>
-                  <p className="text-sm font-medium text-foreground">{note.noteTitle ?? '—'}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {note.feedbackType ? formatLabel(note.feedbackType) : '—'}
-                    {note.coachName ? ` · ${note.coachName}` : ''}
-                  </p>
-                </div>
-                <div className="text-right shrink-0 ml-4">
-                  <p className="text-xs text-muted-foreground">{formatDate(note.dateProvided)}</p>
-                  {note.followUpRequired && !note.followUpCompleted && (
-                    <span className="text-xs text-amber-600 font-medium">Follow-up pending</span>
-                  )}
-                  {note.followUpRequired && note.followUpCompleted && (
-                    <span className="text-xs text-green-600 font-medium">Follow-up done</span>
-                  )}
-                </div>
-              </button>
+          <div className="rounded-lg border overflow-hidden">
+            {notes.map((note, i) => (
+              <div key={note.id}>
+                {i > 0 && <Separator />}
+                <button
+                  onClick={() => navigate(`/coaching/${note.id}`)}
+                  className="w-full flex items-start justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{note.noteTitle ?? '—'}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {note.feedbackType ? formatLabel(note.feedbackType) : '—'}
+                      {note.coachName ? ` · ${note.coachName}` : ''}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0 ml-4">
+                    <p className="text-xs text-muted-foreground">{formatDate(note.dateProvided)}</p>
+                    {note.followUpRequired && !note.followUpCompleted && (
+                      <Badge className="mt-1 border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50">
+                        Follow-up pending
+                      </Badge>
+                    )}
+                    {note.followUpRequired && note.followUpCompleted && (
+                      <Badge className="mt-1 border-green-200 bg-green-50 text-green-700 hover:bg-green-50">
+                        Follow-up done
+                      </Badge>
+                    )}
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
           {totalPages > 1 && (
@@ -222,6 +237,18 @@ export default function ProfilePage() {
       <Section title="Profile Information" icon={User}>
         {!editingName ? (
           <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-14 w-14 shrink-0">
+                <AvatarFallback className="text-base font-semibold">
+                  {(user?.fullName ?? '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="font-semibold text-foreground truncate">{user?.fullName ?? '—'}</p>
+                <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+              </div>
+            </div>
+            <Separator />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Full Name" value={user?.fullName} />
               <Field label="Email" value={user?.email} />

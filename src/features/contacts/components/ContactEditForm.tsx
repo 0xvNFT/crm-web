@@ -11,7 +11,7 @@ import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TextareaWithCounter } from '@/components/ui/textarea-with-counter'
-import { CheckboxField } from '@/components/shared/CheckboxField'
+import { SwitchField } from '@/components/shared/SwitchField'
 import { FormRow } from '@/components/shared/FormRow'
 import { FormSection } from '@/components/shared/FormSection'
 import { parseApiError } from '@/utils/errors'
@@ -293,9 +293,42 @@ export function ContactEditForm({ contactId, contact, onSuccess, onCancel }: Con
         <FormRow label="Monthly Patient Volume" error={errors.patientVolumeMonthly?.message}>
           <Input {...register('patientVolumeMonthly')} type="number" min={0} />
         </FormRow>
-        <CheckboxField label="Prescribing Authority" id="prescribingAuthority" {...register('prescribingAuthority')} />
-        <CheckboxField label="Do Not Call" id="doNotCall" {...register('doNotCall')} />
-        <CheckboxField label="Email Opt-Out" id="emailOptOut" {...register('emailOptOut')} />
+        <Controller
+          name="prescribingAuthority"
+          control={control}
+          render={({ field }) => (
+            <SwitchField
+              id="prescribingAuthority"
+              label="Prescribing Authority"
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <Controller
+          name="doNotCall"
+          control={control}
+          render={({ field }) => (
+            <SwitchField
+              id="doNotCall"
+              label="Do Not Call"
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <Controller
+          name="emailOptOut"
+          control={control}
+          render={({ field }) => (
+            <SwitchField
+              id="emailOptOut"
+              label="Email Opt-Out"
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
       </FormSection>
 
       <FormSection title="Address">

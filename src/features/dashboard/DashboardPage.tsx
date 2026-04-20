@@ -5,19 +5,12 @@ import { StatCard } from './components/StatCard'
 import { PipelineChart } from './components/PipelineChart'
 import { LeadFunnelChart } from './components/LeadFunnelChart'
 import { ActivityChart } from './components/ActivityChart'
+import { RepTargetsWidget } from './components/RepTargetsWidget'
 import { useDashboardStats } from './hooks/useDashboardStats'
 import { usePipelineSummary, useLeadFunnelSummary, useActivitySummary } from '@/api/endpoints/reports'
 import { Building2, Target, ShoppingCart, Activity, CalendarCheck } from 'lucide-react'
 import { OverdueFollowUpsWidget } from './components/OverdueFollowUpsWidget'
-
-// Lightweight section divider used between analytics groups
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-0.5">
-      {children}
-    </p>
-  )
-}
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -45,7 +38,6 @@ export default function DashboardPage() {
       />
 
       {/* ── KPI Stats ─────────────────────────────────────────────────────────── */}
-      {/* FIELD_REP sees personal stats; MANAGER/ADMIN sees org-wide */}
       <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
         {isRepOnly ? (
           <>
@@ -64,50 +56,84 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ── Pipeline ──────────────────────────────────────────────────────────── */}
-      {/* MANAGER/ADMIN only: org-level pipeline visibility */}
-      {isManager && (
-        <div className="space-y-3">
-          <SectionLabel>Pipeline</SectionLabel>
-          <PipelineChart
-            data={pipeline.data}
-            isLoading={pipeline.isLoading}
-            isError={pipeline.isError}
-            error={pipeline.error}
-            onRetry={() => pipeline.refetch()}
-          />
-        </div>
-      )}
+      {/* ── Tabbed analytics ──────────────────────────────────────────────────── */}
+      {isRepOnly ? (
+        // REP view: Overview charts + My Targets tab
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="targets">My Targets</TabsTrigger>
+          </TabsList>
 
-      {/* ── Lead Funnel + Activity ─────────────────────────────────────────────── */}
-      {/* All roles see these; backend scopes REP data server-side */}
-      <div className="space-y-3">
-        <SectionLabel>Leads &amp; Activity</SectionLabel>
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <LeadFunnelChart
-            data={leadFunnel.data}
-            isLoading={leadFunnel.isLoading}
-            isError={leadFunnel.isError}
-            error={leadFunnel.error}
-            onRetry={() => leadFunnel.refetch()}
-          />
-          <ActivityChart
-            data={activitySummary.data}
-            isLoading={activitySummary.isLoading}
-            isError={activitySummary.isError}
-            error={activitySummary.error}
-            onRetry={() => activitySummary.refetch()}
-          />
-        </div>
-      </div>
+          <TabsContent value="overview" className="space-y-5 mt-4">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              <LeadFunnelChart
+                data={leadFunnel.data}
+                isLoading={leadFunnel.isLoading}
+                isError={leadFunnel.isError}
+                error={leadFunnel.error}
+                onRetry={() => leadFunnel.refetch()}
+              />
+              <ActivityChart
+                data={activitySummary.data}
+                isLoading={activitySummary.isLoading}
+                isError={activitySummary.isError}
+                error={activitySummary.error}
+                onRetry={() => activitySummary.refetch()}
+              />
+            </div>
+          </TabsContent>
 
-      {/* ── Overdue Follow-ups ─────────────────────────────────────────────────── */}
-      {/* MANAGER/ADMIN only: coaching oversight tool */}
-      {isManager && (
-        <div className="space-y-3">
-          <SectionLabel>Coaching Alerts</SectionLabel>
-          <OverdueFollowUpsWidget />
-        </div>
+          <TabsContent value="targets" className="mt-4">
+            {user?.userId && (
+              <RepTargetsWidget
+                repId={user.userId}
+                visitCount={myVisits.data ?? 0}
+                activityCount={activities.data ?? 0}
+                leadCount={leads.data ?? 0}
+                loadingStats={myVisits.isLoading || activities.isLoading || leads.isLoading}
+              />
+            )}
+          </TabsContent>
+        </Tabs>
+      ) : (
+        // MANAGER/ADMIN view: Overview + Team tab
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="team">Team</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-5 mt-4">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              <LeadFunnelChart
+                data={leadFunnel.data}
+                isLoading={leadFunnel.isLoading}
+                isError={leadFunnel.isError}
+                error={leadFunnel.error}
+                onRetry={() => leadFunnel.refetch()}
+              />
+              <ActivityChart
+                data={activitySummary.data}
+                isLoading={activitySummary.isLoading}
+                isError={activitySummary.isError}
+                error={activitySummary.error}
+                onRetry={() => activitySummary.refetch()}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="team" className="space-y-5 mt-4">
+            <PipelineChart
+              data={pipeline.data}
+              isLoading={pipeline.isLoading}
+              isError={pipeline.isError}
+              error={pipeline.error}
+              onRetry={() => pipeline.refetch()}
+            />
+            <OverdueFollowUpsWidget />
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   )
