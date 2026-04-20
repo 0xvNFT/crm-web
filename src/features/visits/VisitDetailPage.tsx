@@ -22,6 +22,8 @@ import { SignatureCaptureDialog } from './components/SignatureCaptureDialog'
 import { VisitProductsSection } from './components/VisitProductsSection'
 import { VisitMaterialsSection } from './components/VisitMaterialsSection'
 import { DetailSection, DetailField } from '@/components/shared/DetailSection'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -174,141 +176,165 @@ export default function VisitDetailPage() {
 
       {/* Rejection reason banner */}
       {!editing && visit.rejectionReason && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
-          <p className="text-xs font-semibold text-destructive uppercase tracking-wide mb-0.5">Rejected</p>
-          <p className="text-sm text-foreground">{visit.rejectionReason}</p>
-        </div>
+        <Alert variant="destructive">
+          <AlertTitle>Rejected</AlertTitle>
+          <AlertDescription>{visit.rejectionReason}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Signature required warning — blocks submission until captured */}
+      {!editing && signatureBlocking && isOwnVisit && (
+        <Alert className="border-amber-200 bg-amber-50 text-amber-800 [&>svg]:text-amber-600">
+          <FileSignature className="h-4 w-4" />
+          <AlertTitle>Signature Required</AlertTitle>
+          <AlertDescription>A customer signature must be captured before this visit can be submitted for review.</AlertDescription>
+        </Alert>
       )}
 
       {!editing && (
-        <>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <DetailSection noGrid title="Visit Details" icon={MapPin}>
-              <div className="grid grid-cols-2 gap-3">
-                <DetailField label="Account" value={visit.accountName} />
-                <DetailField label="Contact" value={visit.contactName} />
-                <DetailField label="Assigned Rep" value={visit.assignedRepName} />
-                <DetailField label="Territory" value={visit.territoryName} />
-                <DetailField label="Visit Type" value={visit.visitType?.replace(/_/g, ' ')} />
-                <DetailField label="Priority" value={visit.priority} />
-                {visit.opportunityId && (
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-medium text-muted-foreground">Opportunity</p>
-                    <button
-                      className="flex items-center gap-1.5 text-sm text-primary hover:underline"
-                      onClick={() => navigate(`/opportunities/${visit.opportunityId}`)}
-                    >
-                      <TrendingUp className="h-3.5 w-3.5" strokeWidth={1.5} />
-                      {visit.opportunityName ?? 'View Opportunity'}
-                    </button>
+        <Tabs defaultValue="info">
+          <TabsList>
+            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="products">Products &amp; Materials</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+          </TabsList>
+
+          {/* ── Info tab ─────────────────────────────────────────────────────── */}
+          <TabsContent value="info" className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <DetailSection noGrid title="Visit Details" icon={MapPin}>
+                <div className="grid grid-cols-2 gap-3">
+                  <DetailField label="Account" value={visit.accountName} />
+                  <DetailField label="Contact" value={visit.contactName} />
+                  <DetailField label="Assigned Rep" value={visit.assignedRepName} />
+                  <DetailField label="Territory" value={visit.territoryName} />
+                  <DetailField label="Visit Type" value={visit.visitType?.replace(/_/g, ' ')} />
+                  <DetailField label="Priority" value={visit.priority} />
+                  {visit.opportunityId && (
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-medium text-muted-foreground">Opportunity</p>
+                      <button
+                        className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                        onClick={() => navigate(`/opportunities/${visit.opportunityId}`)}
+                      >
+                        <TrendingUp className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        {visit.opportunityName ?? 'View Opportunity'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </DetailSection>
+
+              <DetailSection noGrid title="Schedule" icon={Clock}>
+                <div className="grid grid-cols-2 gap-3">
+                  <DetailField label="Scheduled Start" value={formatDateTime(visit.scheduledStart)} />
+                  <DetailField label="Scheduled End" value={formatDateTime(visit.scheduledEnd)} />
+                  <DetailField label="Check-in Time" value={visit.checkInTime ? formatDateTime(visit.checkInTime) : null} />
+                  <DetailField label="Check-out Time" value={visit.checkOutTime ? formatDateTime(visit.checkOutTime) : null} />
+                  <DetailField label="Duration" value={visit.durationMinutes ? `${visit.durationMinutes} min` : null} />
+                  <DetailField label="Next Visit" value={visit.nextVisitDate ? formatDate(visit.nextVisitDate) : null} />
+                </div>
+              </DetailSection>
+            </div>
+
+            <DetailSection noGrid title="Call Details" icon={FileSignature}>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">Call Objectives</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{visit.callObjectives ?? '—'}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">Outcome</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{visit.outcome ?? '—'}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">Key Discussion Points</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{visit.keyDiscussionPoints ?? '—'}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">Customer Feedback</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{visit.customerFeedback ?? '—'}</p>
+                </div>
+                <DetailField label="Sentiment" value={visit.sentiment} />
+                <DetailField label="Submission Status" value={visit.submissionStatus} />
+              </div>
+            </DetailSection>
+
+            {(visit.followUpRequired || visit.followUpNotes || visit.nextBestAction) && (
+              <DetailSection noGrid title="Follow-up" icon={CheckCircle}>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <DetailField label="Follow-up Required" value={visit.followUpRequired ? 'Yes' : 'No'} />
+                  <DetailField label="Next Best Action" value={visit.nextBestAction} />
+                  <div className="sm:col-span-2 space-y-0.5">
+                    <p className="text-xs font-medium text-muted-foreground">Follow-up Notes</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{visit.followUpNotes ?? '—'}</p>
+                  </div>
+                </div>
+              </DetailSection>
+            )}
+
+            {(visit.gpsLatitude || visit.locationName) && (
+              <DetailSection noGrid title="Location" icon={MapPin}>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <DetailField label="Location Name" value={visit.locationName} />
+                  <DetailField label="GPS Latitude" value={visit.gpsLatitude?.toString()} />
+                  <DetailField label="GPS Longitude" value={visit.gpsLongitude?.toString()} />
+                  <DetailField label="Location Verified" value={visit.locationVerified ? 'Yes' : 'No'} />
+                </div>
+              </DetailSection>
+            )}
+
+            {visit.signatureRequired && (
+              <DetailSection noGrid title="Signature" icon={FileSignature}>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <DetailField label="Signature Required" value="Yes" />
+                  <DetailField label="Signature Captured" value={visit.signatureCaptured ? 'Yes' : 'No'} />
+                  <DetailField label="Captured By" value={visit.signatureCapturedByName} />
+                  <DetailField label="Captured At" value={visit.signatureCapturedAt ? formatDateTime(visit.signatureCapturedAt) : null} />
+                </div>
+                {visit.signatureImageUrl && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-muted-foreground">Signature Image</p>
+                    <img
+                      src={visit.signatureImageUrl}
+                      alt="Captured signature"
+                      className="max-h-24 border rounded-md"
+                    />
                   </div>
                 )}
-              </div>
-            </DetailSection>
+              </DetailSection>
+            )}
 
-            <DetailSection noGrid title="Schedule" icon={Clock}>
-              <div className="grid grid-cols-2 gap-3">
-                <DetailField label="Scheduled Start" value={formatDateTime(visit.scheduledStart)} />
-                <DetailField label="Scheduled End" value={formatDateTime(visit.scheduledEnd)} />
-                <DetailField label="Check-in Time" value={visit.checkInTime ? formatDateTime(visit.checkInTime) : null} />
-                <DetailField label="Check-out Time" value={visit.checkOutTime ? formatDateTime(visit.checkOutTime) : null} />
-                <DetailField label="Duration" value={visit.durationMinutes ? `${visit.durationMinutes} min` : null} />
-                <DetailField label="Next Visit" value={visit.nextVisitDate ? formatDate(visit.nextVisitDate) : null} />
-              </div>
-            </DetailSection>
-          </div>
-
-          <DetailSection noGrid title="Call Details" icon={FileSignature}>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-0.5">
-                <p className="text-xs font-medium text-muted-foreground">Call Objectives</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{visit.callObjectives ?? '—'}</p>
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-medium text-muted-foreground">Outcome</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{visit.outcome ?? '—'}</p>
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-medium text-muted-foreground">Key Discussion Points</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{visit.keyDiscussionPoints ?? '—'}</p>
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-medium text-muted-foreground">Customer Feedback</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{visit.customerFeedback ?? '—'}</p>
-              </div>
-              <DetailField label="Sentiment" value={visit.sentiment} />
-              <DetailField label="Submission Status" value={visit.submissionStatus} />
-            </div>
-          </DetailSection>
-
-          {(visit.followUpRequired || visit.followUpNotes || visit.nextBestAction) && (
-            <DetailSection noGrid title="Follow-up" icon={CheckCircle}>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <DetailField label="Follow-up Required" value={visit.followUpRequired ? 'Yes' : 'No'} />
-                <DetailField label="Next Best Action" value={visit.nextBestAction} />
-                <div className="sm:col-span-2 space-y-0.5">
-                  <p className="text-xs font-medium text-muted-foreground">Follow-up Notes</p>
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{visit.followUpNotes ?? '—'}</p>
+            {(visit.reviewedById || visit.reviewedAt) && (
+              <DetailSection noGrid title="Review" icon={User}>
+                <div className="grid grid-cols-2 gap-3">
+                  <DetailField label="Reviewed By" value={visit.reviewedByName} />
+                  <DetailField label="Reviewed At" value={visit.reviewedAt ? formatDateTime(visit.reviewedAt) : null} />
                 </div>
-              </div>
-            </DetailSection>
-          )}
+              </DetailSection>
+            )}
 
-          {(visit.gpsLatitude || visit.locationName) && (
-            <DetailSection noGrid title="Location" icon={MapPin}>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <DetailField label="Location Name" value={visit.locationName} />
-                <DetailField label="GPS Latitude" value={visit.gpsLatitude?.toString()} />
-                <DetailField label="GPS Longitude" value={visit.gpsLongitude?.toString()} />
-                <DetailField label="Location Verified" value={visit.locationVerified ? 'Yes' : 'No'} />
-              </div>
-            </DetailSection>
-          )}
+            {visit.notes && (
+              <DetailSection noGrid title="Notes" icon={FileSignature}>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{visit.notes}</p>
+              </DetailSection>
+            )}
+          </TabsContent>
 
-          {visit.signatureRequired && (
-            <DetailSection noGrid title="Signature" icon={FileSignature}>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <DetailField label="Signature Required" value="Yes" />
-                <DetailField label="Signature Captured" value={visit.signatureCaptured ? 'Yes' : 'No'} />
-                <DetailField label="Captured By" value={visit.signatureCapturedByName} />
-                <DetailField label="Captured At" value={visit.signatureCapturedAt ? formatDateTime(visit.signatureCapturedAt) : null} />
-              </div>
-              {visit.signatureImageUrl && (
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Signature Image</p>
-                  <img
-                    src={visit.signatureImageUrl}
-                    alt="Captured signature"
-                    className="max-h-24 border rounded-md"
-                  />
-                </div>
-              )}
-            </DetailSection>
-          )}
+          {/* ── Products & Materials tab ──────────────────────────────────────── */}
+          <TabsContent value="products" className="space-y-4 mt-4">
+            <VisitProductsSection visitId={id ?? ''} visit={visit} />
+            <VisitMaterialsSection visitId={id ?? ''} visit={visit} />
+          </TabsContent>
 
-          {(visit.reviewedById || visit.reviewedAt) && (
-            <DetailSection noGrid title="Review" icon={User}>
-              <div className="grid grid-cols-2 gap-3">
-                <DetailField label="Reviewed By" value={visit.reviewedByName} />
-                <DetailField label="Reviewed At" value={visit.reviewedAt ? formatDateTime(visit.reviewedAt) : null} />
-              </div>
-            </DetailSection>
-          )}
-
-          {visit.notes && (
-            <DetailSection noGrid title="Notes" icon={FileSignature}>
-              <p className="text-sm text-foreground whitespace-pre-wrap">{visit.notes}</p>
-            </DetailSection>
-          )}
-
-          <VisitProductsSection visitId={id ?? ''} visit={visit} />
-          <VisitMaterialsSection visitId={id ?? ''} visit={visit} />
-        </>
+          {/* ── Activity tab ─────────────────────────────────────────────────── */}
+          <TabsContent value="activity" className="space-y-4 mt-4">
+            <EntityTagsSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
+            <EntityNotesSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
+            <EntityHistorySection entityType="PharmaFieldVisit" entityId={id ?? ''} />
+          </TabsContent>
+        </Tabs>
       )}
-
-      <EntityTagsSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
-          <EntityNotesSection entityType="PharmaFieldVisit" entityId={id ?? ''} />
-      <EntityHistorySection entityType="PharmaFieldVisit" entityId={id ?? ''} />
 
       {/* ─── Dialogs ──────────────────────────────────────────────────────────── */}
 

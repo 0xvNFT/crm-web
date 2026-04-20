@@ -1,13 +1,13 @@
 [
   {
-    "version": "version 2.5.1",
-    "date": "2026-04-17",
-    "title": "What's new in version 2.5.1",
+    "version": "version 2.5.2",
+    "date": "2026-04-20",
+    "title": "What's new in version 2.5.2",
     "items": [
       "Notes section added in the pages",
-      "UI/UX improvements",
-      "Audit trail logging for all entity changes",
-      "Campaign management module added"
+      "UI/UX improvements and bug fixes",
+      "Pipeline management features added",
+      "Signature capture functionality added"
     ]
   }
 ]
