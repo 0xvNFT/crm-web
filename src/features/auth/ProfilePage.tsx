@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, X, Check, Shield, User, GraduationCap, Users, MapPin } from 'lucide-react'
+import { Pencil, X, Check, Shield, User, GraduationCap, Users, MapPin, UserCheck } from 'lucide-react'
 import { useRole } from '@/hooks/useRole'
 import { useAuth } from '@/hooks/useAuth'
 import { Badge } from '@/components/ui/badge'
@@ -119,6 +119,70 @@ function TerritoriesSection({ userId }: { userId: string }) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </Section>
+  )
+}
+
+// ─── Reporting Structure ──────────────────────────────────────────────────────
+function ReportingStructureSection({ userId }: { userId: string }) {
+  const { data: profile, isLoading } = useMyProfile()
+
+  if (!userId) return null
+
+  const reportsTo = profile?.reportsTo
+  const directReports = profile?.directReports ?? []
+
+  if (!isLoading && !reportsTo && directReports.length === 0) return null
+
+  return (
+    <Section title="Reporting Structure" icon={UserCheck}>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : (
+        <div className="space-y-4">
+          {reportsTo && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">Reports To</p>
+              <div className="flex items-center gap-3">
+                <Avatar className="h-7 w-7 shrink-0">
+                  <AvatarFallback className="text-xs">
+                    {(reportsTo.fullName ?? '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{reportsTo.fullName ?? '—'}</p>
+                  {reportsTo.jobTitle && <p className="text-xs text-muted-foreground">{reportsTo.jobTitle}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {directReports.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">Direct Reports ({directReports.length})</p>
+              <div className="rounded-lg border overflow-hidden">
+                {directReports.map((report, i) => (
+                  <div key={report.userId}>
+                    {i > 0 && <Separator />}
+                    <div className="flex items-center gap-3 px-4 py-2.5">
+                      <Avatar className="h-7 w-7 shrink-0">
+                        <AvatarFallback className="text-xs">
+                          {(report.fullName ?? '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{report.fullName ?? '—'}</p>
+                        {report.jobTitle && <p className="text-xs text-muted-foreground truncate">{report.jobTitle}</p>}
+                      </div>
+                      {report.role && <Badge variant="secondary" className="shrink-0">{formatLabel(report.role)}</Badge>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Section>
@@ -288,6 +352,7 @@ export default function ProfilePage() {
       {/* Teams & Territories — from /me/profile, not cached with session */}
       {user?.userId && <TeamsSection userId={user.userId} />}
       {user?.userId && <TerritoriesSection userId={user.userId} />}
+      {user?.userId && <ReportingStructureSection userId={user.userId} />}
 
       {/* Coaching History — visible to all roles */}
       {user?.userId && <CoachingHistorySection userId={user.userId} />}

@@ -53,6 +53,8 @@ export type UserProfile                  = components['schemas']['UserProfileRes
 export type UserProfileTeam              = components['schemas']['TeamInfo']
 export type UserProfileTerritory         = components['schemas']['TerritoryInfo']
 export type UserProfileManagedTerritory  = components['schemas']['ManagedTerritoryInfo']
+export type UserProfileReportsTo         = components['schemas']['ReportsToInfo']
+export type UserProfileDirectReport      = components['schemas']['DirectReportInfo']
 
 // ─── Visit lifecycle types ────────────────────────────────────────────────────
 export type VisitProductInfo         = components['schemas']['VisitProductInfo']
