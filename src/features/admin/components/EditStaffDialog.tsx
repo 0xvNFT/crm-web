@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useUpdateStaff, useStaffSearch } from '@/api/endpoints/users'
 import { useConfigOptions } from '@/hooks/useConfigOptions'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useAuth } from '@/hooks/useAuth'
 import { editStaffSchema, type EditStaffFormData } from '@/schemas/admin'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { FormRow } from '@/components/shared/FormRow'
 import { toast } from '@/hooks/useToast'
 import { parseApiError } from '@/utils/errors'
@@ -27,13 +29,15 @@ interface EditStaffDialogProps {
 // key={user?.id} must be set at the call site to remount this component per user,
 // ensuring defaultValues are stable and not stale from a previous selection.
 export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
+  const { user: currentUser } = useAuth()
+  const isSelf = !!user?.id && user.id === currentUser?.userId
   const { mutate: updateStaff, isPending } = useUpdateStaff(user?.id ?? '')
   const roleOptions = useConfigOptions('user.role')
 
   // Reports To combobox state
   const [managerQuery, setManagerQuery] = useState('')
   const debouncedManagerQuery = useDebounce(managerQuery, 300)
-  const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery)
+  const { data: managerResults, isLoading: isSearchingManagers } = useStaffSearch(debouncedManagerQuery, ['ADMIN', 'MANAGER'])
   const managerOptions: ComboboxOption[] = (managerResults ?? [])
     .filter((u) => u.id !== user?.id) // cannot report to yourself
     .map((u) => ({
@@ -109,20 +113,27 @@ export function EditStaffDialog({ user, onClose }: EditStaffDialogProps) {
           </div>
 
           <FormRow label="Role" error={errors.role?.message}>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
-                  <SelectContent>
-                    {roleOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Controller
+                    name="role"
+                    control={control}
+                    render={({ field }) => (
+                      <Select value={field.value ?? undefined} onValueChange={field.onChange} disabled={isSelf}>
+                        <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
+                        <SelectContent>
+                          {roleOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+              </TooltipTrigger>
+              {isSelf && <TooltipContent>You cannot change your own role</TooltipContent>}
+            </Tooltip>
           </FormRow>
 
           <div className="grid grid-cols-2 gap-3">
