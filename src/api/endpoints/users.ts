@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/api/client'
-import type { User, PageUser, StaffMember, CreateStaffRequest, UpdateStaffRequest } from '@/api/app-types'
+import type { User, PageUser, StaffMember, CreateStaffRequest, UpdateStaffRequest, UserProfile } from '@/api/app-types'
 
 // ─── Normalizer ───────────────────────────────────────────────────────────────
 // Backend now returns StaffResponse DTO — roles is string[], manager is flat (managerId/managerName).
@@ -112,5 +112,14 @@ export function useResendInvite() {
   return useMutation({
     mutationFn: (id: string) =>
       client.post(`/api/v1/pharma/users/${id}/resend-invite`).then((r) => r.data),
+  })
+}
+
+export function useMyProfile() {
+  return useQuery({
+    queryKey: ['users', 'me', 'profile'],
+    queryFn: () =>
+      client.get<UserProfile>('/api/v1/pharma/users/me/profile').then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
   })
 }
